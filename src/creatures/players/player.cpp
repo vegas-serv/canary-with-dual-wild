@@ -306,6 +306,11 @@ int32_t Player::getWeaponSkill(const Item* item) const {
 			attackSkill = getSkillLevel(SKILL_CLUB);
 			break;
 		}
+		
+		case WEAPON_WAND: {
+            attackSkill = getMagicLevel();
+            break;
+        }
 
 		case WEAPON_AXE: {
 			attackSkill = getSkillLevel(SKILL_AXE);
