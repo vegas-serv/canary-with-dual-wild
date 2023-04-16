@@ -54,6 +54,8 @@ class MonsterFunctions final : LuaScriptInterface {
 			registerMethod(L, "Monster", "configureForgeSystem", MonsterFunctions::luaMonsterConfigureForgeSystem);
 			registerMethod(L, "Monster", "clearFiendishStatus", MonsterFunctions::luaMonsterClearFiendishStatus);
 			registerMethod(L, "Monster", "isForgeable", MonsterFunctions::luaMonsterIsForgeable);
+			
+			registerMethod(L, "Monster", "setMasterPosition", MonsterFunctions::luaMonsterSetMasterPosition);
 
 			CharmFunctions::init(L);
 			LootFunctions::init(L);
@@ -62,6 +64,8 @@ class MonsterFunctions final : LuaScriptInterface {
 		}
 
 		static int luaMonsterCreate(lua_State* L);
+		
+		static int luaMonsterSetMasterPosition(lua_State* L);
 
 		static int luaMonsterIsMonster(lua_State* L);
 
