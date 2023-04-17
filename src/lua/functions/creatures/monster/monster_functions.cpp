@@ -520,7 +520,7 @@ int MonsterFunctions::luaMonsterSetMasterPosition(lua_State* L)
         position.z = getNumber<uint16_t>(L, 4);
     }
 
-    Tile* tile = g_game.map.getTile(position);
+    Tile* tile = g_game().map.getTile(position);
     if (!tile) {
         lua_pushnil(L);
         return 1;
