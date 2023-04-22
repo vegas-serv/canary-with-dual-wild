@@ -4014,7 +4014,11 @@ void ProtocolGame::sendResourceBalance(Resource_t resourceType, uint64_t value) 
 void ProtocolGame::sendSaleItemList(const std::vector<ShopBlock> &shopVector, const std::map<uint16_t, uint16_t> &inventoryMap) {
 	// Since we already have full inventory map we shouldn't call getMoney here - it is simply wasting cpu power
 	uint64_t playerMoney = 0;
-	auto it = inventoryMap.find(ITEM_CRYSTAL_COIN);
+	auto it = inventoryMap.find(ITEM_BAR_OF_GOLD);
+	if (it != inventoryMap.end()) {
+		playerMoney += static_cast<uint64_t>(it->second) * 1000000;
+	}
+	it = inventoryMap.find(ITEM_CRYSTAL_COIN);
 	if (it != inventoryMap.end()) {
 		playerMoney += static_cast<uint64_t>(it->second) * 10000;
 	}
@@ -7547,11 +7551,12 @@ void ProtocolGame::parseSendBosstiarySlots() {
 		auto boostedBossRace = magic_enum::enum_integer<BosstiaryRarity_t>(mType->info.bosstiaryRace);
 		auto boostedBossKillCount = player->getBestiaryKillCount(static_cast<uint16_t>(boostedBossId));
 		auto boostedLootBonus = static_cast<uint16_t>(g_configManager().getNumber(BOOSTED_BOSS_LOOT_BONUS));
+		auto bosstiaryMultiplier = static_cast<uint8_t>(g_configManager().getNumber(BOSSTIARY_KILL_MULTIPLIER));
 		auto boostedKillBonus = static_cast<uint8_t>(g_configManager().getNumber(BOOSTED_BOSS_KILL_BONUS));
 		msg.addByte(boostedBossRace); // Boss Race
 		msg.add<uint32_t>(boostedBossKillCount); // Kill Count
 		msg.add<uint16_t>(boostedLootBonus); // Loot Bonus
-		msg.addByte(boostedKillBonus); // Kill Bonus
+		msg.addByte(bosstiaryMultiplier + boostedKillBonus); // Kill Bonus
 		msg.addByte(boostedBossRace); // Boss Race
 		msg.add<uint32_t>(0); // Remove Price
 		msg.addByte(0); // Inactive? (Only true if equal to Boosted Boss)

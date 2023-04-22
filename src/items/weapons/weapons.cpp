@@ -701,11 +701,26 @@ void WeaponWand::configureWeapon(const ItemType &it) {
 	Weapon::configureWeapon(it);
 }
 
-int32_t WeaponWand::getWeaponDamage(const Player*, const Creature*, const Item*, bool maxDamage /*= false*/) const {
-	if (maxDamage) {
-		return -maxChange;
-	}
-	return -normal_random(minChange, maxChange);
+int32_t WeaponWand::getWeaponDamage(const Player* player, const Creature*, const Item* item, bool maxDamage /*= false*/) const
+{
+    using namespace std;
+    int32_t attackSkill = player->getWeaponSkill(item) * 1.3;
+    int32_t attackValue = std::max<int32_t>(0, item->getAttack());
+    float attackFactor = player->getAttackFactor();
+    uint32_t level = player->getLevel();
+
+    int32_t maxValue = static_cast<int32_t>(Weapons::getMaxWeaponDamage(level, attackSkill, attackValue, attackFactor, false) * player->getVocation()->meleeDamageMultiplier);
+
+    int32_t minValue = level / 5;
+    if (maxDamage) {
+        return -maxValue;
+    }
+
+    return -normal_random(minValue, maxValue);
+    // if (maxDamage) {
+    //     return -maxChange;
+    // }
+    // return -normal_random(minChange, maxChange);
 }
 
 int16_t WeaponWand::getElementDamageValue() const {

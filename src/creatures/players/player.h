@@ -2231,6 +2231,11 @@ class Player final : public Creature, public Cylinder {
 		uint32_t getBossPoints() const {
 			return bossPoints;
 		}
+		void sendBosstiaryCooldownTimer() const {
+			if (client) {
+				client->sendBosstiaryCooldownTimer();
+			}
+		}
 
 		void setSlotBossId(uint8_t slotId, uint32_t bossId) {
 			if (slotId == 1)
@@ -2569,8 +2574,8 @@ class Player final : public Creature, public Cylinder {
 		bool isPromoted() const;
 
 		uint32_t getAttackSpeed() const {
-			return vocation->getAttackSpeed();
-		}
+            return (vocation->getAttackSpeed() - (getSkillLevel(SKILL_FIST) * 3));
+        }
 
 		static double_t getPercentLevel(uint64_t count, uint64_t nextLevelCount);
 		double getLostPercent() const;
