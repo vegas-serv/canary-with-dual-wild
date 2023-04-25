@@ -313,6 +313,13 @@ bool Game::loadCustomMaps(const std::string &customMapPath) {
 
 	namespace fs = std::filesystem;
 
+	if (!fs::exists(customMapPath)) {
+		if (!fs::create_directory(customMapPath)) {
+			SPDLOG_ERROR("Failed to create custom map directory {}", customMapPath);
+			return false;
+		}
+	}
+
 	int customMapIndex = 0;
 	for (const auto &entry : fs::directory_iterator(customMapPath)) {
 		const auto &realPath = entry.path();
@@ -346,7 +353,7 @@ bool Game::loadCustomMaps(const std::string &customMapPath) {
 			SPDLOG_ERROR("Failed to load custom map {}", filename);
 			return false;
 		}
-		customMapIndex += 1;
+		customMapIndex++;
 	}
 
 	// Must be done after all maps have been loaded
@@ -7343,15 +7350,6 @@ void Game::playerHighscores(Player* player, HighscoreType_t type, uint8_t catego
 	};
 	g_databaseTasks().addTask(query.str(), callback, true);
 	player->addAsyncOngoingTask(PlayerAsyncTask_Highscore);
-}
-
-void Game::playerTournamentLeaderboard(uint32_t playerId, uint8_t leaderboardType) {
-	Player* player = getPlayerByID(playerId);
-	if (!player || leaderboardType > 1) {
-		return;
-	}
-
-	player->sendTournamentLeaderboard();
 }
 
 void Game::playerReportRuleViolationReport(uint32_t playerId, const std::string &targetName, uint8_t reportType, uint8_t reportReason, const std::string &comment, const std::string &translation) {
