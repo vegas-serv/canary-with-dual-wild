@@ -968,9 +968,6 @@ void ProtocolGame::parsePacketFromDispatcher(NetworkMessage msg, uint8_t recvbyt
 		case 0xC0:
 			parseForgeBrowseHistory(msg);
 			break;
-		case 0xC7:
-			parseTournamentLeaderboard(msg);
-			break;
 		case 0xC9: /* update tile */
 			break;
 		case 0xCA:
@@ -1744,6 +1741,7 @@ void ProtocolGame::sendItemInspection(uint16_t itemId, uint8_t itemCount, const 
 	msg.addByte(0x76);
 	msg.addByte(0x00);
 	msg.addByte(cyclopedia ? 0x01 : 0x00);
+	msg.add<uint32_t>(player->getID()); // 13.00 Creature ID
 	msg.addByte(0x01);
 
 	const ItemType &it = Item::items[itemId];
@@ -1919,29 +1917,6 @@ void ProtocolGame::sendHighscores(const std::vector<HighscoreCharacter> &charact
 	writeToOutputBuffer(msg);
 }
 
-void ProtocolGame::parseTournamentLeaderboard(NetworkMessage &msg) {
-	if (oldProtocol) {
-		return;
-	}
-
-	uint8_t ledaerboardType = msg.getByte();
-	if (ledaerboardType == 0) {
-		const std::string worldName = msg.getString();
-		uint16_t currentPage = msg.get<uint16_t>();
-		(void)worldName;
-		(void)currentPage;
-	} else if (ledaerboardType == 1) {
-		const std::string worldName = msg.getString();
-		const std::string characterName = msg.getString();
-		(void)worldName;
-		(void)characterName;
-	}
-	uint8_t elementsPerPage = msg.getByte();
-	(void)elementsPerPage;
-
-	addGameTask(&Game::playerTournamentLeaderboard, player->getID(), ledaerboardType);
-}
-
 void ProtocolGame::parseConfigureShowOffSocket(NetworkMessage &msg) {
 	if (oldProtocol) {
 		return;
@@ -2104,6 +2079,7 @@ void ProtocolGame::parseBestiarysendMonsterData(NetworkMessage &msg) {
 		newmsg.add<uint32_t>(mtype->info.experience);
 		newmsg.add<uint16_t>(mtype->getBaseSpeed());
 		newmsg.add<uint16_t>(mtype->info.armor);
+		newmsg.addDouble(0); // 13.00 Mitigation
 	}
 
 	if (currentLevel > 2) {
@@ -3064,7 +3040,6 @@ void ProtocolGame::sendCyclopediaCharacterBaseInformation() {
 	AddOutfit(msg, player->getDefaultOutfit(), false);
 
 	msg.addByte(0x00); // hide stamina
-	msg.addByte(0x00); // enable store summary & character titles
 	msg.addString(""); // character title
 	writeToOutputBuffer(msg);
 }
@@ -3083,8 +3058,6 @@ void ProtocolGame::sendCyclopediaCharacterGeneralStats() {
 	msg.addByte(player->getLevelPercent());
 	// BaseXPGainRate
 	msg.add<uint16_t>(100);
-	// TournamentXPFactor
-	msg.add<int32_t>(0);
 	// LowLevelBonus
 	msg.add<uint16_t>(0);
 	// XPBoost
@@ -3095,10 +3068,10 @@ void ProtocolGame::sendCyclopediaCharacterGeneralStats() {
 	msg.add<uint16_t>(0);
 	// canBuyXpBoost
 	msg.addByte(0x00);
-	msg.add<uint16_t>(std::min<int32_t>(player->getHealth(), std::numeric_limits<uint16_t>::max()));
-	msg.add<uint16_t>(std::min<int32_t>(player->getMaxHealth(), std::numeric_limits<uint16_t>::max()));
-	msg.add<uint16_t>(std::min<int32_t>(player->getMana(), std::numeric_limits<uint16_t>::max()));
-	msg.add<uint16_t>(std::min<int32_t>(player->getMaxMana(), std::numeric_limits<uint16_t>::max()));
+	msg.add<uint32_t>(std::min<int32_t>(player->getHealth(), std::numeric_limits<uint16_t>::max()));
+	msg.add<uint32_t>(std::min<int32_t>(player->getMaxHealth(), std::numeric_limits<uint16_t>::max()));
+	msg.add<uint32_t>(std::min<int32_t>(player->getMana(), std::numeric_limits<uint16_t>::max()));
+	msg.add<uint32_t>(std::min<int32_t>(player->getMaxMana(), std::numeric_limits<uint16_t>::max()));
 	msg.addByte(player->getSoul());
 	msg.add<uint16_t>(player->getStaminaMinutes());
 
@@ -3144,7 +3117,7 @@ void ProtocolGame::sendCyclopediaCharacterCombatStats() {
 	msg.addByte(CYCLOPEDIA_CHARACTERINFO_COMBATSTATS);
 	msg.addByte(0x00);
 	for (uint8_t i = SKILL_CRITICAL_HIT_CHANCE; i <= SKILL_LAST; ++i) {
-		msg.add<uint16_t>(std::min<int32_t>(player->getSkillLevel(i), std::numeric_limits<uint16_t>::max()));
+		msg.add<uint16_t>(std::min<int32_t>(player->getSkillLevel(i, true), std::numeric_limits<uint16_t>::max()));
 		msg.add<uint16_t>(0);
 	}
 
@@ -3240,6 +3213,7 @@ void ProtocolGame::sendCyclopediaCharacterCombatStats() {
 
 	msg.add<uint16_t>(player->getArmor());
 	msg.add<uint16_t>(player->getDefense());
+	msg.addDouble(0); // Mitigation
 
 	uint8_t combats = 0;
 	auto startCombats = msg.getBufferPosition();
@@ -3542,18 +3516,6 @@ void ProtocolGame::sendCyclopediaCharacterTitles() {
 	writeToOutputBuffer(msg);
 }
 
-void ProtocolGame::sendTournamentLeaderboard() {
-	if (!player || oldProtocol) {
-		return;
-	}
-
-	NetworkMessage msg;
-	msg.addByte(0xC5);
-	msg.addByte(0);
-	msg.addByte(0x01);
-	writeToOutputBuffer(msg);
-}
-
 void ProtocolGame::sendReLoginWindow(uint8_t unfairFightReduction) {
 	NetworkMessage msg;
 	msg.addByte(0x28);
@@ -3593,7 +3555,11 @@ void ProtocolGame::sendBasicData() {
 	std::list<uint16_t> spellsList = g_spells().getSpellsByVocation(player->getVocationId());
 	msg.add<uint16_t>(spellsList.size());
 	for (uint16_t sid : spellsList) {
-		msg.addByte(sid);
+		if (oldProtocol) {
+			msg.addByte(sid);
+		} else {
+			msg.add<uint16_t>(sid);
+		}
 	}
 
 	if (!oldProtocol) {
@@ -4162,7 +4128,6 @@ void ProtocolGame::sendCoinBalance() {
 
 	if (!oldProtocol) {
 		msg.add<uint32_t>(player->coinBalance); // Reserved Auction Coins
-		msg.add<uint32_t>(0); // Tournament Coins
 	}
 
 	writeToOutputBuffer(msg);
@@ -4425,19 +4390,29 @@ void ProtocolGame::sendForgingData() {
 	NetworkMessage msg;
 	msg.addByte(0x86);
 
-	std::vector<ItemClassification*> classifications = g_game().getItemsClassifications();
+	std::map<uint8_t, uint16_t> tierCorePrices;
+
+	const auto &classifications = g_game().getItemsClassifications();
 	msg.addByte(classifications.size());
-	for (ItemClassification* classification : classifications) {
+	for (const auto &classification : classifications) {
 		msg.addByte(classification->id);
 		msg.addByte(classification->tiers.size());
-		for (const auto &[tier, price] : classification->tiers) {
+		for (const auto &[tier, tierInfo] : classification->tiers) {
 			msg.addByte(tier);
-			msg.add<uint64_t>(price);
+			msg.add<uint64_t>(tierInfo.priceToUpgrade);
+			tierCorePrices[tier] = tierInfo.corePriceToFuse;
 		}
 	}
 
-	// Version 12.81
+	// Version 13.16
 	// Forge Config Bytes
+	
+	// Exalted core table per tier
+	msg.addByte(static_cast<uint8_t>(tierCorePrices.size()));
+	for (const auto &[tier, cores] : tierCorePrices) {
+		msg.addByte(tier);
+		msg.addByte(cores);
+	}
 
 	// (conversion) (left column top) Cost to make 1 bottom item - 20
 	msg.addByte(static_cast<uint8_t>(g_configManager().getNumber(FORGE_COST_ONE_SLIVER)));
@@ -4448,9 +4423,9 @@ void ProtocolGame::sendForgingData() {
 	// (conversion) (right column top) Current stored dust limit minus this number = cost to increase stored dust limit - 75
 	msg.addByte(75);
 	// (conversion) (right column bottom) Starting stored dust limit
-	msg.addByte(static_cast<uint8_t>(player->getForgeDustLevel()));
+	msg.add<uint16_t>(player->getForgeDustLevel());
 	// (conversion) (right column bottom) Max stored dust limit - 225
-	msg.addByte(static_cast<uint8_t>(g_configManager().getNumber(FORGE_MAX_DUST)));
+	msg.add<uint16_t>(g_configManager().getNumber(FORGE_MAX_DUST));
 	// (fusion) Dust cost - 100
 	msg.addByte(static_cast<uint8_t>(g_configManager().getNumber(FORGE_FUSION_DUST_COST)));
 	// (transfer) Dust cost - 100
@@ -4577,7 +4552,7 @@ void ProtocolGame::sendOpenForge() {
 		}
 	}
 
-	msg.addByte(static_cast<uint8_t>(player->getForgeDustLevel())); // Player dust limit
+	msg.add<uint16_t>(player->getForgeDustLevel()); // Player dust limit
 	writeToOutputBuffer(msg);
 	// Update forging informations
 	sendForgingData();
@@ -5609,7 +5584,6 @@ void ProtocolGame::sendAddCreature(const Creature* creature, const Position &pos
 
 	if (!oldProtocol) {
 		msg.addByte(shouldAddExivaRestrictions ? 0x01 : 0x00); // exiva button enabled
-		msg.addByte(0x00); // Tournament button
 	}
 
 	writeToOutputBuffer(msg);
@@ -6238,7 +6212,11 @@ void ProtocolGame::sendSpellCooldown(uint16_t spellId, uint32_t time) {
 	if (oldProtocol && spellId >= 170) {
 		msg.addByte(170);
 	} else {
-		msg.addByte(spellId);
+		if (oldProtocol) {
+			msg.addByte(spellId);
+		} else {
+			msg.add<uint16_t>(spellId);
+		}
 	}
 	msg.add<uint32_t>(time);
 	writeToOutputBuffer(msg);
@@ -6589,8 +6567,13 @@ void ProtocolGame::AddCreature(NetworkMessage &msg, const Creature* creature, bo
 void ProtocolGame::AddPlayerStats(NetworkMessage &msg) {
 	msg.addByte(0xA0);
 
-	msg.add<uint16_t>(std::min<int32_t>(player->getHealth(), std::numeric_limits<uint16_t>::max()));
-	msg.add<uint16_t>(std::min<int32_t>(player->getMaxHealth(), std::numeric_limits<uint16_t>::max()));
+	if (oldProtocol) {
+		msg.add<uint16_t>(std::min<int32_t>(player->getHealth(), std::numeric_limits<uint16_t>::max()));
+		msg.add<uint16_t>(std::min<int32_t>(player->getMaxHealth(), std::numeric_limits<uint16_t>::max()));
+	} else {
+		msg.add<uint32_t>(std::min<int32_t>(player->getHealth(), std::numeric_limits<uint16_t>::max()));
+		msg.add<uint32_t>(std::min<int32_t>(player->getMaxHealth(), std::numeric_limits<uint16_t>::max()));
+	}
 
 	msg.add<uint32_t>(player->hasFlag(PlayerFlags_t::HasInfiniteCapacity) ? 1000000 : player->getFreeCapacity());
 	if (oldProtocol) {
@@ -6612,10 +6595,13 @@ void ProtocolGame::AddPlayerStats(NetworkMessage &msg) {
 	msg.add<uint16_t>(player->getStoreXpBoost()); // xp boost
 	msg.add<uint16_t>(player->getStaminaXpBoost()); // stamina multiplier (100 = 1.0x)
 
-	msg.add<uint16_t>(std::min<int32_t>(player->getMana(), std::numeric_limits<uint16_t>::max()));
-	msg.add<uint16_t>(std::min<int32_t>(player->getMaxMana(), std::numeric_limits<uint16_t>::max()));
+	if (!oldProtocol) {
+		msg.add<uint32_t>(std::min<int32_t>(player->getMana(), std::numeric_limits<uint16_t>::max()));
+		msg.add<uint32_t>(std::min<int32_t>(player->getMaxMana(), std::numeric_limits<uint16_t>::max()));
+	} else {
+		msg.add<uint16_t>(std::min<int32_t>(player->getMana(), std::numeric_limits<uint16_t>::max()));
+		msg.add<uint16_t>(std::min<int32_t>(player->getMaxMana(), std::numeric_limits<uint16_t>::max()));
 
-	if (oldProtocol) {
 		msg.addByte(static_cast<uint8_t>(std::min<uint32_t>(player->getMagicLevel(), std::numeric_limits<uint8_t>::max())));
 		msg.addByte(static_cast<uint8_t>(std::min<uint32_t>(player->getBaseMagicLevel(), std::numeric_limits<uint8_t>::max())));
 		msg.addByte(std::min<uint8_t>(static_cast<uint8_t>(player->getMagicLevelPercent()), 100));
@@ -6636,8 +6622,8 @@ void ProtocolGame::AddPlayerStats(NetworkMessage &msg) {
 	msg.addByte(1); // enables exp boost in the store
 
 	if (!oldProtocol) {
-		msg.add<uint16_t>(player->getManaShield()); // remaining mana shield
-		msg.add<uint16_t>(player->getMaxManaShield()); // total mana shield
+		msg.add<uint32_t>(player->getManaShield()); // remaining mana shield
+	    msg.add<uint32_t>(player->getMaxManaShield()); // total mana shield
 	}
 }
 
@@ -6665,12 +6651,14 @@ void ProtocolGame::AddPlayerSkills(NetworkMessage &msg) {
 	}
 
 	for (uint8_t i = SKILL_CRITICAL_HIT_CHANCE; i <= SKILL_LAST; ++i) {
-		msg.add<uint16_t>(std::min<int32_t>(player->getSkillLevel(i), std::numeric_limits<uint16_t>::max()));
+		msg.add<uint16_t>(std::min<int32_t>(player->getSkillLevel(i, true), std::numeric_limits<uint16_t>::max()));
 		msg.add<uint16_t>(player->getBaseSkill(i));
 	}
 
 	if (!oldProtocol) {
-
+		
+		// 13.10 list (U8 + U16)
+	    msg.addByte(0);
 		// Version 12.81 new skill (Fatal, Dodge and Momentum)
 		sendForgeSkillStats(msg);
 
@@ -7154,11 +7142,19 @@ void ProtocolGame::parseExtendedOpcode(NetworkMessage &msg) {
 }
 
 void ProtocolGame::parseInventoryImbuements(NetworkMessage &msg) {
+	if (oldProtocol) {
+		return;
+	}
+
 	bool isTrackerOpen = msg.getByte(); // Window is opened or closed
 	addGameTask(&Game::playerRequestInventoryImbuements, player->getID(), isTrackerOpen);
 }
 
 void ProtocolGame::sendInventoryImbuements(const std::map<Slots_t, Item*> items) {
+	if (oldProtocol) {
+		return;
+	}
+	
 	NetworkMessage msg;
 	msg.addByte(0x5D);
 
