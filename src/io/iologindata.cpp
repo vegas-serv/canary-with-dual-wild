@@ -1354,7 +1354,6 @@ void IOLoginData::addPremiumDays(uint32_t accountId, int32_t addDays) {
 	query << "UPDATE `accounts` SET `premdays` = `premdays` + " << addDays
 		  << ", `lastday` = " << getTimeNow()
 		  << " WHERE `id` = " << accountId;
-		  
 	Database::getInstance().executeQuery(query.str());
 }
 

@@ -65,7 +65,6 @@ GameStore.ActionType = {
 GameStore.CointType = {
 	Coin = 0,
 	Transferable = 1,
-	Tournament = 2,
 }
 
 GameStore.Storages = {
@@ -223,20 +222,10 @@ function onRecvbyte(player, msg, byte)
 		return player:sendCancelMessage("Store don't have offers for rookgaard citizen.")
 	end
 
-	local exaust = player:getStorageValue(Global.Storage.StoreExaust)
-	local currentTime = os.time()
-
 	if byte == GameStore.RecivedPackets.C_StoreEvent then
 	elseif byte == GameStore.RecivedPackets.C_TransferCoins then
 		parseTransferCoins(player:getId(), msg)
 	elseif byte == GameStore.RecivedPackets.C_OpenStore then
-		if exaust > currentTime then
-			player:sendCancelMessage("You are exhausted")
-			return false
-		end
-		local num = currentTime + 1
-		player:setStorageValue(Global.Storage.StoreExaust, num)
-
 		parseOpenStore(player:getId(), msg)
 	elseif byte == GameStore.RecivedPackets.C_RequestStoreOffers then
 		parseRequestStoreOffers(player:getId(), msg)
@@ -247,6 +236,13 @@ function onRecvbyte(player, msg, byte)
 	elseif byte == GameStore.RecivedPackets.C_RequestTransactionHistory then
 		parseRequestTransactionHistory(player:getId(), msg)
 	end
+
+	if player:isUIExhausted(250) then
+		player:sendCancelMessage("You are exhausted.")
+		return false
+	end
+
+	player:updateUIExhausted()
 	return true
 end
 
@@ -256,11 +252,6 @@ function parseTransferCoins(playerId, msg)
 		return false
 	end
 
-	if player:isUIExhausted(2000) then
-		return addPlayerEvent(sendStoreError, 250, playerId, GameStore.StoreErrors.STORE_ERROR_TRANSFER, "You are exhausted.")
-	end
-
-	player:updateUIExhausted()
 	local reciver = msg:getString()
 	local amount = msg:getU32()
 
@@ -289,6 +280,7 @@ function parseTransferCoins(playerId, msg)
 	-- Adding history for both reciver/sender
 	GameStore.insertHistory(accountId, GameStore.HistoryTypes.HISTORY_TYPE_NONE, player:getName() .. " transfered you this amount.", amount, GameStore.CointType.Coin)
 	GameStore.insertHistory(player:getAccountId(), GameStore.HistoryTypes.HISTORY_TYPE_NONE, "You transfered this amount to " .. reciver, -1 * amount, GameStore.CointType.Coin)
+	openStore(playerId)
 end
 
 function parseOpenStore(playerId, msg)
@@ -494,7 +486,7 @@ function openStore(playerId)
 		return false
 	end
 
-	local oldProtocol = player:getClient().version < 1200
+    local oldProtocol = player:getClient().version < 1200
 	local msg = NetworkMessage()
 	msg:addByte(GameStore.SendingPackets.S_OpenStore)
 	if oldProtocol then
@@ -515,7 +507,6 @@ function openStore(playerId)
 			if oldProtocol then
 				msg:addString(category.description)
 			end
-
 			msg:addByte(category.state or GameStore.States.STATE_NONE)
 			local size = #category.icons > 255 and 255 or #category.icons
 			msg:addByte(size)
@@ -705,7 +696,7 @@ function sendShowStoreOffers(playerId, category, redirectId)
 	if not player then
 		return false
 	end
-
+	
 	local oldProtocol = player:getClient().version < 1200
 
 	local msg = NetworkMessage()
@@ -730,11 +721,13 @@ function sendShowStoreOffers(playerId, category, redirectId)
 	end
 
 	if not category.offers then
-		msg:addU16(0)
+		msg:addU16(0) -- Disable reasons
+		msg:addU16(0) -- Offers
 		msg:sendToPlayer(player)
 		return
 	end
 
+	local disableReasons = {}
 	local offers = {}
 	local count = 0
 	for k, offer in ipairs(category.offers) do
@@ -756,20 +749,27 @@ function sendShowStoreOffers(playerId, category, redirectId)
 				offers[name].itemtype = offer.itemtype
 			end
 		end
+
+		local canBuy = player:canBuyOffer(offer)
+		if (canBuy.disabled == 1) then
+			for index, disableTable in ipairs(disableReasons) do
+				if (canBuy.disabledReason == disableTable.reason) then
+					offer.disabledReadonIndex = index
+				end
+			end
+
+			if (offer.disabledReadonIndex == nil) then
+				offer.disabledReadonIndex = #disableReasons
+				table.insert(disableReasons, canBuy.disabledReason)
+			end
+		end
+
 		table.insert(offers[name].offers, offer)
 	end
 
-	-- If player doesn't have hireling
-	if category.name == "Hirelings" then
-		if player:getHirelingsCount() < 1 then
-			offers["Hireling Name Change"] = nil
-			offers["Hireling Sex Change"] = nil
-			offers["Hireling Trader"] = nil
-			offers["Hireling Steward"] = nil
-			offers["Hireling Banker"] = nil
-			offers["Hireling Cook"] = nil
-			count = count - 6
-		end
+	msg:addU16(#disableReasons)
+	for _, reason in ipairs(disableReasons) do
+		msg:addString(reason)
 	end
 
 	if count > categoryLimit then
@@ -794,11 +794,11 @@ function sendShowStoreOffers(playerId, category, redirectId)
 				msg:addU32(xpBoostPrice or off.price)
 				msg:addByte(off.coinType or 0x00)
 
-				local disabled, disabledReason = player:canBuyOffer(off).disabled, player:canBuyOffer(off).disabledReason
-				msg:addByte(disabled)
-				if disabled == 1 then
+				msg:addByte((off.disabledReadonIndex ~= nil) and 1 or 0)
+				if (off.disabledReadonIndex ~= nil) then
 					msg:addByte(0x01);
-					msg:addString(disabledReason)
+					msg:addU16(off.disabledReadonIndex)
+					off.disabledReadonIndex = nil -- Reseting the table to nil disable reason
 				end
 
 				if (off.state) then
@@ -1005,7 +1005,7 @@ function sendStoreTransactionHistory(playerId, page, entriesPerPage)
 			msg:addU32(0)
 		end
 		msg:addU32(entry.time)
-		msg:addByte(entry.mode)
+		msg:addByte(entry.mode) -- 0 = normal, 1 = gift, 2 = refund
 		msg:addU32(entry.amount)
 		if not oldProtocol then
 			msg:addByte(0x0) -- 0 = transferable tibia coin, 1 = normal tibia coin
@@ -1023,7 +1023,7 @@ function sendStorePurchaseSuccessful(playerId, message)
 	if not player then
 		return false
 	end
-
+	
 	local oldProtocol = player:getClient().version < 1200
 	local msg = NetworkMessage()
 	msg:addByte(GameStore.SendingPackets.S_CompletePurchase)
@@ -1073,7 +1073,7 @@ function sendUpdatedStoreBalances(playerId)
 	if not player then
 		return false
 	end
-
+	
 	local oldProtocol = player:getClient().version < 1200
 	local msg = NetworkMessage()
 	msg:addByte(GameStore.SendingPackets.S_CoinBalanceUpdating)
@@ -1086,7 +1086,6 @@ function sendUpdatedStoreBalances(playerId)
 	msg:addU32(player:getCoinsBalance()) -- How many are Transferable
 	if not oldProtocol then
 		msg:addU32(player:getCoinsBalance()) -- How many are reserved for a Character Auction
-		msg:addU32(0) -- Tournament Coins
 	end
 
 	msg:sendToPlayer(player)
@@ -1695,7 +1694,7 @@ end
 function GameStore.processHirelingPurchase(player, offer, productType, hirelingName, chosenSex)
 	local playerId = player:getId()
 	local offerId = offer.id
-
+	
 	if player:getClient().version < 1200 then
 		return error({code = 1, message = "You cannot buy hirelings on client 10, please relog on client 12 and try again."})
 	end
@@ -1731,11 +1730,11 @@ end
 function GameStore.processHirelingChangeNamePurchase(player, offer, productType, newHirelingName)
 	local playerId = player:getId()
 	local offerId = offer.id
-
+	
 	if player:getClient().version < 1200 then
 		return error({code = 1, message = "You cannot buy hireling change name on client 10, please relog on client 12 and try again."})
 	end
-
+	
 	if productType == GameStore.ClientOfferTypes.CLIENT_STORE_OFFER_NAMECHANGE then
 		local result = GameStore.canUseHirelingName(newHirelingName)
 		if not result.ability then
@@ -1756,7 +1755,7 @@ end
 
 function GameStore.processHirelingChangeSexPurchase(player, offer)
 	local playerId = player:getId()
-
+	
 	if player:getClient().version < 1200 then
 		return error({code = 1, message = "You cannot buy hireling change sex on client 10, please relog on client 12 and try again."})
 	end
@@ -1768,10 +1767,10 @@ function GameStore.processHirelingChangeSexPurchase(player, offer)
 end
 
 function GameStore.processHirelingSkillPurchase(player, offer)
-	if player:getClient().version < 1200 then
+if player:getClient().version < 1200 then
 		return error({code = 1, message = "You cannot buy hireling skill on client 10, please relog on client 12 and try again."})
 	end
-
+	
 	player:getPosition():sendMagicEffect(CONST_ME_MAGIC_BLUE)
 	local skill = offer.id - HIRELING_STORAGE.SKILL
 	player:enableHirelingSkill(skill)
@@ -1779,10 +1778,10 @@ function GameStore.processHirelingSkillPurchase(player, offer)
 end
 
 function GameStore.processHirelingOutfitPurchase(player, offer)
-	if player:getClient().version < 1200 then
+if player:getClient().version < 1200 then
 		return error({code = 1, message = "You cannot buy hireling outfit on client 10, please relog on client 12 and try again."})
 	end
-
+	
 	player:getPosition():sendMagicEffect(CONST_ME_MAGIC_GREEN)
 	local outfit = offer.id - HIRELING_STORAGE.OUTFIT
 	player:enableHirelingOutfit(outfit)
@@ -1824,41 +1823,6 @@ function Player.addCoinsBalance(self, coins, update)
 	return true
 end
 
---- Tournament Coins
-function Player.getTournamentBalance(self)
-	resultId = db.storeQuery("SELECT `tournament_coins` FROM `accounts` WHERE `id` = " .. self:getAccountId())
-	if not resultId then
-		return 0
-	end
-	return Result.getNumber(resultId, "tournament_coins")
-end
-
-function Player.setTournamentBalance(self, tournament)
-	db.query("UPDATE `accounts` SET `tournament_coins` = " .. tournament .. " WHERE `id` = " .. self:getAccountId())
-	return true
-end
-
-function Player.canRemoveTournament(self, tournament)
-	if self:getTournamentBalance() < tournament then
-		return false
-	end
-	return true
-end
-
-function Player.removeTournamentBalance(self, tournament)
-	if self:canRemoveTournament(tournament) then
-		return self:setTournamentBalance(self:getTournamentBalance() - tournament)
-	end
-
-	return false
-end
-
-function Player.addTournamentBalance(self, tournament, update)
-	self:setTournamentBalance(self:getTournamentBalance() + tournament)
-	if update then sendStoreBalanceUpdating(self, true) end
-	return true
-end
-
 --- Support Functions
 function Player.makeCoinTransaction(self, offer, desc)
 	local op = true
@@ -1870,11 +1834,7 @@ function Player.makeCoinTransaction(self, offer, desc)
 	end
 	
 	-- Remove coins
-	if offer.coinType == GameStore.CointType.Tournament then
-		op = self:removeTournamentBalance(offer.price)
-	else
-		op = self:removeCoinsBalance(offer.price)
-	end
+	op = self:removeCoinsBalance(offer.price)
 
 	-- When the transaction is suscessfull add to the history
 	if op then
@@ -1885,11 +1845,7 @@ function Player.makeCoinTransaction(self, offer, desc)
 end
 
 function Player.canPayForOffer(self, coins, type)
-	if type == GameStore.CointType.Tournament then
-		return self:canRemoveTournament(coins)
-	else
-		return self:canRemoveCoins(coins)
-	end
+	return self:canRemoveCoins(coins)
 end
 
 --- Other players functions
@@ -1954,7 +1910,29 @@ function sendHomePage(playerId)
 	msg:addByte(0x0) -- Collections Size
 	msg:addU16(0x00) -- Collection Name
 
+	local disableReasons = {}
 	local homeOffers = getHomeOffers(player:getId())
+	for p, offer in pairs(homeOffers)do
+		local canBuy = player:canBuyOffer(offer)
+		if (canBuy.disabled == 1) then
+			for index, disableTable in ipairs(disableReasons) do
+				if (canBuy.disabledReason == disableTable.reason) then
+					offer.disabledReadonIndex = index
+				end
+			end
+
+			if (offer.disabledReadonIndex == nil) then
+				offer.disabledReadonIndex = #disableReasons
+				table.insert(disableReasons, canBuy.disabledReason)
+			end
+		end
+	end
+
+	msg:addU16(#disableReasons)
+	for _, reason in ipairs(disableReasons) do
+		msg:addString(reason)
+	end
+
 	msg:addU16(#homeOffers) -- offers
 
 	for p, offer in pairs(homeOffers)do
@@ -1964,11 +1942,12 @@ function sendHomePage(playerId)
 		msg:addU16(0x1)
 		msg:addU32(offer.price)
 		msg:addByte(offer.coinType or 0x00)
-		local disabled, disabledReason = player:canBuyOffer(offer).disabled, player:canBuyOffer(offer).disabledReason
-		msg:addByte(disabled)
-		if disabled == 1 then
+
+		msg:addByte((offer.disabledReadonIndex ~= nil) and 1 or 0)
+		if (offer.disabledReadonIndex ~= nil) then
 			msg:addByte(0x01);
-			msg:addString(disabledReason)
+			msg:addU16(offer.disabledReadonIndex)
+			offer.disabledReadonIndex = nil -- Reseting the table to nil disable reason
 		end
 
 		msg:addByte(0x00)

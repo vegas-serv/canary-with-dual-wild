@@ -2406,10 +2406,6 @@ uint32_t Player::getIP() const {
 void Player::death(Creature* lastHitCreature) {
 	loginPosition = town->getTemplePosition();
 
-	if (getSkull() != SKULL_RED && getSkull() != SKULL_BLACK) {
-		setSkull(SKULL_NONE);
-	}
-
 	if (skillLoss) {
 		uint8_t unfairFightReduction = 100;
 		int playerDmg = 0;
@@ -2588,7 +2584,7 @@ void Player::death(Creature* lastHitCreature) {
 		while (it != end) {
 			Condition* condition = *it;
 			// isSupress block to delete spells conditions (ensures that the player cannot, for example, reset the cooldown time of the familiar and summon several)
-			if (condition->isPersistent() && isSuppress(condition->getType())) {
+			if (condition->isPersistent() && condition->isRemovableOnDeath()) {
 				it = conditions.erase(it);
 
 				condition->endCondition(this);
@@ -6390,7 +6386,7 @@ void Player::forgeFuseItems(uint16_t itemId, uint8_t tier, bool success, bool re
 			setForgeDusts(getForgeDusts() - dustCost);
 		}
 		if (bonus != 2) {
-			if (!removeItemCountById(ITEM_FORGE_CORE, coreCount)) {
+			if (coreCount != 0 && !removeItemCountById(ITEM_FORGE_CORE, coreCount)) {
 				SPDLOG_ERROR("[{}][Log 1] Failed to remove item 'id :{} count: {}' from player {}", __FUNCTION__, ITEM_FORGE_CORE, coreCount, getName());
 				sendForgeError(RETURNVALUE_CONTACTADMINISTRATOR);
 				return;
@@ -6465,7 +6461,7 @@ void Player::forgeFuseItems(uint16_t itemId, uint8_t tier, bool success, bool re
 			setForgeDusts(getForgeDusts() - dustCost);
 		}
 
-		if (!removeItemCountById(ITEM_FORGE_CORE, coreCount)) {
+		if (coreCount != 0 && !removeItemCountById(ITEM_FORGE_CORE, coreCount)) {
 			SPDLOG_ERROR("[{}][Log 2] Failed to remove item 'id: {}, count: {}' from player {}", __FUNCTION__, ITEM_FORGE_CORE, coreCount, getName());
 			sendForgeError(RETURNVALUE_CONTACTADMINISTRATOR);
 			return;

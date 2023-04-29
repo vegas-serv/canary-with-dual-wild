@@ -1509,6 +1509,10 @@ void ProtocolGame::parseLookInBattleList(NetworkMessage &msg) {
 }
 
 void ProtocolGame::parseQuickLoot(NetworkMessage &msg) {
+	if (oldProtocol) {
+		return;
+	}
+
 	Position pos = msg.getPosition();
 	uint16_t itemId = msg.get<uint16_t>();
 	uint8_t stackpos = msg.getByte();
@@ -5933,6 +5937,66 @@ void ProtocolGame::sendOutfitWindow() {
 		return;
 	}
 
+	if (oldProtocol) {
+		Outfit_t currentOutfit = player->getDefaultOutfit();
+		Mount* currentMount = g_game().mounts.getMountByID(player->getCurrentMount());
+		if (currentMount) {
+			currentOutfit.lookMount = currentMount->clientId;
+		}
+
+		AddOutfit(msg, currentOutfit);
+
+		std::vector<ProtocolOutfit> protocolOutfits;
+		if (player->isAccessPlayer()) {
+			static const std::string gamemasterOutfitName = "Game Master";
+			protocolOutfits.emplace_back(gamemasterOutfitName, 75, 0);
+
+			static const std::string gmCustomerSupport = "Customer Support";
+			protocolOutfits.emplace_back(gmCustomerSupport, 266, 0);
+
+			static const std::string communityManager = "Community Manager";
+			protocolOutfits.emplace_back(communityManager, 302, 0);
+		}
+
+		const auto &outfits = Outfits::getInstance().getOutfits(player->getSex());
+		protocolOutfits.reserve(outfits.size());
+		for (const Outfit &outfit : outfits) {
+			uint8_t addons;
+			if (!player->getOutfitAddons(outfit, addons)) {
+				continue;
+			}
+
+			protocolOutfits.emplace_back(outfit.name, outfit.lookType, addons);
+			// Game client doesn't allow more than 100 outfits
+			if (protocolOutfits.size() == 150) {
+				break;
+			}
+		}
+
+		msg.addByte(protocolOutfits.size());
+		for (const ProtocolOutfit &outfit : protocolOutfits) {
+			msg.add<uint16_t>(outfit.lookType);
+			msg.addString(outfit.name);
+			msg.addByte(outfit.addons);
+		}
+
+		std::vector<const Mount*> mounts;
+		for (const Mount &mount : g_game().mounts.getMounts()) {
+			if (player->hasMount(&mount)) {
+				mounts.push_back(&mount);
+			}
+		}
+
+		msg.addByte(mounts.size());
+		for (const Mount* mount : mounts) {
+			msg.add<uint16_t>(mount->clientId);
+			msg.addString(mount->name);
+		}
+
+		writeToOutputBuffer(msg);
+		return;
+	}
+
 	bool mounted = false;
 	Outfit_t currentOutfit = player->getDefaultOutfit();
 	const Mount* currentMount = g_game().mounts.getMountByID(player->getCurrentMount());
@@ -6549,7 +6613,8 @@ void ProtocolGame::AddCreature(NetworkMessage &msg, const Creature* creature, bo
 		}
 	}
 
-	msg.addByte(creature->getSpeechBubble());
+	auto bubble = creature->getSpeechBubble();
+	msg.addByte(oldProtocol && bubble == SPEECHBUBBLE_HIRELING ? SPEECHBUBBLE_NONE : bubble);
 	msg.addByte(0xFF); // MARK_UNMARKED
 	if (!oldProtocol) {
 		msg.addByte(0x00); // inspection type
@@ -6623,7 +6688,7 @@ void ProtocolGame::AddPlayerStats(NetworkMessage &msg) {
 
 	if (!oldProtocol) {
 		msg.add<uint32_t>(player->getManaShield()); // remaining mana shield
-	    msg.add<uint32_t>(player->getMaxManaShield()); // total mana shield
+		msg.add<uint32_t>(player->getMaxManaShield()); // total mana shield
 	}
 }
 
@@ -6656,9 +6721,8 @@ void ProtocolGame::AddPlayerSkills(NetworkMessage &msg) {
 	}
 
 	if (!oldProtocol) {
-		
 		// 13.10 list (U8 + U16)
-	    msg.addByte(0);
+		msg.addByte(0);
 		// Version 12.81 new skill (Fatal, Dodge and Momentum)
 		sendForgeSkillStats(msg);
 

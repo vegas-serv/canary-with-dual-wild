@@ -31,7 +31,7 @@ void ProtocolLogin::disconnectClient(const std::string &message) {
 void ProtocolLogin::getCharacterList(const std::string &accountIdentifier, const std::string &password) {
 	account::Account account;
 	account.setProtocolCompat(oldProtocol);
-	
+
 	if (oldProtocol && !g_configManager().getBoolean(OLD_PROTOCOL)) {
 		disconnectClient(fmt::format("Only protocol version {}.{} is allowed.", CLIENT_VERSION_UPPER, CLIENT_VERSION_LOWER));
 		return;
