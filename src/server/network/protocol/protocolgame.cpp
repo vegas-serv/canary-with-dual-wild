@@ -4047,7 +4047,6 @@ void ProtocolGame::sendSaleItemList(const std::vector<ShopBlock> &shopVector, co
 
 		it = inventoryMap.find(shopBlock.itemId);
 		if (it != inventoryMap.end()) {
-			itemsToSend++;
 			msg.add<uint16_t>(shopBlock.itemId);
 			if (oldProtocol) {
 				msg.addByte(static_cast<uint8_t>(std::min<uint16_t>(it->second, std::numeric_limits<uint8_t>::max())));
@@ -6702,16 +6701,16 @@ void ProtocolGame::AddPlayerSkills(NetworkMessage &msg) {
 			msg.addByte(std::min<uint8_t>(100, static_cast<uint8_t>(player->getSkillPercent(i))));
 		}
 	} else {
-		msg.add<uint16_t>(static_cast<uint16_t>(std::min<uint32_t>(player->getMagicLevel(), std::numeric_limits<uint16_t>::max())));
-		msg.add<uint16_t>(static_cast<uint16_t>(std::min<uint32_t>(player->getBaseMagicLevel(), std::numeric_limits<uint16_t>::max())));
-		msg.add<uint16_t>(static_cast<uint16_t>(std::min<uint32_t>(player->getBaseMagicLevel(), std::numeric_limits<uint16_t>::max())));
-		msg.add<uint16_t>(std::min<uint16_t>(static_cast<uint16_t>(player->getMagicLevelPercent()), 100));
+		msg.add<uint16_t>(player->getMagicLevel());
+		msg.add<uint16_t>(player->getBaseMagicLevel());
+		msg.add<uint16_t>(player->getBaseMagicLevel()); // Loyalty Bonus
+		msg.add<uint16_t>(player->getMagicLevelPercent() * 100);
 
 		for (uint8_t i = SKILL_FIRST; i <= SKILL_FISHING; ++i) {
-			msg.add<uint16_t>(player->getSkillLevel(i));
+			msg.add<uint16_t>(std::min<int32_t>(player->getSkillLevel(i), std::numeric_limits<uint16_t>::max()));
 			msg.add<uint16_t>(player->getBaseSkill(i));
-			msg.add<uint16_t>(player->getBaseSkill(i));
-			msg.add<uint16_t>(static_cast<uint8_t>(player->getSkillPercent(i)) * 100);
+			msg.add<uint16_t>(player->getBaseSkill(i)); // Loyalty Bonus
+			msg.add<uint16_t>(player->getSkillPercent(i) * 100);
 		}
 	}
 
@@ -7819,28 +7818,34 @@ void ProtocolGame::sendBossPodiumWindow(const Item* podium, const Position &posi
 
 	auto unlockedBosses = g_ioBosstiary().getBosstiaryFinished(player, 2);
 	auto unlockedBossesSize = static_cast<uint16_t>(unlockedBosses.size());
-	msg.add<uint16_t>(unlockedBossesSize);
+	bool isBossPodium = podium->getID() == ITEM_PODIUM_OF_VIGOUR;
+	msg.addByte(isBossPodium ? 0x01 : 0x00); // Bosstiary or bestiary
+	if (isBossPodium) {
+		msg.add<uint16_t>(unlockedBossesSize);
 
-	for (const auto &boss : unlockedBosses) {
-		const MonsterType* mType = g_ioBosstiary().getMonsterTypeByBossRaceId(boss);
-		if (!mType) {
-			continue;
-		}
-		const auto &bossName = mType->name;
-		auto bossOutfit = mType->info.outfit;
+		for (const auto &boss : unlockedBosses) {
+			const MonsterType* mType = g_ioBosstiary().getMonsterTypeByBossRaceId(boss);
+			if (!mType) {
+				continue;
+			}
+			const auto &bossName = mType->name;
+			auto bossOutfit = mType->info.outfit;
 
-		msg.addString(bossName); // Nome from boss unlocked
-		msg.add<uint32_t>(boss); // ID from boss unlocked
-		msg.add<uint16_t>(bossOutfit.lookType); // LookType from boss unlocked
-		if (bossOutfit.lookType != 0) {
-			msg.addByte(bossOutfit.lookHead); // LookHead from boss unlocked
-			msg.addByte(bossOutfit.lookBody); // LookBody from boss unlocked
-			msg.addByte(bossOutfit.lookLegs); // LookLegs from boss unlocked
-			msg.addByte(bossOutfit.lookFeet); // LookFeet from boss unlocked
-			msg.addByte(bossOutfit.lookAddons); // LookAddon from boss unlocked
-		} else {
-			msg.add<uint16_t>(bossOutfit.lookTypeEx); // LookTypeEx from boss unlocked
+			msg.add<uint16_t>(boss); // ID from boss unlocked
+			msg.addString(bossName); // Nome from boss unlocked
+			msg.add<uint16_t>(bossOutfit.lookType); // LookType from boss unlocked
+			if (bossOutfit.lookType != 0) {
+				msg.addByte(bossOutfit.lookHead); // LookHead from boss unlocked
+				msg.addByte(bossOutfit.lookBody); // LookBody from boss unlocked
+				msg.addByte(bossOutfit.lookLegs); // LookLegs from boss unlocked
+				msg.addByte(bossOutfit.lookFeet); // LookFeet from boss unlocked
+				msg.addByte(bossOutfit.lookAddons); // LookAddon from boss unlocked
+			} else {
+				msg.add<uint16_t>(bossOutfit.lookTypeEx); // LookTypeEx from boss unlocked
+			}
 		}
+	} else {
+		msg.add<uint16_t>(0x00);
 	}
 
 	msg.addPosition(position); // Position of the podium on the map
@@ -7903,5 +7908,50 @@ void ProtocolGame::sendBosstiaryEntryChanged(uint32_t bossid) {
 	NetworkMessage msg;
 	msg.addByte(0xE6);
 	msg.add<uint32_t>(bossid);
+	writeToOutputBuffer(msg);
+}
+
+void ProtocolGame::sendSingleSoundEffect(const Position &pos, SoundEffect_t id, SourceEffect_t source) {
+	if (oldProtocol) {
+		return;
+	}
+
+	NetworkMessage msg;
+	msg.addByte(0x83);
+	msg.addPosition(pos);
+	msg.addByte(0x06); // Sound effect type
+	msg.addByte(static_cast<uint8_t>(source)); // Sound source type
+	msg.add<uint16_t>(static_cast<uint16_t>(id)); // Sound id
+	msg.addByte(0x00); // Breaking the effects loop
+	writeToOutputBuffer(msg);
+}
+
+void ProtocolGame::sendDoubleSoundEffect(
+	const Position &pos,
+	SoundEffect_t mainSoundId,
+	SourceEffect_t mainSource,
+	SoundEffect_t secondarySoundId,
+	SourceEffect_t secondarySource
+) {
+	if (oldProtocol) {
+		return;
+	}
+
+	NetworkMessage msg;
+	msg.addByte(0x83);
+	msg.addPosition(pos);
+
+	// Primary sound
+	msg.addByte(0x06); // Sound effect type
+	msg.addByte(static_cast<uint8_t>(mainSource)); // Sound source type
+	msg.add<uint16_t>(static_cast<uint16_t>(mainSoundId)); // Sound id
+
+	// Secondary sound (Can be an array too, but not necessary here)
+	msg.addByte(0x07); // Multiple effect type
+	msg.addByte(0x01); // Useless ENUM (So far)
+	msg.addByte(static_cast<uint8_t>(secondarySource)); // Sound source type
+	msg.add<uint16_t>(static_cast<uint16_t>(secondarySoundId)); // Sound id
+
+	msg.addByte(0x00); // Breaking the effects loop
 	writeToOutputBuffer(msg);
 }
