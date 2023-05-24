@@ -543,3 +543,14 @@ int MonsterFunctions::luaMonsterSetMasterPosition(lua_State* L)
     pushBoolean(L, true);
     return 1;
 }
+
+int MonsterFunctions::luaMonsterIsOnHazardSystem(lua_State* L) {
+	// monster:isOnHazardSystem()
+	const Monster* monster = getUserdata<const Monster>(L, 1);
+	if (monster) {
+		pushBoolean(L, monster->isOnHazardSystem());
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
