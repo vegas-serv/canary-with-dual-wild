@@ -43,7 +43,7 @@ CombatDamage Combat::getCombatDamage(Creature* creature, Creature* target) const
 						static_cast<int32_t>(weapon->getWeaponDamage(player, target, tool, false) * maxa + maxb)
 					);
 				}else{
-					int32_t levelFormula = player->getLevel() * 4 + player->getMagicLevel() * 6;
+					int32_t levelFormula = player->getLevel() * 14 + player->getMagicLevel() * 16;
 					damage.primary.value = normal_random(
 						static_cast<int32_t>(levelFormula * mina + minb),
 						static_cast<int32_t>(levelFormula * maxa + maxb)
