@@ -714,7 +714,7 @@ void WeaponWand::configureWeapon(const ItemType &it) {
 int32_t WeaponWand::getWeaponDamage(const Player* player, const Creature*, const Item* item, bool maxDamage /*= false*/) const
 {
     using namespace std;
-    int32_t attackSkill = player->getWeaponSkill(item) * 1.3;
+    int32_t attackSkill = player->getWeaponSkill(item) * 1.6;
     int32_t attackValue = std::max<int32_t>(0, item->getAttack());
     float attackFactor = player->getAttackFactor();
     uint32_t level = player->getLevel();
