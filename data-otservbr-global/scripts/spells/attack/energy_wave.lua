@@ -5,8 +5,8 @@ combat:setParameter(COMBAT_PARAM_DISTANCEEFFECT, CONST_ANI_ENERGY)
 combat:setArea(createCombatArea(AREA_SQUAREWAVE5, AREADIAGONAL_SQUAREWAVE5))
 
 function onGetFormulaValues(player, level, maglevel)
-	local min = (level / 5) + (maglevel * 4.5)
-	local max = (level / 5) + (maglevel * 9)
+	local min = (level / 5) + (maglevel * 6.5)
+	local max = (level / 5) + (maglevel * 12)
 	return -min, -max
 end
 
@@ -26,7 +26,7 @@ spell:castSound(SOUND_EFFECT_TYPE_SPELL_ENERGY_WAVE)
 spell:level(38)
 spell:mana(170)
 spell:needDirection(true)
-spell:cooldown(8 * 1000)
+spell:cooldown(3 * 1000)
 spell:groupCooldown(2 * 1000)
 spell:needLearn(false)
 spell:vocation("sorcerer;true", "master sorcerer;true")

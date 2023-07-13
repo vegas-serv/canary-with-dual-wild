@@ -29,7 +29,7 @@ local function createVortex()
 		local ground = tile:getGround()
 		if ground then
 			ground:transform(22894)
-			addEvent(function(pos)
+		    addEvent(function(pos)
 				local tile = Tile(pos)
 				if tile then
 					local ground = tile:getGround()

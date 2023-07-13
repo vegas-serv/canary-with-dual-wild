@@ -4,8 +4,8 @@ combat:setParameter(COMBAT_PARAM_EFFECT, CONST_ME_ENERGYAREA)
 combat:setParameter(COMBAT_PARAM_DISTANCEEFFECT, CONST_ANI_ENERGY)
 
 function onGetFormulaValues(player, level, maglevel)
-	local min = (level / 5) + (maglevel * 4.5) + 35
-	local max = (level / 5) + (maglevel * 7.3) + 55
+	local min = (level / 5) + (maglevel * 8.5) + 35
+	local max = (level / 5) + (maglevel * 15.3) + 55
 	return -min, -max
 end
 
@@ -29,7 +29,7 @@ spell:isPremium(true)
 spell:range(3)
 spell:needCasterTargetOrDirection(true)
 spell:blockWalls(true)
-spell:cooldown(30 * 1000)
+spell:cooldown(5 * 1000)
 spell:groupCooldown(2 * 1000, 30 * 1000)
 spell:needLearn(false)
 spell:vocation("sorcerer;true", "master sorcerer;true")
