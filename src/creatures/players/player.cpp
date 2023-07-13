@@ -14,6 +14,7 @@
 #include "creatures/monsters/monster.h"
 #include "creatures/monsters/monsters.h"
 #include "creatures/players/player.h"
+#include "creatures/players/wheel/player_wheel.hpp"
 #include "game/game.h"
 #include "game/scheduling/scheduler.h"
 #include "grouping/familiars.h"
@@ -35,6 +36,7 @@ Player::Player(ProtocolGame_ptr p) :
 	inbox(new Inbox(ITEM_INBOX)),
 	client(std::move(p)) {
 	inbox->incrementReferenceCounter();
+	m_wheelPlayer = std::make_unique<PlayerWheel>(*this);
 }
 
 Player::~Player() {
@@ -386,6 +388,10 @@ void Player::getShieldAndWeapon(const Item*&shield, const Item*&weapon) const {
 	}
 }
 
+float Player::getMitigation() const {
+	return wheel()->calculateMitigation();
+}
+
 int32_t Player::getDefense() const {
 	int32_t defenseSkill = getSkillLevel(SKILL_FIST);
 	int32_t defenseValue = 7;
@@ -404,6 +410,10 @@ int32_t Player::getDefense() const {
 
 	if (shield) {
 		defenseValue = weapon != nullptr ? shield->getDefense() + weapon->getExtraDefense() : shield->getDefense();
+		// Wheel of destiny - Combat Mastery
+		if (shield->getDefense() > 0) {
+			defenseValue += wheel()->getMajorStatConditional("Combat Mastery", WheelMajor_t::DEFENSE);
+		}
 		defenseSkill = getSkillLevel(SKILL_SHIELD);
 	}
 
@@ -1679,6 +1689,8 @@ void Player::onChangeZone(ZoneType_t zone) {
 	}
 
 	updateImbuementTrackerStats();
+	wheel()->onThink(true);
+	wheel()->sendGiftOfLifeCooldown();
 	g_game().updateCreatureWalkthrough(this);
 	sendIcons();
 	g_events().eventPlayerOnChangeZone(this, zone);
@@ -2082,6 +2094,9 @@ void Player::onThink(uint32_t interval) {
 	if (lastStatsTrainingTime != getOfflineTrainingTime() / 60 / 1000) {
 		sendStats();
 	}
+
+	// Wheel of destiny major spells
+	wheel()->onThink();
 }
 
 uint32_t Player::isMuted() const {
@@ -2456,7 +2471,6 @@ bool Player::hasShield() const {
 
 BlockType_t Player::blockHit(Creature* attacker, CombatType_t combatType, int32_t &damage, bool checkDefense /* = false*/, bool checkArmor /* = false*/, bool field /* = false*/) {
 	BlockType_t blockType = Creature::blockHit(attacker, combatType, damage, checkDefense, checkArmor, field);
-
 	if (attacker) {
 		sendCreatureSquare(attacker, SQ_COLOR_BLACK);
 	}
@@ -2527,11 +2541,15 @@ BlockType_t Player::blockHit(Creature* attacker, CombatType_t combatType, int32_
 			}
 		}
 
+		// Wheel of destiny - apply resistance
+		wheel()->adjustDamageBasedOnResistanceAndSkill(damage, combatType);
+
 		if (damage <= 0) {
 			damage = 0;
 			blockType = BLOCK_ARMOR;
 		}
 	}
+
 	return blockType;
 }
 
@@ -2873,6 +2891,8 @@ Item* Player::getCorpse(Creature* lastHitCreature, Creature* mostDamageCreature)
 }
 
 void Player::addInFightTicks(bool pzlock /*= false*/) {
+	wheel()->checkAbilities();
+
 	if (hasFlag(PlayerFlags_t::NotGainInFight)) {
 		return;
 	}
@@ -5079,6 +5099,9 @@ bool Player::isInWarList(uint32_t guildId) const {
 
 uint32_t Player::getMagicLevel() const {
 	uint32_t magic = std::max<int32_t>(0, getLoyaltyMagicLevel() + varStats[STAT_MAGICPOINTS]);
+	// Wheel of destiny magic bonus
+	magic += m_wheelPlayer->getStat(WheelStat_t::MAGIC); // Regular bonus
+	magic += m_wheelPlayer->getMajorStatConditional("Positional Tatics", WheelMajor_t::MAGIC); // Revelation bonus
 	return magic;
 }
 
@@ -5092,10 +5115,10 @@ uint32_t Player::getLoyaltyMagicLevel() const {
 	}
 
 	absl::uint128 spent = manaSpent;
-	absl::uint128 totalMana = vocation->getTotalMana(level) + mana;
+	absl::uint128 totalMana = vocation->getTotalMana(level) + spent;
 	absl::uint128 loyaltyMana = (totalMana * getLoyaltyBonus()) / 100;
 	while ((spent + loyaltyMana) >= nextReqMana) {
-		loyaltyMana -= nextReqMana - mana;
+		loyaltyMana -= nextReqMana - spent;
 		level++;
 		spent = 0;
 
@@ -5109,7 +5132,24 @@ uint32_t Player::getLoyaltyMagicLevel() const {
 	return level;
 }
 
-uint16_t Player::getSkillLevel(skills_t skill, bool sendToClient /* = false */) const {
+uint32_t Player::getCapacity() const {
+	if (hasFlag(PlayerFlags_t::CannotPickupItem)) {
+		return 0;
+	} else if (hasFlag(PlayerFlags_t::HasInfiniteCapacity)) {
+		return std::numeric_limits<uint32_t>::max();
+	}
+	return capacity + bonusCapacity + varStats[STAT_CAPACITY] + m_wheelPlayer->getStat(WheelStat_t::CAPACITY);
+}
+
+int32_t Player::getMaxHealth() const {
+	return std::max<int32_t>(1, healthMax + varStats[STAT_MAXHITPOINTS] + m_wheelPlayer->getStat(WheelStat_t::HEALTH));
+}
+
+uint32_t Player::getMaxMana() const {
+	return std::max<int32_t>(0, manaMax + varStats[STAT_MAXMANAPOINTS] + m_wheelPlayer->getStat(WheelStat_t::MANA));
+}
+
+uint16_t Player::getSkillLevel(skills_t skill) const {
 	auto skillLevel = getLoyaltySkill(skill);
 	skillLevel = std::max<int32_t>(0, skillLevel + varSkills[skill]);
 
@@ -5118,9 +5158,31 @@ uint16_t Player::getSkillLevel(skills_t skill, bool sendToClient /* = false */) 
 		skillLevel = std::min<int32_t>(it->second, skillLevel);
 	}
 
-	// Send to client multiplied skill mana/life leech (13.00+ version changed to decimal)
-	if (sendToClient && (skill == SKILL_MANA_LEECH_AMOUNT || skill == SKILL_LIFE_LEECH_AMOUNT)) {
-		return skillLevel * 100;
+	// Wheel of destiny
+	if (skill >= SKILL_CLUB && skill <= SKILL_AXE) {
+		skillLevel += m_wheelPlayer->getStat(WheelStat_t::MELEE);
+		skillLevel += m_wheelPlayer->getMajorStatConditional("Battle Instinct", WheelMajor_t::MELEE);
+	} else if (skill == SKILL_DISTANCE) {
+		skillLevel += m_wheelPlayer->getMajorStatConditional("Positional Tatics", WheelMajor_t::DISTANCE);
+		skillLevel += m_wheelPlayer->getStat(WheelStat_t::DISTANCE);
+	} else if (skill == SKILL_SHIELD) {
+		skillLevel += m_wheelPlayer->getMajorStatConditional("Battle Instinct", WheelMajor_t::SHIELD);
+	} else if (skill == SKILL_MAGLEVEL) {
+		skillLevel += m_wheelPlayer->getMajorStatConditional("Positional Tatics", WheelMajor_t::MAGIC);
+		skillLevel += m_wheelPlayer->getStat(WheelStat_t::MAGIC);
+	} else if (skill == SKILL_LIFE_LEECH_AMOUNT) {
+		skillLevel += m_wheelPlayer->getStat(WheelStat_t::LIFE_LEECH);
+	} else if (skill == SKILL_MANA_LEECH_AMOUNT) {
+		skillLevel += m_wheelPlayer->getStat(WheelStat_t::MANA_LEECH);
+	} else if (skill == SKILL_CRITICAL_HIT_DAMAGE) {
+		skillLevel += m_wheelPlayer->getMajorStatConditional("Combat Mastery", WheelMajor_t::CRITICAL_DMG_2);
+		skillLevel += m_wheelPlayer->getMajorStatConditional("Ballistic Mastery", WheelMajor_t::CRITICAL_DMG);
+		skillLevel += m_wheelPlayer->checkAvatarSkill(WheelAvatarSkill_t::CRITICAL_DAMAGE);
+	}
+
+	int32_t avatarCritChance = m_wheelPlayer->checkAvatarSkill(WheelAvatarSkill_t::CRITICAL_CHANCE);
+	if (skill == SKILL_CRITICAL_HIT_CHANCE && avatarCritChance > 0) {
+		skillLevel = avatarCritChance; // 100%
 	}
 
 	return std::min<uint16_t>(std::numeric_limits<uint16_t>::max(), std::max<uint16_t>(0, static_cast<uint16_t>(skillLevel)));
@@ -6198,6 +6260,22 @@ void Player::triggerMomentum() {
 			g_game().addMagicEffect(getPosition(), CONST_ME_HOURGLASS);
 			sendTextMessage(MESSAGE_ATTENTION, "Momentum was triggered.");
 		}
+	}
+}
+
+void Player::clearCooldowns() {
+	auto it = conditions.begin();
+	while (it != conditions.end()) {
+		auto condItem = *it;
+		ConditionType_t type = condItem->getType();
+		auto maxu16 = std::numeric_limits<uint16_t>::max();
+		auto checkSpellId = condItem->getSubId();
+		auto spellId = checkSpellId > maxu16 ? 0u : static_cast<uint16_t>(checkSpellId);
+		if (type == CONDITION_SPELLCOOLDOWN || type == CONDITION_SPELLGROUPCOOLDOWN) {
+			condItem->setTicks(0);
+			type == CONDITION_SPELLGROUPCOOLDOWN ? sendSpellGroupCooldown(static_cast<SpellGroup_t>(spellId), 0) : sendSpellCooldown(spellId, 0);
+		}
+		++it;
 	}
 }
 
@@ -7414,6 +7492,16 @@ void Player::reloadHazardSystemIcon() {
  * Interfaces
  ******************************************************************************/
 
+// Wheel interface
+std::unique_ptr<PlayerWheel> &Player::wheel() {
+	return m_wheelPlayer;
+}
+
+const std::unique_ptr<PlayerWheel> &Player::wheel() const {
+	return m_wheelPlayer;
+}
+
+// Account interface
 error_t Player::SetAccountInterface(account::Account* account) {
 	if (account == nullptr) {
 		return account::ERROR_NULLPTR;

@@ -14,6 +14,7 @@
 #include "io/functions/iologindata_save_player.hpp"
 #include "game/game.h"
 #include "creatures/monsters/monster.h"
+#include "creatures/players/wheel/player_wheel.hpp"
 #include "io/ioprey.h"
 
 bool IOLoginData::authenticateAccountPassword(const std::string &accountIdentifier, const std::string &password, account::Account* account) {
@@ -159,7 +160,7 @@ bool IOLoginData::preloadPlayer(Player* player, const std::string &name) {
 	if (creation == 0) {
 		query.str(std::string());
 		query << "UPDATE `accounts` SET `creation` = " << static_cast<uint32_t>(time(nullptr)) << " WHERE `id` = " << player->accountNumber;
-		db.storeQuery(query.str());
+		db.executeQuery(query.str());
 	}
 
 	// If the player has more premium days than he purchased, it means data existed before the loyalty system was implemented.
@@ -167,7 +168,7 @@ bool IOLoginData::preloadPlayer(Player* player, const std::string &name) {
 	if (premiumDays > premiumDaysPurchased) {
 		query.str(std::string());
 		query << "UPDATE `accounts` SET `premdays_purchased` = " << premiumDays << " WHERE `id` = " << player->accountNumber;
-		db.storeQuery(query.str());
+		db.executeQuery(query.str());
 	}
 
 	player->loyaltyPoints = static_cast<uint32_t>(std::ceil((static_cast<double>(time(nullptr) - creation)) / 86400)) * g_configManager().getNumber(LOYALTY_POINTS_PER_CREATION_DAY)
@@ -177,21 +178,22 @@ bool IOLoginData::preloadPlayer(Player* player, const std::string &name) {
 	return true;
 }
 
-bool IOLoginData::loadPlayerById(Player* player, uint32_t id) {
+// The boolean "disable" will desactivate the loading of information that is not relevant to the preload, for example, forge, bosstiary, etc. None of this we need to access if the player is offline
+bool IOLoginData::loadPlayerById(Player* player, uint32_t id, bool disable /* = true*/) {
 	Database &db = Database::getInstance();
 	std::ostringstream query;
 	query << "SELECT * FROM `players` WHERE `id` = " << id;
-	return loadPlayer(player, db.storeQuery(query.str()));
+	return loadPlayer(player, db.storeQuery(query.str()), disable);
 }
 
-bool IOLoginData::loadPlayerByName(Player* player, const std::string &name) {
+bool IOLoginData::loadPlayerByName(Player* player, const std::string &name, bool disable /* = true*/) {
 	Database &db = Database::getInstance();
 	std::ostringstream query;
 	query << "SELECT * FROM `players` WHERE `name` = " << db.escapeString(name);
-	return loadPlayer(player, db.storeQuery(query.str()));
+	return loadPlayer(player, db.storeQuery(query.str()), disable);
 }
 
-bool IOLoginData::loadPlayer(Player* player, DBResult_ptr result) {
+bool IOLoginData::loadPlayer(Player* player, DBResult_ptr result, bool disable /* = false*/) {
 	if (!result || !player) {
 		return false;
 	}
@@ -647,6 +649,11 @@ bool IOLoginData::loadPlayer(Player* player, DBResult_ptr result) {
 		} while (result->next());
 	}
 
+	// We will not load the information from here on down, as they are functions that are not needed for the player preload
+	if (disable) {
+		return true;
+	}
+
 	// load vip
 	query.str(std::string());
 	query << "SELECT `player_id` FROM `account_viplist` WHERE `account_id` = " << player->getAccount();
@@ -741,6 +748,10 @@ bool IOLoginData::loadPlayer(Player* player, DBResult_ptr result) {
 			} while (result->next());
 		}
 	}
+
+	// Wheel loading
+	player->wheel()->loadDBPlayerSlotPointsOnLogin();
+	player->wheel()->initializePlayerData();
 
 	player->initializePrey();
 	player->initializeTaskHunting();
@@ -1249,6 +1260,11 @@ bool IOLoginData::savePlayer(Player* player) {
 
 	IOLoginDataSave::savePlayerForgeHistory(player);
 	IOLoginDataSave::savePlayerBosstiary(player);
+
+	if (!player->wheel()->saveDBPlayerSlotPointsOnLogout()) {
+		spdlog::warn("Failed to save player wheel info to player: {}", player->getName());
+		return false;
+	}
 
 	query.str(std::string());
 	query << "DELETE FROM `player_storage` WHERE `player_id` = " << player->getGUID();
