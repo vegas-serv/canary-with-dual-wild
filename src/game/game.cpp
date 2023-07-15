@@ -2985,6 +2985,16 @@ void Game::playerUseItemEx(uint32_t playerId, const Position &fromPos, uint8_t f
 		return;
 	}
 
+	if (g_configManager().getBoolean(ONLY_INVITED_CAN_MOVE_HOUSE_ITEMS)) {
+		if (HouseTile* houseTile = dynamic_cast<HouseTile*>(item->getTile())) {
+			House* house = houseTile->getHouse();
+			if (house && item->getRealParent() && item->getRealParent() != player && (!house->isInvited(player) || house->getHouseAccessLevel(player) == HOUSE_GUEST)) {
+				player->sendCancelMessage(RETURNVALUE_CANNOTUSETHISOBJECT);
+				return;
+			}
+		}
+	}
+
 	Position walkToPos = fromPos;
 	ReturnValue ret = g_actions().canUse(player, fromPos);
 	if (ret == RETURNVALUE_NOERROR) {
@@ -3109,6 +3119,16 @@ void Game::playerUseItem(uint32_t playerId, const Position &pos, uint8_t stackPo
 		return;
 	}
 
+	if (g_configManager().getBoolean(ONLY_INVITED_CAN_MOVE_HOUSE_ITEMS)) {
+		if (HouseTile* houseTile = dynamic_cast<HouseTile*>(item->getTile())) {
+			House* house = houseTile->getHouse();
+			if (house && item->getRealParent() && item->getRealParent() != player && (!house->isInvited(player) || house->getHouseAccessLevel(player) == HOUSE_GUEST)) {
+				player->sendCancelMessage(RETURNVALUE_CANNOTUSETHISOBJECT);
+				return;
+			}
+		}
+	}
+
 	const ItemType &it = Item::items[item->getID()];
 	if (it.isRune() || it.type == ITEM_TYPE_POTION) {
 		if (player->walkExhausted()) {
@@ -3208,6 +3228,16 @@ void Game::playerUseWithCreature(uint32_t playerId, const Position &fromPos, uin
 	if (!item || !item->isMultiUse() || item->getID() != itemId) {
 		player->sendCancelMessage(RETURNVALUE_CANNOTUSETHISOBJECT);
 		return;
+	}
+
+	if (g_configManager().getBoolean(ONLY_INVITED_CAN_MOVE_HOUSE_ITEMS)) {
+		if (HouseTile* houseTile = dynamic_cast<HouseTile*>(item->getTile())) {
+			House* house = houseTile->getHouse();
+			if (house && item->getRealParent() && item->getRealParent() != player && (!house->isInvited(player) || house->getHouseAccessLevel(player) == HOUSE_GUEST)) {
+				player->sendCancelMessage(RETURNVALUE_CANNOTUSETHISOBJECT);
+				return;
+			}
+		}
 	}
 
 	const ItemType &it = Item::items[item->getID()];
@@ -3973,8 +4003,8 @@ void Game::playerRequestTrade(uint32_t playerId, const Position &pos, uint8_t st
 	if (g_configManager().getBoolean(ONLY_INVITED_CAN_MOVE_HOUSE_ITEMS)) {
 		if (HouseTile* houseTile = dynamic_cast<HouseTile*>(tradeItem->getTile())) {
 			House* house = houseTile->getHouse();
-			if (house && !house->isInvited(player)) {
-				player->sendCancelMessage(RETURNVALUE_PLAYERISNOTINVITED);
+			if (house && tradeItem->getRealParent() != player && (!house->isInvited(player) || house->getHouseAccessLevel(player) == HOUSE_GUEST)) {
+				player->sendCancelMessage(RETURNVALUE_NOTMOVEABLE);
 				return;
 			}
 		}
