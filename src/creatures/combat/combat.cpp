@@ -423,12 +423,12 @@ bool Combat::setParam(CombatParam_t param, uint32_t value) {
 		}
 
 		case COMBAT_PARAM_EFFECT: {
-			params.impactEffect = static_cast<uint8_t>(value);
+			params.impactEffect = static_cast<uint16_t>(value);
 			return true;
 		}
 
 		case COMBAT_PARAM_DISTANCEEFFECT: {
-			params.distanceEffect = static_cast<uint8_t>(value);
+			params.distanceEffect = static_cast<uint16_t>(value);
 			return true;
 		}
 
@@ -860,7 +860,7 @@ void Combat::postCombatEffects(Creature* caster, const Position &origin, const P
 	}
 }
 
-void Combat::addDistanceEffect(Creature* caster, const Position &fromPos, const Position &toPos, uint8_t effect) {
+void Combat::addDistanceEffect(Creature* caster, const Position &fromPos, const Position &toPos, uint16_t effect) {
 	if (effect == CONST_ANI_WEAPONTYPE) {
 		if (!caster) {
 			return;
@@ -1303,7 +1303,8 @@ void Combat::doCombatCondition(Creature* caster, Creature* target, const CombatP
 }
 
 void Combat::doCombatDispel(Creature* caster, const Position &position, const AreaCombat* area, const CombatParams &params) {
-	CombatFunc(caster, caster->getPosition(), position, area, params, CombatDispelFunc, nullptr);
+	auto origin = caster ? caster->getPosition() : Position();
+	CombatFunc(caster, origin, position, area, params, CombatDispelFunc, nullptr);
 }
 
 void Combat::doCombatDispel(Creature* caster, Creature* target, const CombatParams &params) {
