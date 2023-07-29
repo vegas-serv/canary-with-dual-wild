@@ -52593,13 +52593,10 @@
 		<attribute key="wrapableTo" value="23398"/>
 	</item>
 	<item id="34313" name="homely bed">
-<<<<<<< Updated upstream
 		<attribute key="type" value="bed"/>
 		<attribute key="bedpart" value="blanket"/>
 		<attribute key="bedpartof" value="34312"/>
-=======
 	    <attribute key="type" value="bed"/>
->>>>>>> Stashed changes
 		<attribute key="partnerdirection" value="north"/>
 		<attribute key="maletransformto" value="34321"/>
 		<attribute key="rotateTo" value="34315"/>
@@ -52616,13 +52613,10 @@
 		<attribute key="wrapableTo" value="23398"/>
 	</item>
 	<item id="34315" name="homely bed">
-<<<<<<< Updated upstream
 		<attribute key="type" value="bed"/>
 		<attribute key="bedpart" value="blanket"/>
 		<attribute key="bedpartof" value="34314"/>
-=======
 	    <attribute key="type" value="bed"/>
->>>>>>> Stashed changes
 		<attribute key="partnerdirection" value="west"/>
 		<attribute key="maletransformto" value="34323"/>
 		<attribute key="rotateTo" value="34313"/>
@@ -52639,13 +52633,10 @@
 		<attribute key="wrapableTo" value="23398"/>
 	</item>
 	<item id="34317" name="homely bed">
-<<<<<<< Updated upstream
 		<attribute key="type" value="bed"/>
 		<attribute key="bedpart" value="blanket"/>
 		<attribute key="bedpartof" value="34316"/>
-=======
 	    <attribute key="type" value="bed"/>
->>>>>>> Stashed changes
 		<attribute key="partnerdirection" value="north"/>
 		<attribute key="femaletransformto" value="34321"/>
 		<attribute key="rotateTo" value="34319"/>
@@ -52662,13 +52653,10 @@
 		<attribute key="wrapableTo" value="23398"/>
 	</item>
 	<item id="34319" name="homely bed">
-<<<<<<< Updated upstream
 		<attribute key="type" value="bed"/>
 		<attribute key="bedpart" value="blanket"/>
 		<attribute key="bedpartof" value="34318"/>
-=======
 	    <attribute key="type" value="bed"/>
->>>>>>> Stashed changes
 		<attribute key="partnerdirection" value="west"/>
 		<attribute key="femaletransformto" value="34323"/>
 		<attribute key="rotateTo" value="34317"/>
@@ -52895,13 +52883,10 @@
 		<attribute key="wrapableTo" value="23398"/>
 	</item>
 	<item id="35190" name="wrought-iron bed">
-<<<<<<< Updated upstream
 		<attribute key="type" value="bed"/>
 		<attribute key="bedpart" value="blanket"/>
 		<attribute key="bedpartof" value="35189"/>
-=======
 	    <attribute key="type" value="bed"/>
->>>>>>> Stashed changes
 		<attribute key="partnerdirection" value="north"/>
 		<attribute key="maletransformto" value="35207"/>
 		<attribute key="rotateTo" value="35192"/>
@@ -52918,13 +52903,10 @@
 		<attribute key="wrapableTo" value="23398"/>
 	</item>
 	<item id="35192" name="wrought-iron bed">
-<<<<<<< Updated upstream
 		<attribute key="type" value="bed"/>
 		<attribute key="bedpart" value="blanket"/>
 		<attribute key="bedpartof" value="35191"/>
-=======
 	    <attribute key="type" value="bed"/>
->>>>>>> Stashed changes
 		<attribute key="partnerdirection" value="west"/>
 		<attribute key="maletransformto" value="35209"/>
 		<attribute key="rotateTo" value="35190"/>
@@ -52941,13 +52923,10 @@
 		<attribute key="wrapableTo" value="23398"/>
 	</item>
 	<item id="35203" name="wrought-iron bed">
-<<<<<<< Updated upstream
 		<attribute key="type" value="bed"/>
 		<attribute key="bedpart" value="blanket"/>
 		<attribute key="bedpartof" value="35193"/>
-=======
 	    <attribute key="type" value="bed"/>
->>>>>>> Stashed changes
 		<attribute key="partnerdirection" value="north"/>
 		<attribute key="femaletransformto" value="35207"/>
 		<attribute key="rotateTo" value="37205"/>
@@ -52964,13 +52943,10 @@
 		<attribute key="wrapableTo" value="23398"/>
 	</item>
 	<item id="35205" name="wrought-iron bed">
-<<<<<<< Updated upstream
 		<attribute key="type" value="bed"/>
 		<attribute key="bedpart" value="blanket"/>
 		<attribute key="bedpartof" value="35204"/>
-=======
 	    <attribute key="type" value="bed"/>
->>>>>>> Stashed changes
 		<attribute key="partnerdirection" value="west"/>
 		<attribute key="femaletransformto" value="35209"/>
 		<attribute key="rotateTo" value="35203"/>
@@ -53529,13 +53505,10 @@
 		<attribute key="wrapableTo" value="23398"/>
 	</item>
 	<item id="35852" name="magnificent bed">
-<<<<<<< Updated upstream
 		<attribute key="type" value="bed"/>
 		<attribute key="bedpart" value="blanket"/>
 		<attribute key="bedpartof" value="35851"/>
-=======
 	    <attribute key="type" value="bed"/>
->>>>>>> Stashed changes
 		<attribute key="partnerdirection" value="north"/>
 		<attribute key="maletransformto" value="35860"/>
 		<attribute key="rotateTo" value="35854"/>
@@ -53552,13 +53525,10 @@
 		<attribute key="wrapableTo" value="23398"/>
 	</item>
 	<item id="35854" name="magnificent bed">
-<<<<<<< Updated upstream
 		<attribute key="type" value="bed"/>
 		<attribute key="bedpart" value="blanket"/>
 		<attribute key="bedpartof" value="35853"/>
-=======
 	    <attribute key="type" value="bed"/>
->>>>>>> Stashed changes
 		<attribute key="partnerdirection" value="west"/>
 		<attribute key="maletransformto" value="35862"/>
 		<attribute key="rotateTo" value="35852"/>
@@ -53575,13 +53545,10 @@
 		<attribute key="wrapableTo" value="23398"/>
 	</item>
 	<item id="35856" name="magnificent bed">
-<<<<<<< Updated upstream
 		<attribute key="type" value="bed"/>
 		<attribute key="bedpart" value="blanket"/>
 		<attribute key="bedpartof" value="35855"/>
-=======
 	    <attribute key="type" value="bed"/>
->>>>>>> Stashed changes
 		<attribute key="partnerdirection" value="north"/>
 		<attribute key="femaletransformto" value="35860"/>
 		<attribute key="rotateTo" value="35858"/>
@@ -53598,13 +53565,10 @@
 		<attribute key="wrapableTo" value="23398"/>
 	</item>
 	<item id="35858" name="magnificent bed">
-<<<<<<< Updated upstream
 		<attribute key="type" value="bed"/>
 		<attribute key="bedpart" value="blanket"/>
 		<attribute key="bedpartof" value="35857"/>
-=======
 	    <attribute key="type" value="bed"/>
->>>>>>> Stashed changes
 		<attribute key="partnerdirection" value="west"/>
 		<attribute key="femaletransformto" value="35862"/>
 		<attribute key="rotateTo" value="35856"/>
@@ -53661,13 +53625,10 @@
 		<attribute key="wrapableTo" value="23398"/>
 	</item>
 	<item id="35864" name="ornate bed">
-<<<<<<< Updated upstream
 		<attribute key="type" value="bed"/>
 		<attribute key="bedpart" value="blanket"/>
 		<attribute key="bedpartof" value="35863"/>
-=======
 	    <attribute key="type" value="bed"/>
->>>>>>> Stashed changes
 		<attribute key="partnerdirection" value="north"/>
 		<attribute key="maletransformto" value="35872"/>
 		<attribute key="rotateTo" value="35866"/>
@@ -53684,13 +53645,10 @@
 		<attribute key="wrapableTo" value="23398"/>
 	</item>
 	<item id="35866" name="ornate bed">
-<<<<<<< Updated upstream
 		<attribute key="type" value="bed"/>
 		<attribute key="bedpart" value="blanket"/>
 		<attribute key="bedpartof" value="35865"/>
-=======
 	    <attribute key="type" value="bed"/>
->>>>>>> Stashed changes
 		<attribute key="partnerdirection" value="west"/>
 		<attribute key="maletransformto" value="35874"/>
 		<attribute key="rotateTo" value="35864"/>
@@ -53707,13 +53665,10 @@
 		<attribute key="wrapableTo" value="23398"/>
 	</item>
 	<item id="35868" name="ornate bed">
-<<<<<<< Updated upstream
 		<attribute key="type" value="bed"/>
 		<attribute key="bedpart" value="blanket"/>
 		<attribute key="bedpartof" value="35867"/>
-=======
 	    <attribute key="type" value="bed"/>
->>>>>>> Stashed changes
 		<attribute key="partnerdirection" value="north"/>
 		<attribute key="femaletransformto" value="35872"/>
 		<attribute key="rotateTo" value="35870"/>
@@ -53730,13 +53685,10 @@
 		<attribute key="wrapableTo" value="23398"/>
 	</item>
 	<item id="35870" name="ornate bed">
-<<<<<<< Updated upstream
 		<attribute key="type" value="bed"/>
 		<attribute key="bedpart" value="blanket"/>
 		<attribute key="bedpartof" value="35869"/>
-=======
 	    <attribute key="type" value="bed"/>
->>>>>>> Stashed changes
 		<attribute key="partnerdirection" value="west"/>
 		<attribute key="femaletransformto" value="35874"/>
 		<attribute key="rotateTo" value="35868"/>
@@ -53793,13 +53745,10 @@
 		<attribute key="wrapableTo" value="23398"/>
 	</item>
 	<item id="35876" name="vengothic bed">
-<<<<<<< Updated upstream
 		<attribute key="type" value="bed"/>
 		<attribute key="bedpart" value="blanket"/>
 		<attribute key="bedpartof" value="35875"/>
-=======
 	    <attribute key="type" value="bed"/>
->>>>>>> Stashed changes
 		<attribute key="partnerdirection" value="north"/>
 		<attribute key="maletransformto" value="35884"/>
 		<attribute key="rotateTo" value="35878"/>
@@ -53816,13 +53765,10 @@
 		<attribute key="wrapableTo" value="23398"/>
 	</item>
 	<item id="35878" name="vengothic bed">
-<<<<<<< Updated upstream
 		<attribute key="type" value="bed"/>
 		<attribute key="bedpart" value="blanket"/>
 		<attribute key="bedpartof" value="35877"/>
-=======
 	    <attribute key="type" value="bed"/>
->>>>>>> Stashed changes
 		<attribute key="partnerdirection" value="west"/>
 		<attribute key="maletransformto" value="35886"/>
 		<attribute key="rotateTo" value="35876"/>
@@ -53839,13 +53785,10 @@
 		<attribute key="wrapableTo" value="23398"/>
 	</item>
 	<item id="35880" name="vengothic bed">
-<<<<<<< Updated upstream
 		<attribute key="type" value="bed"/>
 		<attribute key="bedpart" value="blanket"/>
 		<attribute key="bedpartof" value="35879"/>
-=======
 	    <attribute key="type" value="bed"/>
->>>>>>> Stashed changes
 		<attribute key="partnerdirection" value="north"/>
 		<attribute key="femaletransformto" value="35884"/>
 		<attribute key="rotateTo" value="35882"/>
@@ -53862,13 +53805,10 @@
 		<attribute key="wrapableTo" value="23398"/>
 	</item>
 	<item id="35882" name="vengothic bed">
-<<<<<<< Updated upstream
 		<attribute key="type" value="bed"/>
 		<attribute key="bedpart" value="blanket"/>
 		<attribute key="bedpartof" value="35881"/>
-=======
 	    <attribute key="type" value="bed"/>
->>>>>>> Stashed changes
 		<attribute key="partnerdirection" value="west"/>
 		<attribute key="femaletransformto" value="35886"/>
 		<attribute key="rotateTo" value="35880"/>
@@ -54059,13 +53999,10 @@
 		<attribute key="wrapableTo" value="23398"/>
 	</item>
 	<item id="35929" name="grandiose bed">
-<<<<<<< Updated upstream
 		<attribute key="type" value="bed"/>
 		<attribute key="bedpart" value="blanket"/>
 		<attribute key="bedpartof" value="35928"/>
-=======
 	    <attribute key="type" value="bed"/>
->>>>>>> Stashed changes
 		<attribute key="partnerdirection" value="north"/>
 		<attribute key="maletransformto" value="35937"/>
 		<attribute key="rotateTo" value="35931"/>
@@ -54082,13 +54019,10 @@
 		<attribute key="wrapableTo" value="23398"/>
 	</item>
 	<item id="35931" name="grandiose bed">
-<<<<<<< Updated upstream
 		<attribute key="type" value="bed"/>
 		<attribute key="bedpart" value="blanket"/>
 		<attribute key="bedpartof" value="35930"/>
-=======
 	    <attribute key="type" value="bed"/>
->>>>>>> Stashed changes
 		<attribute key="partnerdirection" value="west"/>
 		<attribute key="maletransformto" value="35939"/>
 		<attribute key="rotateTo" value="35929"/>
@@ -54105,13 +54039,10 @@
 		<attribute key="wrapableTo" value="23398"/>
 	</item>
 	<item id="35933" name="grandiose bed">
-<<<<<<< Updated upstream
 		<attribute key="type" value="bed"/>
 		<attribute key="bedpart" value="blanket"/>
 		<attribute key="bedpartof" value="35932"/>
-=======
 	    <attribute key="type" value="bed"/>
->>>>>>> Stashed changes
 		<attribute key="partnerdirection" value="north"/>
 		<attribute key="femaletransformto" value="35937"/>
 		<attribute key="rotateTo" value="35935"/>
@@ -54128,13 +54059,10 @@
 		<attribute key="wrapableTo" value="23398"/>
 	</item>
 	<item id="35935" name="grandiose bed">
-<<<<<<< Updated upstream
 		<attribute key="type" value="bed"/>
 		<attribute key="bedpart" value="blanket"/>
 		<attribute key="bedpartof" value="35934"/>
-=======
 	    <attribute key="type" value="bed"/>
->>>>>>> Stashed changes
 		<attribute key="partnerdirection" value="west"/>
 		<attribute key="femaletransformto" value="35939"/>
 		<attribute key="rotateTo" value="35933"/>
