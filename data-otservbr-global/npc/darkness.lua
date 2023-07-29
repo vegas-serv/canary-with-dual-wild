@@ -1,4 +1,4 @@
-local internalNpcName = "Yana"
+local internalNpcName = "Darkness Boss"
 local npcType = Game.createNpcType(internalNpcName)
 local npcConfig = {}
 
@@ -11,7 +11,7 @@ npcConfig.walkInterval = 2000
 npcConfig.walkRadius = 2
 
 npcConfig.outfit = {
-	lookType = 471,
+	lookType = 1619,
 	lookHead = 0,
 	lookBody = 57,
 	lookLegs = 0,
@@ -26,14 +26,46 @@ npcConfig.flags = {
 npcConfig.voices = {
 	interval = 15000,
 	chance = 50,
-	{text = 'Trading tokens! First-class equipment available!'}
+	{text = 'Trading tokens! First-class itens available!'}
 }
 
-npcConfig.currency = 22721
+npcConfig.currency = 19082
 
 npcConfig.shop = {
-	{ name = "vampire lord token", clientId = 8192, buy = 1 },
-	{ name = "premium scroll", clientId = 14758, buy = 350 }
+	{ name = "The Snapper Boss", clientId = 11640, buy = 300 },
+	{ name = "Hide Boss", clientId = 11638, buy = 300 },
+	{ name = "Deathbine Boss", clientId = 11636, buy = 300 },
+	{ name = "The Bloodtusk Boss", clientId = 11634, buy = 300 },
+	{ name = "Shardhead Boss", clientId = 11632, buy = 300 },
+	{ name = "Esmeralda Boss", clientId = 11630, buy = 300 },
+	{ name = "Fleshcrawler Boss", clientId = 11628, buy = 300 },
+	{ name = "Ribstride Boss", clientId = 11626, buy = 300 },
+	{ name = "The Bloodweb Boss", clientId = 11624, buy = 300 },
+	{ name = "Thul Boss", clientId = 11622, buy = 300 },
+	{ name = "The Old Widow Boss", clientId = 11620, buy = 300 },
+	{ name = "Hemming Boss", clientId = 11618, buy = 300 },
+	{ name = "Tormentor Boss", clientId = 11616, buy = 300 },
+	{ name = "Flameborn Boss", clientId = 11614, buy = 300 },
+	{ name = "Fazzrah Boss", clientId = 11612, buy = 300 },
+	{ name = "Tromphonyte Boss", clientId = 11610, buy = 300 },
+	{ name = "Sulphur Scuttler Boss", clientId = 11608, buy = 300 },
+	{ name = "Bruise Payne Boss", clientId = 11606, buy = 300 },
+	{ name = "The Many Boss", clientId = 11604, buy = 300 },
+	{ name = "The Noxious Spawn Boss", clientId = 11650, buy = 400 },
+	{ name = "Gorgo Boss", clientId = 11648, buy = 300 },
+	{ name = "Stonecracker Boss", clientId = 11646, buy = 300 },
+	{ name = "Leviathan Boss", clientId = 11644, buy = 300 },
+	{ name = "Kerberos Boss", clientId = 11642, buy = 300 },
+	{ name = "Ethershreck Boss", clientId = 18338, buy = 300 },
+	{ name = "Paiz The Pauperizer Boss", clientId = 18337, buy = 300 },
+	{ name = "Bretzecutioner Boss", clientId = 18336, buy = 300 },
+	{ name = "Zanakeph Boss", clientId = 18335, buy = 300 },
+	{ name = "Tiquandas Revenge Boss", clientId = 18334, buy = 300 },
+	{ name = "Demodras Boss", clientId = 18333, buy = 500 },
+	{ name = "Necropharus Boss", clientId = 18332, buy = 400 },
+	{ name = "The Horned Fox Boss", clientId = 18331, buy = 400 },
+	{ name = "Lethal Lissy Boss", clientId = 18329, buy = 300 },
+	{ name = "Fahim The Wise Boss", clientId = 18328, buy = 200 }
 }
 -- On buy npc shop message
 npcType.onBuyItem = function(npc, player, itemId, subType, amount, ignore, inBackpacks, totalCost)
@@ -173,16 +205,16 @@ local function creatureSayCallback(npc, creature, type, message)
 	end
 
 	if MsgContains(message, "information") then
-		npcHandler:say({"{Tokens} are small objects made of metal or other materials. You can use them to buy superior equipment from token traders like me.",
+		npcHandler:say({"{trade} are small objects made of metal or other materials. You can use them to buy superior equipment from token traders like me.",
 						"There are several ways to obtain the tokens I'm interested in - killing certain bosses, for example. In exchange for a certain amount of tokens, I can offer you some first-class items."}, npc, creature)
 	elseif MsgContains(message, "worth") then
 	-- to do: check if Heart of Destruction was killed
 	-- after kill message: 'You disrupted the Heart of Destruction, defeated the World Devourer and bought our world some time. You have proven your worth.'
 	npcHandler:say({"Disrupt the Heart of Destruction, fell the World Devourer to prove your worth and you will be granted the power to imbue 'Powerful Strike', 'Powerful Void' and --'Powerful Vampirism'."}, npc, creature)
-	elseif MsgContains(message, "tokens") then
-		npc:openShopWindow(creature)
-		npcHandler:say("If you have any gold tokens with you, let's have a look! These are my offers.", npc, creature)
 	elseif MsgContains(message, "trade") then
+		npc:openShopWindow(creature)
+		npcHandler:say("If you have any golden raid tokens with you, let's have a look! These are my offers.", npc, creature)
+	elseif MsgContains(message, "traade") then
 		npcHandler:say({"I have creature products for the imbuements {strike}, {vampirism} and {void}. Make your choice, please!"}, npc, creature)
 		npcHandler:setTopic(playerId, 1)
 	elseif npcHandler:getTopic(playerId) == 1 then

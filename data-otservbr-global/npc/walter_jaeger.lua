@@ -16,7 +16,8 @@ npcConfig.outfit = {
 	lookBody = 5,
 	lookLegs = 5,
 	lookFeet = 115,
-	lookAddons = 0
+	lookAddons = 2,
+	lookMount = 427
 }
 
 npcConfig.flags = {
@@ -80,6 +81,11 @@ local config = {
 			name = "Antelope",
 			id = 163,
 			points = 145000
+		},
+		[2] = {
+			name = "Noxious Ripptor",
+			id = 202,
+			points = 245000
 		}
 	},
 	trophies = {
@@ -134,6 +140,16 @@ local config = {
 			name = "falcon pet",
 			id = 36750,
 			points = 135000
+		},
+		[2] = {
+			name = "traditional gamsbart hat",
+			id = 32100,
+			points = 35000
+		},
+		[3] = {
+			name = "traditional neckerchief",
+			id = 32101,
+			points = 35000
 		},
 	}
 }
