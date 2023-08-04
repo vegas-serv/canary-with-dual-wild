@@ -15,6 +15,8 @@
 #include "lua/creature/creatureevent.h"
 #include "database/databasetasks.h"
 #include "lua/creature/events.h"
+#include "lua/callbacks/event_callback.hpp"
+#include "lua/callbacks/events_callbacks.hpp"
 #include "game/game.h"
 #include "game/functions/game_reload.hpp"
 #include "lua/global/globalevent.h"
@@ -1103,6 +1105,10 @@ void Game::playerMoveCreature(Player* player, Creature* movingCreature, const Po
 		return;
 	}
 
+	if (!g_callbacks().checkCallback(EventCallback_t::PlayerOnMoveCreature, &EventCallback::playerOnMoveCreature, player, movingCreature, movingCreaturePos, toPos)) {
+		return;
+	}
+
 	ReturnValue ret = internalMoveCreature(*movingCreature, *toTile);
 	if (ret != RETURNVALUE_NOERROR) {
 		player->sendCancelMessage(ret);
@@ -1411,6 +1417,10 @@ void Game::playerMoveItem(Player* player, const Position &fromPos, uint16_t item
 		return;
 	}
 
+	if (!g_callbacks().checkCallback(EventCallback_t::PlayerOnMoveItem, &EventCallback::playerOnMoveItem, player, item, count, fromPos, toPos, fromCylinder, toCylinder)) {
+		return;
+	}
+
 	if (!g_events().eventPlayerOnMoveItem(player, item, count, fromPos, toPos, fromCylinder, toCylinder)) {
 		return;
 	}
@@ -1444,6 +1454,7 @@ void Game::playerMoveItem(Player* player, const Position &fromPos, uint16_t item
 	item->checkDecayMapItemOnMove();
 
 	g_events().eventPlayerOnItemMoved(player, item, count, fromPos, toPos, fromCylinder, toCylinder);
+	g_callbacks().executeCallback(EventCallback_t::PlayerOnItemMoved, &EventCallback::playerOnItemMoved, player, item, count, fromPos, toPos, fromCylinder, toCylinder);
 }
 
 bool Game::isTryingToStow(const Position &toPos, Cylinder* toCylinder) const {
@@ -2351,7 +2362,7 @@ void Game::internalQuickLootCorpse(Player* player, Container* corpse) {
 		uint16_t baseCount = item->getItemCount();
 		ObjectCategory_t category = getObjectCategory(item);
 
-		ReturnValue ret = internalQuickLootItem(player, item, category);
+		ReturnValue ret = internalCollectLootItems(player, item, category);
 		if (ret == RETURNVALUE_NOTENOUGHCAPACITY) {
 			shouldNotifyCapacity = true;
 		} else if (ret == RETURNVALUE_CONTAINERNOTENOUGHROOM) {
@@ -2458,103 +2469,169 @@ void Game::internalQuickLootCorpse(Player* player, Container* corpse) {
 	player->lastQuickLootNotification = OTSYS_TIME();
 }
 
-ReturnValue Game::internalQuickLootItem(Player* player, Item* item, ObjectCategory_t category /* = OBJECTCATEGORY_DEFAULT*/) {
+Container* Game::findLootContainer(Player* player, bool &fallbackConsumed, ObjectCategory_t category) {
+	Container* lootContainer = player->getLootContainer(category);
+	if (!lootContainer && player->quickLootFallbackToMainContainer && !fallbackConsumed) {
+		Item* fallbackItem = player->getInventoryItem(CONST_SLOT_BACKPACK);
+		Container* mainBackpack = fallbackItem ? fallbackItem->getContainer() : nullptr;
+
+		if (mainBackpack) {
+			player->setLootContainer(OBJECTCATEGORY_DEFAULT, mainBackpack);
+			player->sendInventoryItem(CONST_SLOT_BACKPACK, player->getInventoryItem(CONST_SLOT_BACKPACK));
+			lootContainer = mainBackpack;
+			fallbackConsumed = true;
+		}
+	}
+
+	return lootContainer;
+}
+
+Container* Game::findNextAvailableContainer(ContainerIterator &containerIterator, Container*&lootContainer, Container*&lastSubContainer) {
+	while (containerIterator.hasNext()) {
+		Item* cur = *containerIterator;
+		Container* subContainer = cur ? cur->getContainer() : nullptr;
+		containerIterator.advance();
+
+		if (subContainer) {
+			lastSubContainer = subContainer;
+			lootContainer = subContainer;
+			return lootContainer;
+		}
+	}
+
+	// Fix last empty sub-container
+	if (lastSubContainer && !lastSubContainer->empty()) {
+		Item* cur = lastSubContainer->getItemByIndex(lastSubContainer->size() - 1);
+		lootContainer = cur ? cur->getContainer() : nullptr;
+		lastSubContainer = nullptr;
+		return lootContainer;
+	}
+
+	return nullptr;
+}
+
+bool Game::handleFallbackLogic(const Player* player, Container*&lootContainer, ContainerIterator &containerIterator, const bool &fallbackConsumed) {
+	if (fallbackConsumed || !player->quickLootFallbackToMainContainer) {
+		return false;
+	}
+
+	Item* fallbackItem = player->getInventoryItem(CONST_SLOT_BACKPACK);
+	if (!fallbackItem || !fallbackItem->getContainer())
+		return false;
+
+	lootContainer = fallbackItem->getContainer();
+	containerIterator = lootContainer->iterator();
+
+	return true;
+}
+
+ReturnValue Game::processMoveOrAddItemToLootContainer(Item* item, Container* lootContainer, uint32_t &remainderCount, Player* player) {
+	Item* moveItem = nullptr;
+	ReturnValue ret;
+	if (item->getParent()) {
+		ret = internalMoveItem(item->getParent(), lootContainer, INDEX_WHEREEVER, item, item->getItemCount(), &moveItem, 0, player);
+	} else {
+		ret = internalAddItem(lootContainer, item, INDEX_WHEREEVER);
+	}
+	if (moveItem) {
+		remainderCount -= moveItem->getItemCount();
+	}
+	return ret;
+}
+
+ReturnValue Game::processLootItems(Player* player, Container* lootContainer, Item* item, bool &fallbackConsumed) {
+	Container* lastSubContainer = nullptr;
+	uint32_t remainderCount = item->getItemCount();
+	ContainerIterator containerIterator = lootContainer->iterator();
+
+	do {
+		ReturnValue ret = processMoveOrAddItemToLootContainer(item, lootContainer, remainderCount, player);
+		if (ret != RETURNVALUE_CONTAINERNOTENOUGHROOM) {
+			return ret;
+		}
+
+		const Container* nextContainer = findNextAvailableContainer(containerIterator, lootContainer, lastSubContainer);
+		if (!nextContainer && !handleFallbackLogic(player, lootContainer, containerIterator, fallbackConsumed)) {
+			break;
+		}
+		fallbackConsumed = (nextContainer == nullptr);
+	} while (remainderCount != 0);
+
+	return RETURNVALUE_NOERROR;
+}
+
+ReturnValue Game::internalCollectLootItems(Player* player, Item* item, ObjectCategory_t category /* = OBJECTCATEGORY_DEFAULT*/) {
 	if (!player || !item) {
 		return RETURNVALUE_NOTPOSSIBLE;
 	}
 
-	bool fallbackConsumed = false;
-	Container* lootContainer = player->getLootContainer(category);
-	if (!lootContainer) {
-		if (player->quickLootFallbackToMainContainer) {
-			Item* fallbackItem = player->getInventoryItem(CONST_SLOT_BACKPACK);
-
-			if (fallbackItem) {
-				Container* mainBackpack = fallbackItem->getContainer();
-				if (mainBackpack && !fallbackConsumed) {
-					player->setLootContainer(OBJECTCATEGORY_DEFAULT, mainBackpack);
-					player->sendInventoryItem(CONST_SLOT_BACKPACK, player->getInventoryItem(CONST_SLOT_BACKPACK));
-				}
+	// Send money to the bank
+	if (g_configManager().getBoolean(AUTOBANK)) {
+		if (item->getID() == ITEM_GOLD_COIN || item->getID() == ITEM_PLATINUM_COIN || item->getID() == ITEM_CRYSTAL_COIN) {
+			uint64_t money = 0;
+			if (item->getID() == ITEM_PLATINUM_COIN) {
+				money = item->getItemCount() * 100;
+			} else if (item->getID() == ITEM_CRYSTAL_COIN) {
+				money = item->getItemCount() * 10000;
+			} else {
+				money = item->getItemCount();
 			}
-
-			lootContainer = fallbackItem ? fallbackItem->getContainer() : nullptr;
-			fallbackConsumed = true;
-		} else {
-			return RETURNVALUE_NOTPOSSIBLE;
+			internalRemoveItem(item, item->getItemCount());
+			player->setBankBalance(player->getBankBalance() + money);
+			return RETURNVALUE_NOERROR;
 		}
 	}
 
+	bool fallbackConsumed = false;
+	Container* lootContainer = findLootContainer(player, fallbackConsumed, category);
 	if (!lootContainer) {
 		return RETURNVALUE_NOTPOSSIBLE;
 	}
 
-	Container* lastSubContainer = nullptr;
-	uint32_t remainderCount = item->getItemCount();
-	ContainerIterator it = lootContainer->iterator();
+	return processLootItems(player, lootContainer, item, fallbackConsumed);
+}
 
-	ReturnValue ret;
-	do {
-		Item* moveItem = nullptr;
-		if (item->getParent()) { // Stash retrive dont have parent cylinder.
-			ret = internalMoveItem(item->getParent(), lootContainer, INDEX_WHEREEVER, item, item->getItemCount(), &moveItem, 0, player);
-		} else {
-			ret = internalAddItem(lootContainer, item, INDEX_WHEREEVER);
-		}
-		if (moveItem) {
-			remainderCount -= moveItem->getItemCount();
-		}
+ReturnValue Game::collectRewardChestItems(Player* player, uint32_t maxMoveItems /* = 0*/) {
+	// Check if have item on player reward chest
+	RewardChest* rewardChest = player->getRewardChest();
+	if (!rewardChest || rewardChest->empty()) {
+		SPDLOG_DEBUG("Reward chest is wrong or empty");
+		return RETURNVALUE_NOTPOSSIBLE;
+	}
 
-		if (ret != RETURNVALUE_CONTAINERNOTENOUGHROOM) {
+	auto rewardItemsVector = player->getRewardsFromContainer(rewardChest->getContainer());
+	auto rewardCount = rewardItemsVector.size();
+	uint32_t movedRewardItems = 0;
+	std::string lootedItemsMessage;
+	for (auto item : rewardItemsVector) {
+		// Stop if player not have free capacity
+		if (item && player->getCapacity() < item->getWeight()) {
+			player->sendCancelMessage(RETURNVALUE_NOTENOUGHCAPACITY);
 			break;
 		}
 
-		// search for a sub container
-		bool obtainedNewContainer = false;
-		while (it.hasNext()) {
-			Item* cur = *it;
-			Container* subContainer = cur ? cur->getContainer() : nullptr;
-			it.advance();
-
-			if (subContainer) {
-				lastSubContainer = subContainer;
-				lootContainer = subContainer;
-				obtainedNewContainer = true;
-				break;
-			}
+		// Limit the collect count if the "maxMoveItems" is not "0"
+		auto limitMove = maxMoveItems != 0 && movedRewardItems == maxMoveItems;
+		if (limitMove) {
+			lootedItemsMessage = fmt::format("You can only collect {} items at a time. {} of {} objects were picked up.", maxMoveItems, movedRewardItems, rewardCount);
+			player->sendTextMessage(MESSAGE_EVENT_ADVANCE, lootedItemsMessage);
+			return RETURNVALUE_NOTPOSSIBLE;
 		}
 
-		// a hack to fix last empty sub-container
-		if (!obtainedNewContainer && lastSubContainer && lastSubContainer->size() > 0) {
-			Item* cur = lastSubContainer->getItemByIndex(lastSubContainer->size() - 1);
-			Container* subContainer = cur ? cur->getContainer() : nullptr;
-
-			if (subContainer) {
-				lootContainer = subContainer;
-				obtainedNewContainer = true;
-			}
-
-			lastSubContainer = nullptr;
+		ObjectCategory_t category = getObjectCategory(item);
+		if (internalCollectLootItems(player, item, category) == RETURNVALUE_NOERROR) {
+			movedRewardItems++;
 		}
+	}
 
-		// consumed all sub-container & there is simply no more containers to iterate over.
-		// check if fallback should be used and if not, then break
-		bool quickFallback = (player->quickLootFallbackToMainContainer);
-		bool noFallback = fallbackConsumed || !quickFallback;
-		if (noFallback && (!lootContainer || !obtainedNewContainer)) {
-			break;
-		} else if (!lootContainer || !obtainedNewContainer) {
-			Item* fallbackItem = player->getInventoryItem(CONST_SLOT_BACKPACK);
-			if (!fallbackItem || !fallbackItem->getContainer()) {
-				break;
-			}
+	lootedItemsMessage = fmt::format("{} of {} objects were picked up.", movedRewardItems, rewardCount);
+	player->sendTextMessage(MESSAGE_EVENT_ADVANCE, lootedItemsMessage);
 
-			lootContainer = fallbackItem->getContainer();
-			it = lootContainer->iterator();
+	if (movedRewardItems == 0) {
+		return RETURNVALUE_NOTENOUGHROOM;
+	}
 
-			fallbackConsumed = true;
-		}
-	} while (remainderCount != 0);
-	return ret;
+	return RETURNVALUE_NOERROR;
 }
 
 ObjectCategory_t Game::getObjectCategory(const Item* item) {
@@ -3358,6 +3435,10 @@ void Game::playerMoveUpContainer(uint32_t playerId, uint8_t cid) {
 			return;
 		}
 
+		if (!g_callbacks().checkCallback(EventCallback_t::PlayerOnBrowseField, &EventCallback::playerOnBrowseField, player, tile->getPosition())) {
+			return;
+		}
+
 		auto it = browseFields.find(tile);
 		if (it == browseFields.end()) {
 			parentContainer = new Container(tile);
@@ -3811,6 +3892,10 @@ void Game::playerBrowseField(uint32_t playerId, const Position &pos) {
 		return;
 	}
 
+	if (!g_callbacks().checkCallback(EventCallback_t::PlayerOnBrowseField, &EventCallback::playerOnBrowseField, player, tile->getPosition())) {
+		return;
+	}
+
 	Container* container;
 
 	auto it = browseFields.find(tile);
@@ -4104,6 +4189,10 @@ void Game::playerRequestTrade(uint32_t playerId, const Position &pos, uint8_t st
 		return;
 	}
 
+	if (!g_callbacks().checkCallback(EventCallback_t::PlayerOnTradeRequest, &EventCallback::playerOnTradeRequest, player, tradePartner, tradeItem)) {
+		return;
+	}
+
 	internalStartTrade(player, tradePartner, tradeItem);
 }
 
@@ -4164,8 +4253,12 @@ void Game::playerAcceptTrade(uint32_t playerId) {
 	if (tradePartner->getTradeState() == TRADE_ACCEPT) {
 		Item* tradeItem1 = player->tradeItem;
 		Item* tradeItem2 = tradePartner->tradeItem;
-
 		if (!g_events().eventPlayerOnTradeAccept(player, tradePartner, tradeItem1, tradeItem2)) {
+			internalCloseTrade(player);
+			return;
+		}
+
+		if (!g_callbacks().checkCallback(EventCallback_t::PlayerOnTradeAccept, &EventCallback::playerOnTradeAccept, player, tradePartner, tradeItem1, tradeItem2)) {
 			internalCloseTrade(player);
 			return;
 		}
@@ -4301,6 +4394,7 @@ void Game::playerLookInTrade(uint32_t playerId, bool lookAtCounterOffer, uint8_t
 	);
 	if (index == 0) {
 		g_events().eventPlayerOnLookInTrade(player, tradePartner, tradeItem, lookDistance);
+		g_callbacks().executeCallback(EventCallback_t::PlayerOnLookInTrade, &EventCallback::playerOnLookInTrade, player, tradePartner, tradeItem, lookDistance);
 		return;
 	}
 
@@ -4321,6 +4415,7 @@ void Game::playerLookInTrade(uint32_t playerId, bool lookAtCounterOffer, uint8_t
 
 			if (--index == 0) {
 				g_events().eventPlayerOnLookInTrade(player, tradePartner, item, lookDistance);
+				g_callbacks().executeCallback(EventCallback_t::PlayerOnLookInTrade, &EventCallback::playerOnLookInTrade, player, tradePartner, item, lookDistance);
 				return;
 			}
 		}
@@ -4477,7 +4572,10 @@ void Game::playerLookInShop(uint32_t playerId, uint16_t itemId, uint8_t count) {
 	}
 
 	if (!g_events().eventPlayerOnLookInShop(player, &it, count)) {
-		SPDLOG_ERROR("Game::playerLookInShop - Lua event callback is wrong");
+		return;
+	}
+
+	if (!g_callbacks().checkCallback(EventCallback_t::PlayerOnLookInShop, &EventCallback::playerOnLookInShop, player, &it, count)) {
 		return;
 	}
 
@@ -4519,6 +4617,7 @@ void Game::playerLookAt(uint32_t playerId, uint16_t itemId, const Position &pos,
 
 	// Parse onLook from event player
 	g_events().eventPlayerOnLook(player, pos, thing, stackPos, lookDistance);
+	g_callbacks().executeCallback(EventCallback_t::PlayerOnLook, &EventCallback::playerOnLook, player, pos, thing, stackPos, lookDistance);
 }
 
 void Game::playerLookInBattleList(uint32_t playerId, uint32_t creatureId) {
@@ -4553,6 +4652,7 @@ void Game::playerLookInBattleList(uint32_t playerId, uint32_t creatureId) {
 	}
 
 	g_events().eventPlayerOnLookInBattleList(player, creature, lookDistance);
+	g_callbacks().executeCallback(EventCallback_t::PlayerOnLookInBattleList, &EventCallback::playerOnLookInBattleList, player, creature, lookDistance);
 }
 
 void Game::playerQuickLoot(uint32_t playerId, const Position &pos, uint16_t itemId, uint8_t stackPos, Item* defaultItem, bool lootAllCorpses, bool autoLoot) {
@@ -4634,7 +4734,7 @@ void Game::playerQuickLoot(uint32_t playerId, const Position &pos, uint16_t item
 	if (pos.x == 0xffff && !browseField && !corpse->isRewardCorpse()) {
 		uint32_t worth = item->getWorth();
 		ObjectCategory_t category = getObjectCategory(item);
-		ReturnValue ret = internalQuickLootItem(player, item, category);
+		ReturnValue ret = internalCollectLootItems(player, item, category);
 
 		std::stringstream ss;
 		if (ret == RETURNVALUE_NOTENOUGHCAPACITY) {
@@ -5083,6 +5183,10 @@ void Game::playerTurn(uint32_t playerId, Direction dir) {
 		return;
 	}
 
+	if (!g_callbacks().checkCallback(EventCallback_t::PlayerOnTurn, &EventCallback::playerOnTurn, player, dir)) {
+		return;
+	}
+
 	player->resetIdleTime();
 	internalCreatureTurn(player, dir);
 }
@@ -5182,6 +5286,7 @@ void Game::playerShowQuestLog(uint32_t playerId) {
 	}
 
 	g_events().eventPlayerOnRequestQuestLog(player);
+	g_callbacks().executeCallback(EventCallback_t::PlayerOnRequestQuestLog, &EventCallback::playerOnRequestQuestLog, player);
 }
 
 void Game::playerShowQuestLine(uint32_t playerId, uint16_t questId) {
@@ -5191,6 +5296,7 @@ void Game::playerShowQuestLine(uint32_t playerId, uint16_t questId) {
 	}
 
 	g_events().eventPlayerOnRequestQuestLine(player, questId);
+	g_callbacks().executeCallback(EventCallback_t::PlayerOnRequestQuestLine, &EventCallback::playerOnRequestQuestLine, player, questId);
 }
 
 void Game::playerSay(uint32_t playerId, uint16_t channelId, SpeakClasses type, const std::string &receiver, const std::string &text) {
@@ -5449,6 +5555,7 @@ bool Game::internalCreatureSay(Creature* creature, SpeakClasses type, const std:
 		spectator->onCreatureSay(creature, type, text);
 		if (creature != spectator) {
 			g_events().eventCreatureOnHear(spectator, creature, text, type);
+			g_callbacks().executeCallback(EventCallback_t::CreatureOnHear, &EventCallback::creatureOnHear, spectator, creature, text, type);
 		}
 	}
 	return true;
@@ -5575,6 +5682,10 @@ void Game::changePlayerSpeed(Player &player, int32_t varSpeedDelta) {
 
 void Game::internalCreatureChangeOutfit(Creature* creature, const Outfit_t &outfit) {
 	if (!g_events().eventCreatureOnChangeOutfit(creature, outfit)) {
+		return;
+	}
+
+	if (!g_callbacks().checkCallback(EventCallback_t::CreatureOnChangeOutfit, &EventCallback::creatureOnChangeOutfit, creature, outfit)) {
 		return;
 	}
 
@@ -6269,6 +6380,7 @@ bool Game::combatChangeHealth(Creature* attacker, Creature* target, CombatDamage
 
 		if (!isEvent) {
 			g_events().eventCreatureOnDrainHealth(target, attacker, damage.primary.type, damage.primary.value, damage.secondary.type, damage.secondary.value, message.primary.color, message.secondary.color);
+			g_callbacks().executeCallback(EventCallback_t::CreatureOnDrainHealth, &EventCallback::creatureOnDrainHealth, target, attacker, damage.primary.type, damage.primary.value, damage.secondary.type, damage.secondary.value, message.primary.color, message.secondary.color);
 		}
 		if (damage.origin != ORIGIN_NONE && attacker && damage.primary.type != COMBAT_HEALING) {
 			damage.primary.value *= attacker->getBuff(BUFF_DAMAGEDEALT) / 100.;
@@ -7846,6 +7958,7 @@ void Game::playerReportRuleViolationReport(uint32_t playerId, const std::string 
 	}
 
 	g_events().eventPlayerOnReportRuleViolation(player, targetName, reportType, reportReason, comment, translation);
+	g_callbacks().executeCallback(EventCallback_t::PlayerOnReportRuleViolation, &EventCallback::playerOnReportRuleViolation, player, targetName, reportType, reportReason, comment, translation);
 }
 
 void Game::playerReportBug(uint32_t playerId, const std::string &message, const Position &position, uint8_t category) {
@@ -7855,6 +7968,7 @@ void Game::playerReportBug(uint32_t playerId, const std::string &message, const 
 	}
 
 	g_events().eventPlayerOnReportBug(player, message, position, category);
+	g_callbacks().executeCallback(EventCallback_t::PlayerOnReportBug, &EventCallback::playerOnReportBug, player, message, position, category);
 }
 
 void Game::playerDebugAssert(uint32_t playerId, const std::string &assertLine, const std::string &date, const std::string &description, const std::string &comment) {
@@ -9535,25 +9649,24 @@ void Game::playerRewardChestCollect(uint32_t playerId, const Position &pos, uint
 		return;
 	}
 
-	Item* item = nullptr;
 	Thing* thing = internalGetThing(player, pos, stackPos, itemId, STACKPOS_FIND_THING);
 	if (!thing) {
 		player->sendCancelMessage(RETURNVALUE_NOTPOSSIBLE);
 		return;
 	}
 
-	item = thing->getItem();
+	auto item = thing->getItem();
 	if (!item || item->getID() != ITEM_REWARD_CHEST || !item->getContainer()) {
 		player->sendCancelMessage(RETURNVALUE_NOTPOSSIBLE);
 		return;
 	}
 
-	if (auto function = std::bind(&Game::playerRewardChestCollect, this, player->getID(), pos, itemId, stackPos, 0);
+	if (auto function = std::bind(&Game::playerRewardChestCollect, this, player->getID(), pos, itemId, stackPos, maxMoveItems);
 		player->canAutoWalk(item->getPosition(), function)) {
 		return;
 	}
 
-	ReturnValue returnValue = player->rewardChestCollect(maxMoveItems);
+	ReturnValue returnValue = collectRewardChestItems(player, maxMoveItems);
 	if (returnValue != RETURNVALUE_NOERROR) {
 		player->sendCancelMessage(returnValue);
 	}
@@ -9571,6 +9684,10 @@ bool Game::createHazardArea(const Position &positionFrom, const Position &positi
 		}
 	}
 	return true;
+}
+
+bool Game::canRetrieveStashItems(Player* player, Item* item) {
+	return internalCollectLootItems(player, item, OBJECTCATEGORY_STASHRETRIEVE) == RETURNVALUE_NOERROR;
 }
 
 std::unique_ptr<IOWheel> &Game::getIOWheel() {
