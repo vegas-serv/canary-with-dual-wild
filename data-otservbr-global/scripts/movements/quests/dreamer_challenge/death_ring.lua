@@ -11,7 +11,7 @@ function deathRing.onAddItem(moveitem, tileitem, position)
 		return true
 	end
 
-	local found = false
+    local found = false
 	for i = 1, #trees do
 		local treeItem = Tile(trees[i]):getItemById(3636)
 		if treeItem then

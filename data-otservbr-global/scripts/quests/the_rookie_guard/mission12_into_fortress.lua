@@ -652,15 +652,15 @@ local chests = {
 	[40073] = {
 		id = CHEST_ID.LEFT,
 		item = {
-			id = 3030,
+			id = 23488,
 			amount = 1
 		}
 	},
 	[40074] = {
 		id = CHEST_ID.RIGHT,
 		item = {
-			id = 3035,
-			amount = 2
+			id = 33982,
+			amount = 1
 		}
 	}
 }
@@ -738,22 +738,22 @@ local chests = {
 	[40079] = {
 		id = CHEST_ID.FORTRESS_TREASURE_CHEST,
 		item = {
-			id = 3606,
-			amount = 30
+			id = 35572,
+			amount = 50
 		}
 	},
 	[40080] = {
 		id = CHEST_ID.FORTRESS_TRUNK,
 		item = {
-			id = 7876,
-			amount = 2
+			id = 9586,
+			amount = 1
 		}
 	},
 	[40081] = {
 		id = CHEST_ID.LAIR_TREASURE_CHEST,
 		item = {
-			id = 7876,
-			amount = 1
+			id = 8192,
+			amount = 25
 		}
 	}
 }

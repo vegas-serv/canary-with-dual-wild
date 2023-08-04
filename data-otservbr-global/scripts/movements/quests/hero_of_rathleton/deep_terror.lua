@@ -1,12 +1,12 @@
 local function startWaves()
 	Game.setStorageValue(GlobalStorage.HeroRathleton.DeepRunning, 1)
 	if Game.getStorageValue(GlobalStorage.HeroRathleton.TentacleWave) < 9 then
-		for i = 1, 7 do
+		for i = 1, 25 do
 			Game.createMonster("glooth anemone", Position(math.random(33736, 33746),
 			math.random(31948, 31957), 14), true, true)
 		end
 	elseif Game.getStorageValue(GlobalStorage.HeroRathleton.TentacleWave) == 9 then
-		for i = 1, 4 do
+		for i = 1, 25 do
 			Game.createMonster("tentacle of the deep terror", Position(math.random(33736, 33746),
 			math.random(31948, 31957), 14), true, true)
 		end
@@ -58,8 +58,8 @@ function deepTerror.onStepIn(creature, item, position, fromPosition)
 	end
 	if Game.getStorageValue(GlobalStorage.HeroRathleton.FirstMachines) == 8 then
 		if Game.getStorageValue(GlobalStorage.HeroRathleton.DeepRunning) < 1 then
-			addEvent(Game.setStorageValue, 3 * 60 * 1000, GlobalStorage.HeroRathleton.DeepRunning, 1)
-			addEvent(startWaves, 3 * 60 * 1000)
+			addEvent(Game.setStorageValue, 2 * 60 * 1000, GlobalStorage.HeroRathleton.DeepRunning, 1)
+			addEvent(startWaves, 1 * 60 * 1000)
 			addEvent(Game.setStorageValue, 3 * 60 * 1000, GlobalStorage.HeroRathleton.TentacleWave, 0)
 			addEvent(clearArea, 20 * 60 * 1000)
 		end

@@ -274,7 +274,7 @@ function flaskPotion.onUse(player, item, fromPosition, target, toPosition, isHot
 		player:addCondition(exhaust)
 		player:setStorageValue(38412, player:getStorageValue(38412)+1)
 	end
-
+	
 	player:getPosition():sendSingleSoundEffect(SOUND_EFFECT_TYPE_ITEM_USE_POTION, player:isInGhostMode() and nil or player)
 	-- Delay potion
 	playerDelayPotion[player:getId()] = systemTime() + 500

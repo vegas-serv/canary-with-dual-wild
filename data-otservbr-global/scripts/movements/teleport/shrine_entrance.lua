@@ -1,7 +1,6 @@
 local shrinesEntrance = {
 	ice = {
 		{x = 32356, y = 31780, z = 9},--Carlin
-		{x = 32358, y = 32242, z = 6},--Thais
 		{x = 32954, y = 32076, z = 5},--Venore
 		{x = 32678, y = 31688, z = 2},--Ab'Dendriel
 		{x = 32643, y = 31928, z = 11},--Kazodroon
@@ -16,7 +15,6 @@ local shrinesEntrance = {
 	},
 	earth = {
 		{x = 32364, y = 31780, z = 9},--Carlin
-		{x = 32360, y = 32239, z = 6},--Thais
 		{x = 32958, y = 32079, z = 5},--Venore
 		{x = 32678, y = 31686, z = 2},--Ab'Dendriel
 		{x = 32649, y = 31928, z = 11},--Kazodroon
@@ -31,7 +29,6 @@ local shrinesEntrance = {
 	},
 	fire = {
 		{x = 32356, y = 31783, z = 9},--Carlin
-		{x = 32379, y = 32242, z = 6},--Thais
 		{x = 32961, y = 32076, z = 5},--Venore
 		{x = 32678, y = 31684, z = 2},--Ab'Dendriel
 		{x = 32649, y = 31921, z = 11},--Kazodroon
@@ -46,7 +43,6 @@ local shrinesEntrance = {
 	},
 	energy = {
 		{x = 32364, y = 31783, z = 9},--Carlin
-		{x = 32377, y = 32239, z = 6},--Thais
 		{x = 32958, y = 32072, z = 5},--Venore
 		{x = 32681, y = 31683, z = 2},--Ab'Dendriel
 		{x = 32643, y = 31921, z = 11},--Kazodroon

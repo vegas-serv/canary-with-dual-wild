@@ -4,7 +4,7 @@ function imbuement.onUse(player, item, fromPosition, target, toPosition, isHotke
 	if configManager.getBoolean(configKeys.TOGGLE_IMBUEMENT_SHRINE_STORAGE) and player:getStorageValue(Storage.ForgottenKnowledge.Tomes) ~= 1 then
 		return player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "You did not collect enough knowledge from the ancient Shapers. Visit the Shaper temple in Thais for help.")
 	end
-
+	
 	if not(target) or not(target:isItem()) then
 		return player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "You can only use the shrine on an valid item.")
 	end

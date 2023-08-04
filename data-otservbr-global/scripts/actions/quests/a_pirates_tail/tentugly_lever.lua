@@ -1,7 +1,7 @@
 local config = {
 	bossName = "Tentugly's Head",
 	requiredLevel = 250,
-	timeToFightAgain = 20, -- In hour
+	timeToFightAgain = 5, -- In hour
 	timeToDefeatBoss = 20, -- In minutes
 	playerPositions = {
 		{pos = Position(33792, 31391, 6), teleport = Position(33722, 31186, 7), effect = CONST_ME_TELEPORT},

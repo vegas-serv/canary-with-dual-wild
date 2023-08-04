@@ -65,6 +65,24 @@ local config = {
 		},
 		storage = Storage.InServiceofYalahar.MatrixReward
 	},
+	[3115] = {
+		items = {
+			{itemId = 25780}
+		},
+		storage = Storage.InServiceofYalahar.MatrixxReward
+	},
+	[3117] = {
+		items = {
+			{itemId = 25779}
+		},
+		storage = Storage.InServiceofYalahar.MatrixxrReeward
+	},
+	[1310] = {
+		items = {
+			{itemId = 27565}
+		},
+		storage = Storage.InServiceofYalahar.MatrixxrReward
+	},
 	[3085] = {
 		items = {
 			{itemId = 8828}
@@ -195,7 +213,7 @@ local config = {
 	},
 	[50032] = {
 		items = {
-			{itemId = 3734}
+			{itemId = 3734, count = 10}
 		},
 		storage = Storage.BloodHerbQuest
 	},

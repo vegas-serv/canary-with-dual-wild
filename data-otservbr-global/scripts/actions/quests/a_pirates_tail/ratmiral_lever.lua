@@ -1,7 +1,7 @@
 local config = {
 	bossName = "Ratmiral Blackwhiskers",
 	requiredLevel = 250,
-	timeToFightAgain = 20, -- In hour
+	timeToFightAgain = 5, -- In hour
 	timeToDefeatBoss = 20, -- In minutes
 	playerPositions = {
 		{pos = Position(33893, 31388, 15), teleport = Position(33904, 31356, 14), effect = CONST_ME_TELEPORT},

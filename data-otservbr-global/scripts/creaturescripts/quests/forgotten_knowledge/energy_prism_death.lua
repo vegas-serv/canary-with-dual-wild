@@ -13,5 +13,4 @@ function energyPrismDeath.onKill(creature, target)
 	end
 	return true
 end
-
 energyPrismDeath:register()

@@ -36,7 +36,7 @@ function entrance.onStepIn(creature, item, position, fromPosition)
 		end
 	elseif item:getActionId() == 24838 then
 		if player:getStorageValue(Storage.FerumbrasAscension.Access) < 1 then
-			player:teleportTo(Position(33275, 32390, 8))
+			player:teleportTo(fromPosition, true)
 			player:getPosition():sendMagicEffect(CONST_ME_TELEPORT)
 			player:sendTextMessage(MESSAGE_EVENT_ADVANCE,
 			"This portal is not yet strong enough to breach the destination dimension.")

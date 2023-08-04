@@ -1,7 +1,7 @@
 local function startWaves()
 	Game.setStorageValue(GlobalStorage.HeroRathleton.HorrorRunning, 1)
 	if Game.getStorageValue(GlobalStorage.HeroRathleton.DevourerWave) < 9 then
-		for i = 1, 6 do
+		for i = 1, 50 do
 			Game.createMonster("rot elemental", Position(math.random(33548, 33562), math.random(31949, 31962), 15), true, true)
 			Game.createMonster("devourer", Position(math.random(33548, 33562), math.random(31949, 31962), 15), true, true)
 		end
@@ -63,8 +63,8 @@ function gloothHorror.onStepIn(creature, item, position, fromPosition)
 	end
 	if Game.getStorageValue(GlobalStorage.HeroRathleton.SecondMachines) == 8 then
 		if Game.getStorageValue(GlobalStorage.HeroRathleton.HorrorRunning) < 1 then
-			addEvent(Game.setStorageValue, 3 * 60 * 1000, GlobalStorage.HeroRathleton.HorrorRunning, 1)
-			addEvent(startWaves, 3 * 60 * 1000)
+			addEvent(Game.setStorageValue, 2 * 60 * 1000, GlobalStorage.HeroRathleton.HorrorRunning, 1)
+			addEvent(startWaves, 1 * 60 * 1000)
 			addEvent(Game.setStorageValue, 3 * 60 * 1000, GlobalStorage.HeroRathleton.DevourerWave, 0)
 			addEvent(clearArea, 20 * 60 * 1000)
 		end

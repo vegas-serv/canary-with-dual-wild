@@ -58,7 +58,7 @@ function secretBrokul.onUse(player, item, fromPosition, target, toPosition, isHo
                         if playerTile:getStorageValue(bossConfig.playerStorage) <= os.time() then
                             table.insert(rPlayers, playerTile:getId())
                         else
-                            errorMsg = 'One or more players have already entered in the last 20 hours.'
+                            errorMsg = 'One or more players have already entered in the last 5 hours.'
                         end
                     else
                         errorMsg = 'All the players need to be level '.. bossConfig.requiredLevel ..' or higher.'
@@ -74,7 +74,7 @@ function secretBrokul.onUse(player, item, fromPosition, target, toPosition, isHo
                     rplayer:sendTextMessage(MESSAGE_EVENT_ADVANCE, ('You have %o minutes before you get kicked out.'):format(bossConfig.time))
                     bossConfig.playerPositions[_]:sendMagicEffect(CONST_ME_POFF)
                     rplayer:teleportTo(bossConfig.teleportPosition)
-                    rplayer:setStorageValue(bossConfig.playerStorage, os.time() + (20 * 60 * 60))
+                    rplayer:setStorageValue(bossConfig.playerStorage, os.time() + (5 * 60 * 60))
                     bossConfig.teleportPosition:sendMagicEffect(CONST_ME_ENERGYAREA)
                     rplayer:setDirection(DIRECTION_NORTH)
                 end

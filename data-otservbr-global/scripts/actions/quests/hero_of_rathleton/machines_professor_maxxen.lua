@@ -28,5 +28,5 @@ function heroRathletonProfessor.onUse(player, item, fromPosition, target, toPosi
 	return true
 end
 
-heroRathletonProfessor:aid(9299)
+heroRathletonProfessor:aid(24867)
 heroRathletonProfessor:register()

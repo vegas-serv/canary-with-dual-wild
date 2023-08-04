@@ -3,6 +3,7 @@ function chayenneReward.onUse(player, item, fromPosition, itemEx, toPosition)
 	if player:getStorageValue(Storage.ChayenneReward) < 1 then
 		local backpack = player:addItem(5949, 1)
 		backpack:addItem(16244, 1)
+		backpack:addItem(16251, 1)
 		backpack:addItem(3659, 1)
 		backpack:addItem(9034, 1)
 		backpack:addItem(3027, 1)

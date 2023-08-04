@@ -1,26 +1,12 @@
 local weapons = {
-	{
-		-- grand sanguine rod
-		itemId = 43886,
-		type = WEAPON_WAND,
-		wandType = "earth",
-		level = 600,
-		mana = 20,
-		damage = {100, 124},
-		unproperly = true,
-		vocation = {
-			{"Druid", true},
-			{"Elder Druid"}
-		}
-	},
-	{
-		-- sanguine rod
+{
+		-- naga rod
 		itemId = 43885,
 		type = WEAPON_WAND,
-		wandType = "earth",
-		level = 600,
-		mana = 20,
-		damage = {100, 124},
+		wandType = "holy",
+		level = 8,
+		mana = 22,
+		damage = {90, 110},
 		unproperly = true,
 		vocation = {
 			{"Druid", true},
@@ -28,27 +14,13 @@ local weapons = {
 		}
 	},
 	{
-		-- grand sanguine coil
-		itemId = 43883,
-		type = WEAPON_WAND,
-		wandType = "energy",
-		level = 250,
-		mana = 21,
-		damage = {103, 125},
-		unproperly = true,
-		vocation = {
-			{"Sorcerer", true},
-			{"Master Sorcerer"}
-		}
-	},
-	{
-		-- sanguine coil
+		-- naga wand
 		itemId = 43882,
 		type = WEAPON_WAND,
-		wandType = "fire",
-		level = 250,
+		wandType = "holy",
+		level = 8,
 		mana = 21,
-		damage = {113, 125},
+		damage = {90, 120},
 		unproperly = true,
 		vocation = {
 			{"Sorcerer", true},
@@ -56,185 +28,32 @@ local weapons = {
 		}
 	},
 	{
-		-- grand sanguine crossbow
-		itemId = 43880,
-		type = WEAPON_DISTANCE,
-		level = 600,
+		-- naga rod
+		itemId = 43886,
+		type = WEAPON_WAND,
+		wandType = "holy",
+		level = 8,
+		mana = 22,
+		damage = {90, 110},
 		unproperly = true,
 		vocation = {
-			{"Paladin", true},
-			{"Royal Paladin"}
+			{"Druid", true},
+			{"Elder Druid"}
 		}
 	},
 	{
-		-- sanguine crossbow
-		itemId = 43879,
-		type = WEAPON_DISTANCE,
-		level = 600,
+		-- naga wand
+		itemId = 43883,
+		type = WEAPON_WAND,
+		wandType = "holy",
+		level = 8,
+		mana = 21,
+		damage = {90, 120},
 		unproperly = true,
 		vocation = {
-			{"Paladin", true},
-			{"Royal Paladin"}
+			{"Sorcerer", true},
+			{"Master Sorcerer"}
 		}
-	},
-	{
-		-- grand sanguine bow
-		itemId = 43878,
-		type = WEAPON_DISTANCE,
-		level = 600,
-		unproperly = true,
-		vocation = {
-			{"Paladin", true},
-			{"Royal Paladin"}
-		}
-	},
-	{
-		-- sanguine bow
-		itemId = 43877,
-		type = WEAPON_DISTANCE,
-		level = 600,
-		unproperly = true,
-		vocation = {
-			{"Paladin", true},
-			{"Royal Paladin"}
-		}
-	},
-	{
-		-- grand sanguine battleaxe
-		itemId = 43875,
-		type = WEAPON_AXE,
-		level = 600,
-		unproperly = true,
-		vocation = {
-			{"Knight", true},
-			{"Elite Knight"}
-		}
-	},
-	{
-		-- sanguine battleaxe
-		itemId = 43874,
-		type = WEAPON_AXE,
-		level = 600,
-		unproperly = true,
-		vocation = {
-			{"Knight", true},
-			{"Elite Knight"}
-		}
-	},
-	{
-		-- grand sanguine bludgeon
-		itemId = 43873,
-		type = WEAPON_CLUB,
-		level = 600,
-		unproperly = true,
-		vocation = {
-			{"Knight", true},
-			{"Elite Knight"}
-		}
-	},
-	{
-		-- sanguine bludgeon
-		itemId = 43872,
-		type = WEAPON_CLUB,
-		level = 600,
-		unproperly = true,
-		vocation = {
-			{"Knight", true},
-			{"Elite Knight"}
-		}
-	},
-	{
-		-- grand sanguine razor
-		itemId = 43871,
-		type = WEAPON_SWORD,
-		level = 600,
-		unproperly = true,
-		vocation = {
-			{"Knight", true},
-			{"Elite Knight"}
-		}
-	},
-	{
-		-- sanguine razor
-		itemId = 43870,
-		type = WEAPON_SWORD,
-		level = 600,
-		unproperly = true,
-		vocation = {
-			{"Knight", true},
-			{"Elite Knight"}
-		}
-	},
-	{
-		-- grand sanguine hatchet
-		itemId = 43869,
-		type = WEAPON_AXE,
-		level = 600,
-		unproperly = true,
-		vocation = {
-			{"Knight", true},
-			{"Elite Knight"}
-		}
-	},
-	{
-		-- sanguine hatchet
-		itemId = 43868,
-		type = WEAPON_AXE,
-		level = 600,
-		unproperly = true,
-		vocation = {
-			{"Knight", true},
-			{"Elite Knight"}
-		}
-	},
-	{
-		-- grand sanguine cudgel
-		itemId = 43867,
-		type = WEAPON_CLUB,
-		level = 600,
-		unproperly = true,
-		vocation = {
-			{"Knight", true},
-			{"Elite Knight"}
-		}
-	},
-	{
-		-- sanguine cudgel
-		itemId = 43866,
-		type = WEAPON_CLUB,
-		level = 600,
-		unproperly = true,
-		vocation = {
-			{"Knight", true},
-			{"Elite Knight"}
-		}
-	},
-	{
-		-- grand sanguine blade
-		itemId = 43865,
-		type = WEAPON_SWORD,
-		level = 600,
-		unproperly = true,
-		vocation = {
-			{"Knight", true},
-			{"Elite Knight"}
-		}
-	},
-	{
-		-- sanguine blade
-		itemId = 43864,
-		type = WEAPON_SWORD,
-		level = 600,
-		unproperly = true,
-		vocation = {
-			{"Knight", true},
-			{"Elite Knight"}
-		}
-	},
-	{
-		-- broken macuahuitl
-		itemid = 40530,
-		type = WEAPON_SWORD
 	},
 	{
 		-- naga rod
@@ -266,9 +85,195 @@ local weapons = {
 	},
 	{
 		-- naga crossbow
+		itemId = 23293,
+		type = WEAPON_DISTANCE,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Paladin", true},
+			{"Royal Paladin"}
+		}
+	},
+	
+	{
+		-- naga crossbow
+		itemId = 23289,
+		type = WEAPON_DISTANCE,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Paladin", true},
+			{"Royal Paladin"}
+		}
+	},
+	
+	{
+		-- naga crossbow
+		itemId = 23329,
+		type = WEAPON_DISTANCE,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Paladin", true},
+			{"Royal Paladin"}
+		}
+	},
+	
+	{
+		-- naga crossbow
+		itemId = 23333,
+		type = WEAPON_DISTANCE,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Paladin", true},
+			{"Royal Paladin"}
+		}
+	},
+	
+	{
+		-- naga crossbow
+		itemId = 23250,
+		type = WEAPON_DISTANCE,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Paladin", true},
+			{"Royal Paladin"}
+		}
+	},
+	
+	{
+		-- naga crossbow
+		itemId = 23249,
+		type = WEAPON_DISTANCE,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Paladin", true},
+			{"Royal Paladin"}
+		}
+	},
+	{
+		-- naga crossbow
+		itemId = 23290,
+		type = WEAPON_DISTANCE,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Paladin", true},
+			{"Royal Paladin"}
+		}
+	},
+	
+	{
+		-- naga crossbow
+		itemId = 23294,
+		type = WEAPON_DISTANCE,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Paladin", true},
+			{"Royal Paladin"}
+		}
+	},
+	
+	{
+		-- naga crossbow
+		itemId = 23330,
+		type = WEAPON_DISTANCE,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Paladin", true},
+			{"Royal Paladin"}
+		}
+	},
+	
+	{
+		-- naga crossbow
+		itemId = 23334,
+		type = WEAPON_DISTANCE,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Paladin", true},
+			{"Royal Paladin"}
+		}
+	},
+	
+	{
+		-- naga crossbow
+		itemId = 23259,
+		type = WEAPON_DISTANCE,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Paladin", true},
+			{"Royal Paladin"}
+		}
+	},
+	
+	{
+		-- naga crossbow
+		itemId = 23260,
+		type = WEAPON_DISTANCE,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Paladin", true},
+			{"Royal Paladin"}
+		}
+	},
+	{
+		-- naga crossbow
 		itemId = 39159,
 		type = WEAPON_DISTANCE,
 		level = 300,
+		unproperly = true,
+		vocation = {
+			{"Paladin", true},
+			{"Royal Paladin"}
+		}
+	},
+	{
+		-- naga crossbow
+		itemId = 43879,
+		type = WEAPON_DISTANCE,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Paladin", true},
+			{"Royal Paladin"}
+		}
+	},
+	{
+		-- naga crossbow
+		itemId = 43877,
+		type = WEAPON_DISTANCE,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Paladin", true},
+			{"Royal Paladin"}
+		}
+	},
+	{
+		-- naga crossbow
+		itemId = 43880,
+		type = WEAPON_DISTANCE,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Paladin", true},
+			{"Royal Paladin"}
+		}
+	},
+	{
+		-- naga crossbow
+		itemId = 43878,
+		type = WEAPON_DISTANCE,
+		level = 8,
 		unproperly = true,
 		vocation = {
 			{"Paladin", true},
@@ -309,11 +314,429 @@ local weapons = {
 		}
 	},
 	{
+		-- naga club
+		itemId = 43872,
+		type = WEAPON_CLUB,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
+	},
+	{
+		-- naga axe
+		itemId = 43868,
+		type = WEAPON_AXE,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
+	},
+	{
+		-- naga sword
+		itemId = 43864,
+		type = WEAPON_SWORD,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
+	},
+	{
+		-- naga club
+		itemId = 43866,
+		type = WEAPON_CLUB,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
+	},
+	{
+		-- naga axe
+		itemId = 43874,
+		type = WEAPON_AXE,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
+	},
+	{
+		-- naga sword
+		itemId = 43870,
+		type = WEAPON_SWORD,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
+	},
+	{
+		-- naga club
+		itemId = 43867,
+		type = WEAPON_CLUB,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
+	},
+	{
+		-- naga axe
+		itemId = 43869,
+		type = WEAPON_AXE,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
+	},
+	{
+		-- naga sword
+		itemId = 43865,
+		type = WEAPON_SWORD,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
+	},
+	{
+		-- naga club
+		itemId = 43873,
+		type = WEAPON_CLUB,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
+	},
+	{
+		-- naga axe
+		itemId = 43875,
+		type = WEAPON_AXE,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
+	},
+	{
+		-- naga sword
+		itemId = 43871,
+		type = WEAPON_SWORD,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
+	},
+	{
+		-- naga club
+		itemId = 23326,
+		type = WEAPON_CLUB,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
+	},
+	{
+		-- naga axe
+		itemId = 23314,
+		type = WEAPON_AXE,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
+	},
+	{
+		-- naga sword
+		itemId = 23310,
+		type = WEAPON_SWORD,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
+	},
+	
+	{
+		-- naga club
+		itemId = 23258,
+		type = WEAPON_CLUB,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
+	},
+	{
+		-- naga axe
+		itemId = 23255,
+		type = WEAPON_AXE,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
+	},
+	{
+		-- naga sword
+		itemId = 23254,
+		type = WEAPON_SWORD,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
+	},
+	
+	{
+		-- naga club
+		itemId = 23286,
+		type = WEAPON_CLUB,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
+	},
+	{
+		-- naga axe
+		itemId = 23274,
+		type = WEAPON_AXE,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
+	},
+	{
+		-- naga sword
+		itemId = 23270,
+		type = WEAPON_SWORD,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
+	},
+	{
+		-- naga club
+		itemId = 23325,
+		type = WEAPON_CLUB,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
+	},
+	{
+		-- naga axe
+		itemId = 23313,
+		type = WEAPON_AXE,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
+	},
+	{
+		-- naga sword
+		itemId = 23309,
+		type = WEAPON_SWORD,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
+	},
+	
+	{
+		-- naga club
+		itemId = 23285,
+		type = WEAPON_CLUB,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
+	},
+	{
+		-- naga axe
+		itemId = 23273,
+		type = WEAPON_AXE,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
+	},
+	{
+		-- naga sword
+		itemId = 23269,
+		type = WEAPON_SWORD,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
+	},
+	
+	{
+		-- naga club
+		itemId = 23248,
+		type = WEAPON_CLUB,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
+	},
+	{
+		-- naga axe
+		itemId = 23245,
+		type = WEAPON_AXE,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
+	},
+	{
+		-- naga sword
+		itemId = 23244,
+		type = WEAPON_SWORD,
+		level = 8,
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
+	},
+	{
 		-- gilded eldritch rod
 		itemId = 36675,
 		type = WEAPON_WAND,
 		wandType = "ice",
 		level = 250,
+		mana = 22,
+		damage = {85, 105},
+		unproperly = true,
+		vocation = {
+			{"Druid", true},
+			{"Elder Druid"}
+		}
+	},
+	{
+		-- gilded eldritch rod
+		itemId = 23252,
+		type = WEAPON_WAND,
+		wandType = "ice",
+		level = 8,
+		mana = 22,
+		damage = {85, 105},
+		unproperly = true,
+		vocation = {
+			{"Druid", true},
+			{"Elder Druid"}
+		}
+	},
+	{
+		-- gilded eldritch rod
+		itemId = 23262,
+		type = WEAPON_WAND,
+		wandType = "ice",
+		level = 8,
+		mana = 22,
+		damage = {85, 105},
+		unproperly = true,
+		vocation = {
+			{"Druid", true},
+			{"Elder Druid"}
+		}
+	},
+	{
+		-- gilded eldritch rod
+		itemId = 23302,
+		type = WEAPON_WAND,
+		wandType = "holy",
+		level = 8,
+		mana = 22,
+		damage = {85, 105},
+		unproperly = true,
+		vocation = {
+			{"Druid", true},
+			{"Elder Druid"}
+		}
+	},
+	{
+		-- gilded eldritch rod
+		itemId = 23301,
+		type = WEAPON_WAND,
+		wandType = "holy",
+		level = 8,
+		mana = 22,
+		damage = {85, 105},
+		unproperly = true,
+		vocation = {
+			{"Druid", true},
+			{"Elder Druid"}
+		}
+	},
+	{
+		-- gilded eldritch rod
+		itemId = 23341,
+		type = WEAPON_WAND,
+		wandType = "energy",
+		level = 8,
+		mana = 22,
+		damage = {85, 105},
+		unproperly = true,
+		vocation = {
+			{"Druid", true},
+			{"Elder Druid"}
+		}
+	},
+	{
+		-- gilded eldritch rod
+		itemId = 23342,
+		type = WEAPON_WAND,
+		wandType = "energy",
+		level = 8,
 		mana = 22,
 		damage = {85, 105},
 		unproperly = true,
@@ -342,6 +765,90 @@ local weapons = {
 		type = WEAPON_WAND,
 		wandType = "fire",
 		level = 250,
+		mana = 22,
+		damage = {85, 105},
+		unproperly = true,
+		vocation = {
+			{"Sorcerer", true},
+			{"Master Sorcerer"}
+		}
+	},
+	{
+		-- gilded eldritch wand
+		itemId = 23298,
+		type = WEAPON_WAND,
+		wandType = "holy",
+		level = 8,
+		mana = 22,
+		damage = {85, 105},
+		unproperly = true,
+		vocation = {
+			{"Sorcerer", true},
+			{"Master Sorcerer"}
+		}
+	},
+	{
+		-- gilded eldritch wand
+		itemId = 23297,
+		type = WEAPON_WAND,
+		wandType = "holy",
+		level = 8,
+		mana = 22,
+		damage = {85, 105},
+		unproperly = true,
+		vocation = {
+			{"Sorcerer", true},
+			{"Master Sorcerer"}
+		}
+	},
+	{
+		-- gilded eldritch wand
+		itemId = 23251,
+		type = WEAPON_WAND,
+		wandType = "ice",
+		level = 8,
+		mana = 22,
+		damage = {85, 105},
+		unproperly = true,
+		vocation = {
+			{"Sorcerer", true},
+			{"Master Sorcerer"}
+		}
+	},
+	{
+		-- gilded eldritch wand
+		itemId = 23261,
+		type = WEAPON_WAND,
+		wandType = "ice",
+		level = 8,
+		mana = 22,
+		damage = {85, 105},
+		unproperly = true,
+		vocation = {
+			{"Sorcerer", true},
+			{"Master Sorcerer"}
+		}
+	},
+	{
+		-- gilded eldritch wand
+		itemId = 23338,
+		type = WEAPON_WAND,
+		wandType = "energy",
+		level = 8,
+		mana = 22,
+		damage = {85, 105},
+		unproperly = true,
+		vocation = {
+			{"Sorcerer", true},
+			{"Master Sorcerer"}
+		}
+	},
+	{
+		-- gilded eldritch wand
+		itemId = 23337,
+		type = WEAPON_WAND,
+		wandType = "energy",
+		level = 8,
 		mana = 22,
 		damage = {85, 105},
 		unproperly = true,
@@ -1766,9 +2273,8 @@ local weapons = {
 		-- royal star
 		itemid = 25759,
 		type = WEAPON_MISSILE,
-		level = 120,
-		unproperly = true,
-		breakchance = 30
+		level = 7,
+		unproperly = true
 	},
 	{
 		-- spectral bolt
@@ -1791,7 +2297,22 @@ local weapons = {
 		itemid = 25700,
 		type = WEAPON_WAND,
 		wandType = "energy",
-		level = 80,
+		level = 7,
+		mana = 18,
+		damage = {63, 77},
+		vocation = {
+			{"Sorcerer", true},
+			{"Druid", true, true},
+			{"Master Sorcerer"},
+			{"Elder Druid"}
+		}
+	},
+	{
+		-- dream blossom staff
+		itemid = 3341,
+		type = WEAPON_WAND,
+		wandType = "ice",
+		level = 55,
 		mana = 18,
 		damage = {63, 77},
 		vocation = {
@@ -2175,7 +2696,9 @@ local weapons = {
 		damage = {80, 110},
 		vocation = {
 			{"Sorcerer", true},
-			{"Master Sorcerer"}
+			{"Druid", true, true},
+			{"Master Sorcerer"},
+			{"Elder Druid"}
 		}
 	},
 	{
@@ -2188,7 +2711,9 @@ local weapons = {
 		damage = {65, 95},
 		vocation = {
 			{"Sorcerer", true},
-			{"Master Sorcerer"}
+			{"Druid", true, true},
+			{"Master Sorcerer"},
+			{"Elder Druid"}
 		}
 	},
 	{
@@ -2298,7 +2823,6 @@ local weapons = {
 		type = WEAPON_AXE,
 		level = 75,
 		unproperly = true,
-		action = "removecharge",
 		vocation = {
 			{"Knight", true},
 			{"Elite Knight"}
@@ -2310,7 +2834,6 @@ local weapons = {
 		type = WEAPON_SWORD,
 		level = 75,
 		unproperly = true,
-		action = "removecharge",
 		vocation = {
 			{"Knight", true},
 			{"Elite Knight"}
@@ -2339,7 +2862,7 @@ local weapons = {
 		-- execowtioner axe
 		itemid = 21176,
 		type = WEAPON_AXE,
-		level = 55,
+		level = 7,
 		unproperly = true
 	},
 	{
@@ -2375,8 +2898,7 @@ local weapons = {
 		itemid = 21158,
 		type = WEAPON_MISSILE,
 		level = 60,
-		unproperly = true,
-		breakchance = 2
+		unproperly = true
 	},
 	{
 		-- umbral master crossbow
@@ -2533,7 +3055,7 @@ local weapons = {
 		}
 	},
 	{
-		-- crude umbral chopper
+		-- guardian halberd
 		itemid = 20073,
 		type = WEAPON_AXE,
 		level = 75,
@@ -2670,7 +3192,7 @@ local weapons = {
 		-- pair of iron fists
 		itemid = 17828,
 		type = WEAPON_CLUB,
-		level = 50,
+		level = 7,
 		unproperly = true,
 		vocation = {
 			{"Knight", true},
@@ -4460,7 +4982,7 @@ local weapons = {
 		-- mystic blade
 		itemid = 7384,
 		type = WEAPON_SWORD,
-		level = 60,
+		level = 7,
 		unproperly = true
 	},
 	{
@@ -4511,24 +5033,21 @@ local weapons = {
 		itemid = 7378,
 		type = WEAPON_MISSILE,
 		level = 25,
-		unproperly = true,
-		breakchance = 3
+		unproperly = true
 	},
 	{
 		-- assassin star
 		itemid = 7368,
 		type = WEAPON_MISSILE,
 		level = 80,
-		unproperly = true,
-		breakchance = 33
+		unproperly = true
 	},
 	{
 		-- enchanted spear
 		itemid = 7367,
 		type = WEAPON_MISSILE,
 		level = 42,
-		unproperly = true,
-		breakchance = 1
+		unproperly = true
 	},
 	{
 		-- onyx arrow
@@ -4610,8 +5129,7 @@ local weapons = {
 		itemid = 3347,
 		type = WEAPON_MISSILE,
 		level = 20,
-		unproperly = true,
-		breakchance = 6
+		unproperly = true
 	},
 	{
 		-- ripper lance
@@ -4684,18 +5202,15 @@ local weapons = {
 		}
 	},
 	{
-		-- arcane staff
-		itemid = 3341,
-		type = WEAPON_CLUB,
-		level = 75,
-		unproperly = true
-	},
-	{
 		-- heavy mace
 		itemid = 3340,
 		type = WEAPON_CLUB,
 		level = 70,
-		unproperly = true
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
 	},
 	{
 		-- djinn blade
@@ -4760,7 +5275,11 @@ local weapons = {
 		itemid = 3331,
 		type = WEAPON_AXE,
 		level = 70,
-		unproperly = true
+		unproperly = true,
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
 	},
 	{
 		-- heavy machete
@@ -5054,7 +5573,11 @@ local weapons = {
 		-- ice rapier
 		itemid = 3284,
 		type = WEAPON_SWORD,
-		action = "removecharge"
+		action = "removecharge",
+		vocation = {
+			{"Knight", true},
+			{"Elite Knight"}
+		}
 	},
 	{
 		-- carlin sword
@@ -5109,8 +5632,7 @@ local weapons = {
 	{
 		-- spear
 		itemid = 3277,
-		type = WEAPON_MISSILE,
-		breakchance = 3
+		type = WEAPON_MISSILE
 	},
 	{
 		-- hatchet
@@ -5198,7 +5720,7 @@ local weapons = {
 	},
 	{
 		-- giant smithhammer
-		itemid = 3208,
+		itemid = 12510,
 		type = WEAPON_CLUB
 	},
 	{

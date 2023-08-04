@@ -1,4 +1,3 @@
-
 local spell = Spell("instant")
 local spellId = 196
 

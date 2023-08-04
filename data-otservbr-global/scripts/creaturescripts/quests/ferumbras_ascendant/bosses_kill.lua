@@ -52,10 +52,12 @@ function ascendantBossesKill.onKill(creature, target)
 		return true
 	end
 
-	for player, _ in pairs(targetMonster:getDamageMap()) do
-		local attackerPlayer = Player(player)
+	for key, value in pairs(targetMonster:getDamageMap()) do
+		local attackerPlayer = Player(pid)
 		if attackerPlayer then
-			if targetMonster:getName():lower() == 'ferumbras mortal shell' then
+			if bossConfig.timer then
+				attackerPlayer:setStorageValue(bossConfig.timer, os.time() + 20 * 3600)
+			elseif targetMonster:getName():lower() == 'ferumbras mortal shell' then
 				if bossConfig.timer then
 					attackerPlayer:setStorageValue(bossConfig.timer, os.time() + 60 * 60 * 14 * 24)
 				end
@@ -74,7 +76,7 @@ function ascendantBossesKill.onKill(creature, target)
 		teleport:transform(22761)
 		targetMonster:getPosition():sendMagicEffect(CONST_ME_THUNDER)
 		teleport:setDestination(bossConfig.godbreakerPos)
-		addEvent(revertTeleport, 2 * 60 * 1000, bossConfig.teleportPos, 22761, 1949, Position(33319, 32318, 13))
+		addEvent(revertTeleport, 2 * 60 * 1000, bossConfig.teleportPos, 22761, 1949, teleport:getDestination())
 	end
 
 	if targetMonster:getName():lower() == 'ferumbras mortal shell' then

@@ -1,6 +1,6 @@
 local config = {
 	bossName = "Dragonking Zyrtarch",
-	timeToFightAgain = 20, -- In hour
+	timeToFightAgain = 5, -- In hour
 	timeToDefeatBoss = 15, -- In minutes
 	playerPositions = {
 		{ pos = Position(33391, 31178, 10), teleport = Position(33359, 31186, 10), effect = CONST_ME_TELEPORT },

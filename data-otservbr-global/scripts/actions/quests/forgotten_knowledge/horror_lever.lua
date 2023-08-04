@@ -1,6 +1,6 @@
 local config = {
 	bossName = "Frozen Horror",
-	timeToFightAgain = 20, -- In hour
+	timeToFightAgain = 5, -- In hour
 	timeToDefeatBoss = 15, -- In minutes
 	playerPositions = {
 		{ pos = Position(32302, 31088, 14), teleport = Position(32271, 31097, 14), effect = CONST_ME_TELEPORT },

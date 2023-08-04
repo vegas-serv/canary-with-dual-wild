@@ -57,10 +57,6 @@ function theNewFrontierArena.onUse(player, item, fromPosition, target, toPositio
 		if not creature then
 			return false
 		end
-
-		if creature:getStorageValue(TheNewFrontier.Questline) >= 26 then
-			return player:sendTextMessage(MESSAGE_EVENT_ADVANCE, 'You already finished this battle.')
-		end
 	end
 
 	if Game.getStorageValue(TheNewFrontier.Mission09[1]) == 1 then
@@ -68,7 +64,7 @@ function theNewFrontierArena.onUse(player, item, fromPosition, target, toPositio
 	end
 
 	Game.setStorageValue(TheNewFrontier.Mission09[1], 1)
-	addEvent(clearArena, 30 * 60 * 1000)
+	addEvent(clearArena, 15 * 60 * 1000)
 
 	for b = 1, #config.playerPos do
 		local creature = Tile(config.playerPos[b]):getTopCreature()
@@ -79,7 +75,7 @@ function theNewFrontierArena.onUse(player, item, fromPosition, target, toPositio
 
 	for i = 1, #config.bosses do
 		for j = 1, #config.bosses[i] do
-			addEvent(summonBoss, (i - 1) * 90 * 1000, config.bosses[i][j], config.positions[j + (i == 1 and 2 or 0)])
+			addEvent(summonBoss, (i - 1) * 180 * 1000, config.bosses[i][j], config.positions[j + (i == 1 and 2 or 0)])
 		end
 	end
 	return true

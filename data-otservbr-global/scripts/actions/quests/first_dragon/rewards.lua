@@ -11,10 +11,10 @@ local bpItems = {
 	{name = 'slime heart', count = 2},
 	{name = 'energy vein', count = 2},
 	{name = 'petrified scream', count = 2},
-	{name = 'brimstone shell', count = 2},
+	{name = 'loot pouch', count = 1},
 	{name = 'deepling wart', count = 2},
-	{name = 'wyrm scale', count = 2},
-	{name = 'hellspawn tail', count = 2}
+	{name = 'exp scroll', count = 1},
+	{name = 'stamina doll', count = 1}
 }
 
 local chests = {

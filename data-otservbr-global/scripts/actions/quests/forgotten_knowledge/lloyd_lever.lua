@@ -1,6 +1,6 @@
 local config = {
 	bossName = "Lloyd",
-	timeToFightAgain = 20, -- In hour
+	timeToFightAgain = 5, -- In hour
 	timeToDefeatBoss = 10, -- In minutes
 	playerPositions = {
 		{ pos = Position(32759, 32868, 14), teleport = Position(32800, 32831, 14), effect = CONST_ME_TELEPORT },

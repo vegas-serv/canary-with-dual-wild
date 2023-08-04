@@ -12,8 +12,8 @@ local config = {
 		'ARGG! TORTURE IT!! KILL IT SLOWLY MY MINION!!'
 	},
 	bonebeastChance = 90,
-	bonebeastCount = 4,
-	waves = 10,
+	bonebeastCount = 14,
+	waves = 15,
 	questArea = {
 		fromPosition = {x = 32706, y = 32345, z = 7},
 		toPosition = {x = 32725, y = 32357, z = 7}
@@ -30,20 +30,20 @@ local config = {
 	},
 	summons = {
 		[914] = {
-			[5] = {'Spectre', 'Blightwalker', 'Braindeath', 'Demon'},
-			[10] = {'Betrayed Wraith', 'Betrayed Wraith'}
+			[15] = {'Spectre', 'Blightwalker', 'Braindeath', 'Demon'},
+			[25] = {'Betrayed Wraith', 'Betrayed Wraith', 'Demon'}
 		},
 		[915] = {
-			[5] = {'Plaguesmith', 'Plaguesmith', 'Blightwalker'},
-			[10] = {'Dark Torturer', 'Blightwalker'}
+			[15] = {'Plaguesmith', 'Plaguesmith', 'Blightwalker', 'Hellflayer'},
+			[25] = {'Dark Torturer', 'Blightwalker', 'Floating Savant'}
 		},
 		[916] = {
-			[5] = {'Banshee', 'Plaguesmith', 'Hellhound'},
-			[10] = {'Grim Reaper'}
+			[15] = {'Banshee', 'Plaguesmith', 'Hellhound'},
+			[25] = {'Grim Reaper', 'Demon', 'Brachiodemon'}
 		},
 		[917] = {
-			[5] = {'Plaguesmith', 'Hellhound', 'Hellhound'},
-			[10] = {'Undead Dragon', 'Hand of Cursed Fate'}
+			[15] = {'Plaguesmith', 'Hellhound', 'Juggernaut'},
+			[25] = {'Undead Dragon', 'Hand of Cursed Fate', 'Massacre'}
 		}
 	},
 	storages = {

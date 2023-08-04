@@ -43,18 +43,18 @@ function familiarOnLogin.onLogin(player)
 
 			for sendMessage = 1, #FAMILIAR_TIMER do
 				if player:getStorageValue(FAMILIAR_TIMER[sendMessage].storage) == -1
-					and familiarTimeLeft >= FAMILIAR_TIMER[sendMessage].countdown then
+				and familiarTimeLeft >= FAMILIAR_TIMER[sendMessage].countdown then
 					player:setStorageValue(
-					-- Storage key param
+						-- Storage key param
 						FAMILIAR_TIMER[sendMessage].storage,
-					-- Storage value param start
+						-- Storage value param start
 						addEvent(
 							SendMessageFunction,
 							(familiarTimeLeft - FAMILIAR_TIMER[sendMessage].countdown) * 1000,
 							player:getId(),
 							FAMILIAR_TIMER[sendMessage].message
 						)
-					-- Storage value param end
+						-- Storage value param end
 					)
 				end
 			end

@@ -2,16 +2,16 @@ local function startWaves()
 	local position = math.random(33704, 33718), math.random(32040, 32053), 15
 	Game.setStorageValue(GlobalStorage.HeroRathleton.MaxxenRunning, 1)
 	if Game.getStorageValue(GlobalStorage.HeroRathleton.GloothWave) < 8 then
-		for i = 1, 4 do
+		for i = 1, 25 do
 			local chance = math.random(2)
 			if chance == 1 then
-				Game.createMonster("glooth masher", Position(position), true, true)
+				Game.createMonster("glooth masher", Position(math.random(33704, 33718), math.random(32040, 32053), 15), true, true)
 			else
-				Game.createMonster("glooth golem", Position(position), true, true)
+				Game.createMonster("glooth golem", Position(math.random(33704, 33718), math.random(32040, 32053), 15), true, true)
 			end
 		end
 	elseif Game.getStorageValue(GlobalStorage.HeroRathleton.GloothWave) == 8 then
-		for i = 1, 4 do
+		for i = 1, 25 do
 			local chance = math.random(3)
 			if chance == 1 then
 				Game.createMonster("glooth trasher", Position(position), true, true)
@@ -78,8 +78,8 @@ function professorMaxxen.onStepIn(creature, item, position, fromPosition)
 	end
 	if Game.getStorageValue(GlobalStorage.HeroRathleton.ThirdMachines) == 8 then
 		if Game.getStorageValue(GlobalStorage.HeroRathleton.MaxxenRunning) < 1 then
-			addEvent(Game.setStorageValue, 3 * 60 * 1000, GlobalStorage.HeroRathleton.MaxxenRunning, 1)
-			addEvent(startWaves, 3 * 60 * 1000)
+			addEvent(Game.setStorageValue, 2 * 60 * 1000, GlobalStorage.HeroRathleton.MaxxenRunning, 1)
+			addEvent(startWaves, 1 * 60 * 1000)
 			addEvent(Game.setStorageValue, 3 * 60 * 1000, GlobalStorage.HeroRathleton.GloothWave, 0)
 			addEvent(clearArea, 20 * 60 * 1000)
 		end

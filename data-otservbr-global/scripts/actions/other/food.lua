@@ -125,7 +125,7 @@ local foods = {
 
 local food = Action()
 function food.onUse(player, item, fromPosition, target, toPosition, isHotkey)
-	local bloodBrothersStorage = Storage.Quest.U8_4.BloodBrothers
+    local bloodBrothersStorage = Storage.Quest.U8_4.BloodBrothers
 	local itemFood = foods[item.itemid]
 	local effect = itemFood[3]
 	if not itemFood then

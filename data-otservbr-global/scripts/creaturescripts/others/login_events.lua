@@ -4,13 +4,21 @@ function loginEvents.onLogin(player)
 	local events = {
 		--Monster
 		"LowerRoshamuul",
+		"killahauOutfit",
+		"ahauOnKillEvent",
+		"primalOnKillEvent",
+		"killDecayingOutfit",
 		--Others
 		"AdvanceSave",
+		"LevelReward",
+		"SpellNotifier",
+		"AnimationUp",
 		"BestiaryOnKill",
 		"BosstiaryOnKill",
 		"BossParticipation",
 		"DropLoot",
 		"PlayerDeath",
+		"TaskCreature",
 		"RookgaardAdvance",
 		"FamiliarLogin",
 		"FamiliarAdvance",
@@ -31,6 +39,7 @@ function loginEvents.onLogin(player)
 		"DestroyedPillar",
 		"HealthPillar",
 		"YalahariHealth",
+		"theravager",
 		"EssenceOfMalice",
 		--Dangerous Depths Quest
 		"LostExileKill",
@@ -117,8 +126,6 @@ function loginEvents.onLogin(player)
 		"SecretLibraryKill",
 		-- The Dream Courts
 		"DreamCourtsKill",
-		-- Prime Ordeal
-		"PrimeOrdealKill",
 		-- Concoctions
 		"ConcoctionsOnLogin",
 		-- Hazard System
@@ -127,7 +134,15 @@ function loginEvents.onLogin(player)
 
 	for i = 1, #events do
 		player:registerEvent(events[i])
+		player:registerEvent("MonsterHunter")
+		player:registerEvent("fly")
+		player:registerEvent("newOnKillEvent")
+		player:registerEvent("killPaleWormOutfit")
+		player:registerEvent("Exparrow")
+		player:registerEvent("kdcounter")
+		player:registerEvent("Missions")
 	end
+	
 	return true
 end
 loginEvents:register()

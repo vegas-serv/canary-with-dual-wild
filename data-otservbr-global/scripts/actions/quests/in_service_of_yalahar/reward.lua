@@ -6,6 +6,10 @@ function inServiceYalaharReward.onUse(player, item, fromPosition, target, toPosi
 			player:setStorageValue(Storage.InServiceofYalahar.Mission10, 5) -- StorageValue for Questlog "Mission 10: The Final Battle"
 			player:addItem(8862, 1)
 			player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "You have found a yalahari armor.")
+			player:addOutfitAddon(324, 2)
+			player:addOutfitAddon(324, 1)
+			player:addOutfitAddon(325, 1)
+			player:addOutfitAddon(325, 2)
 
 		else
 			player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "The chest is empty.")
@@ -16,6 +20,10 @@ function inServiceYalaharReward.onUse(player, item, fromPosition, target, toPosi
 			player:setStorageValue(Storage.InServiceofYalahar.Mission10, 5) -- StorageValue for Questlog "Mission 10: The Final Battle"
 			player:addItem(8864, 1)
 			player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "You have found a yalahari mask.")
+			player:addOutfitAddon(324, 2)
+			player:addOutfitAddon(324, 1)
+			player:addOutfitAddon(325, 1)
+			player:addOutfitAddon(325, 2)
 		else
 			player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "The chest is empty.")
 		end
@@ -25,6 +33,10 @@ function inServiceYalaharReward.onUse(player, item, fromPosition, target, toPosi
 			player:setStorageValue(Storage.InServiceofYalahar.Mission10, 5) -- StorageValue for Questlog "Mission 10: The Final Battle"
 			player:addItem(8863, 1)
 			player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "You have found a yalahari leg piece.")
+			player:addOutfitAddon(324, 2)
+			player:addOutfitAddon(324, 1)
+			player:addOutfitAddon(325, 1)
+			player:addOutfitAddon(325, 2)
 		else
 			player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "The chest is empty.")
 		end

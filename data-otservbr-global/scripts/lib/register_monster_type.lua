@@ -67,6 +67,7 @@ registerMonsterType.Bestiary = function(mtype, mask)
 		end
 	end
 end
+
 registerMonsterType.bosstiary = function(mtype, mask)
 	local bossClass = nil
 	if mask.bosstiary then
@@ -91,6 +92,7 @@ registerMonsterType.bosstiary = function(mtype, mask)
 		end
 	end
 end
+
 registerMonsterType.skull = function(mtype, mask)
 	if mask.skull then
 		mtype:skull(mask.skull)
@@ -722,7 +724,7 @@ local function loadImpactSound(incomingLua, mtype)
 			else
 				return SOUND_EFFECT_TYPE_MONSTER_SPELL_LARGE_AREA_ENERGY
 			end
-		elseif nameType == "earth" then
+			elseif nameType == "earth" then
 			if incomingLua.radius <= smallAreaRadius then
 				return SOUND_EFFECT_TYPE_MONSTER_SPELL_SMALL_AREA_EARTH
 			else
@@ -812,7 +814,7 @@ local function loadImpactSound(incomingLua, mtype)
 			return SOUND_EFFECT_TYPE_MONSTER_SPELL_SINGLE_TARGET_HIT
 		end
 	end
-
+	
 	return SOUND_EFFECT_TYPE_SILENCE
 end
 
@@ -963,7 +965,6 @@ function readSpell(incomingLua, mtype)
 			hasImpactSound = true
 		end
 	end
-
 	if not(hasImpactSound) or not(hasCastSound) then
 		local sounds = loadSpellSoundType(incomingLua, mtype)
 		if (not(hasCastSound) and sounds.cast ~= SOUND_EFFECT_TYPE_SILENCE) then
@@ -973,5 +974,6 @@ function readSpell(incomingLua, mtype)
 			spell:castSound(sounds.impact)
 		end
 	end
+
 	return spell
 end

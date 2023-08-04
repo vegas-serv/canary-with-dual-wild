@@ -31,8 +31,8 @@ function bigfootWarzoneCrystal.onUse(player, item, fromPosition, itemEx, toPosit
     local config = warzoneConfig.findByName("Deathstrike")
     if Game.getStorageValue(96974) < 1 then
         Game.setStorageValue(96974, 1)
-
-		for i = 1, 10 do
+		
+        for i = 1, 10 do
 			for k = 1, 6 do
 				local rand_creature = creatures[math.random(1,2)]
 				local pos = Position(math.random(33094, 33101), math.random(31900, 31916), 10)

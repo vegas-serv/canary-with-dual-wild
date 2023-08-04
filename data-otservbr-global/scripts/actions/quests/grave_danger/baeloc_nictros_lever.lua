@@ -2,7 +2,7 @@ local config = {
 	bossName = "Sir Nictros",
 	bossName2 = "Sir Baeloc",
 	requiredLevel = 250,
-	timeToFightAgain = 20, -- In hour
+	timeToFightAgain = 5, -- In hour
 	timeToDefeatBoss = 20, -- In minutes
 	playerPositions = {
 		{pos = Position(33424, 31413, 13), teleport = Position(33423, 31448, 13), effect = CONST_ME_TELEPORT},
