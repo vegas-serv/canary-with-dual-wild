@@ -246,7 +246,7 @@ ReturnValue Combat::canTargetCreature(Player* player, Creature* target) {
 		}
 	}
 
-	return Combat::canDoCombat(player, target);
+	return Combat::canDoCombat(player, target, true);
 }
 
 ReturnValue Combat::canDoCombat(Creature* caster, Tile* tile, bool aggressive) {
@@ -305,7 +305,11 @@ bool Combat::isProtected(const Player* attacker, const Player* target) {
 	return false;
 }
 
-ReturnValue Combat::canDoCombat(Creature* attacker, Creature* target) {
+ReturnValue Combat::canDoCombat(Creature* attacker, Creature* target, bool aggressive) {
+	if (!aggressive) {
+		return RETURNVALUE_NOERROR;
+	}
+
 	if (target) {
 		const Tile* tile = target->getTile();
 		if (tile->hasProperty(CONST_PROP_BLOCKPROJECTILE)) {
@@ -918,7 +922,7 @@ void Combat::doChainEffect(const Position &origin, const Position &dest, uint8_t
 	}
 }
 
-bool Combat::doCombatChain(Creature* caster, Creature* target) const {
+bool Combat::doCombatChain(Creature* caster, Creature* target, bool aggressive) const {
 	auto targets = std::vector<Creature*>();
 	auto targetSet = std::set<uint32_t>();
 	auto visitedChain = std::set<uint32_t>();
@@ -933,7 +937,7 @@ bool Combat::doCombatChain(Creature* caster, Creature* target) const {
 		uint8_t maxTargets, chainDistance;
 		bool backtracking = false;
 		params.chainCallback->onChainCombat(caster, maxTargets, chainDistance, backtracking);
-		pickChainTargets(caster, targets, targetSet, visitedChain, params, chainDistance, maxTargets, backtracking);
+		pickChainTargets(caster, targets, targetSet, visitedChain, params, chainDistance, maxTargets, backtracking, aggressive);
 	}
 	if (targets.empty() || targets.size() == 1 && targets[0] == caster) {
 		return false;
@@ -956,7 +960,7 @@ bool Combat::doCombatChain(Creature* caster, Creature* target) const {
 
 bool Combat::doCombat(Creature* caster, Creature* target) const {
 	if (caster != nullptr && params.chainCallback) {
-		return doCombatChain(caster, target);
+		return doCombatChain(caster, target, params.aggressive);
 	}
 
 	return doCombat(caster, target, caster != nullptr ? caster->getPosition() : Position());
@@ -980,7 +984,7 @@ bool Combat::doCombat(Creature* caster, Creature* target, const Position &origin
 
 bool Combat::doCombat(Creature* caster, const Position &position) const {
 	if (caster != nullptr && params.chainCallback) {
-		return doCombatChain(caster, caster);
+		return doCombatChain(caster, caster, params.aggressive);
 	}
 
 	// area combat callback function
@@ -1050,7 +1054,7 @@ void Combat::CombatFunc(Creature* caster, const Position &origin, const Position
 					}
 				}
 
-				if (!params.aggressive || (caster != creature && Combat::canDoCombat(caster, creature) == RETURNVALUE_NOERROR)) {
+				if (!params.aggressive || (caster != creature && Combat::canDoCombat(caster, creature, params.aggressive) == RETURNVALUE_NOERROR)) {
 					affected++;
 				}
 			}
@@ -1104,7 +1108,7 @@ void Combat::CombatFunc(Creature* caster, const Position &origin, const Position
 					}
 				}
 
-				if (!params.aggressive || (caster != creature && Combat::canDoCombat(caster, creature) == RETURNVALUE_NOERROR)) {
+				if (!params.aggressive || (caster != creature && Combat::canDoCombat(caster, creature, params.aggressive) == RETURNVALUE_NOERROR)) {
 					// Wheel of destiny update beam mastery damage
 					if (casterPlayer) {
 						casterPlayer->wheel()->updateBeamMasteryDamage(tmpDamage, beamAffectedTotal, beamAffectedCurrent);
@@ -1136,7 +1140,7 @@ void Combat::doCombatHealth(Creature* caster, Creature* target, CombatDamage &da
 }
 
 void Combat::doCombatHealth(Creature* caster, Creature* target, const Position &origin, CombatDamage &damage, const CombatParams &params) {
-	bool canCombat = !params.aggressive || (caster != target && Combat::canDoCombat(caster, target) == RETURNVALUE_NOERROR);
+	bool canCombat = !params.aggressive || (caster != target && Combat::canDoCombat(caster, target, params.aggressive) == RETURNVALUE_NOERROR);
 	if ((caster && target)
 		&& (caster == target || canCombat)
 		&& (params.impactEffect != CONST_ME_NONE)) {
@@ -1234,7 +1238,7 @@ void Combat::doCombatMana(Creature* caster, Creature* target, CombatDamage &dama
 }
 
 void Combat::doCombatMana(Creature* caster, Creature* target, const Position &origin, CombatDamage &damage, const CombatParams &params) {
-	bool canCombat = !params.aggressive || (caster != target && Combat::canDoCombat(caster, target) == RETURNVALUE_NOERROR);
+	bool canCombat = !params.aggressive || (caster != target && Combat::canDoCombat(caster, target, params.aggressive) == RETURNVALUE_NOERROR);
 	if ((caster && target)
 		&& (caster == target || canCombat)
 		&& (params.impactEffect != CONST_ME_NONE)) {
@@ -1287,7 +1291,7 @@ void Combat::doCombatCondition(Creature* caster, const Position &position, const
 }
 
 void Combat::doCombatCondition(Creature* caster, Creature* target, const CombatParams &params) {
-	bool canCombat = !params.aggressive || (caster != target && Combat::canDoCombat(caster, target) == RETURNVALUE_NOERROR);
+	bool canCombat = !params.aggressive || (caster != target && Combat::canDoCombat(caster, target, params.aggressive) == RETURNVALUE_NOERROR);
 	if ((caster == target || canCombat) && params.impactEffect != CONST_ME_NONE) {
 		g_game().addMagicEffect(target->getPosition(), params.impactEffect);
 	}
@@ -1316,7 +1320,7 @@ void Combat::doCombatDispel(Creature* caster, const Position &position, const Ar
 }
 
 void Combat::doCombatDispel(Creature* caster, Creature* target, const CombatParams &params) {
-	bool canCombat = !params.aggressive || (caster != target && Combat::canDoCombat(caster, target) == RETURNVALUE_NOERROR);
+	bool canCombat = !params.aggressive || (caster != target && Combat::canDoCombat(caster, target, params.aggressive) == RETURNVALUE_NOERROR);
 	if ((caster && target)
 		&& (caster == target || canCombat)
 		&& (params.impactEffect != CONST_ME_NONE)) {
@@ -1346,7 +1350,7 @@ void Combat::doCombatDefault(Creature* caster, Creature* target, const CombatPar
 }
 
 void Combat::doCombatDefault(Creature* caster, Creature* target, const Position &origin, const CombatParams &params) {
-	if (!params.aggressive || (caster != target && Combat::canDoCombat(caster, target) == RETURNVALUE_NOERROR)) {
+	if (!params.aggressive || (caster != target && Combat::canDoCombat(caster, target, params.aggressive) == RETURNVALUE_NOERROR)) {
 		SpectatorHashSet spectators;
 		g_game().map.getSpectators(spectators, target->getPosition(), true, true);
 
@@ -1383,7 +1387,7 @@ void Combat::setRuneSpellName(const std::string &value) {
 	runeSpellName = value;
 }
 
-void Combat::pickChainTargets(Creature* caster, std::vector<Creature*> &targets, std::set<uint32_t> &targetSet, std::set<uint32_t> &visited, const CombatParams &params, uint8_t chainDistance, uint8_t maxTargets, bool backtracking) {
+void Combat::pickChainTargets(Creature* caster, std::vector<Creature*> &targets, std::set<uint32_t> &targetSet, std::set<uint32_t> &visited, const CombatParams &params, uint8_t chainDistance, uint8_t maxTargets, bool backtracking, bool aggressive) {
 	if (maxTargets == 0 || targets.size() > maxTargets) {
 		return;
 	}
@@ -1407,7 +1411,7 @@ void Combat::pickChainTargets(Creature* caster, std::vector<Creature*> &targets,
 			if (creature == nullptr || visited.contains(creature->getID())) {
 				continue;
 			}
-			bool canCombat = canDoCombat(caster, creature) == RETURNVALUE_NOERROR;
+			bool canCombat = canDoCombat(caster, creature, aggressive) == RETURNVALUE_NOERROR;
 			bool pick = params.chainPickerCallback ? params.chainPickerCallback->onChainCombat(caster, creature) : true;
 			bool hasSight = g_game().isSightClear(currentTarget->getPosition(), creature->getPosition(), true);
 			if (!canCombat || !pick || !hasSight) {
@@ -1429,7 +1433,7 @@ void Combat::pickChainTargets(Creature* caster, std::vector<Creature*> &targets,
 			targets.push_back(closestSpectator);
 			targetSet.insert(closestSpectator->getID());
 			visited.insert(closestSpectator->getID());
-			pickChainTargets(caster, targets, targetSet, visited, params, chainDistance, maxTargets, backtracking);
+			pickChainTargets(caster, targets, targetSet, visited, params, chainDistance, maxTargets, backtracking, aggressive);
 		}
 
 		if (!backtracking || closestSpectator == nullptr) {
