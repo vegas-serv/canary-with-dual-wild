@@ -95,8 +95,8 @@ bool Spells::registerInstantLuaEvent(InstantSpell* event) {
 	if (instant) {
 		// If the spell not have the "spell:words()" return a error message
 		const std::string &instantName = instant->getName();
-		if (instant->getWordsMap().empty()) {
-			SPDLOG_ERROR("[Spells::registerInstantLuaEvent] - Missing register words for spell with name {}", instantName);
+		if (instant->getWords().empty()) {
+			SPDLOG_ERROR("[Spells::registerInstantLuaEvent] - Missing register word for spell with name {}", instantName);
 			return false;
 		}
 
@@ -137,7 +137,7 @@ bool Spells::registerRuneLuaEvent(RuneSpell* event) {
 std::list<uint16_t> Spells::getSpellsByVocation(uint16_t vocationId) {
 	std::list<uint16_t> spellsList;
 	VocSpellMap vocSpells;
-	std::map<uint16_t, bool>::const_iterator vocSpellsIt;
+	phmap::btree_map<uint16_t, bool>::const_iterator vocSpellsIt;
 
 	for (const auto &it : instants) {
 		vocSpells = it.second.getVocMap();

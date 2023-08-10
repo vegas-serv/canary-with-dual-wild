@@ -15,6 +15,7 @@
 #include "creatures/monsters/monsters.h"
 #include "creatures/players/player.h"
 #include "creatures/players/wheel/player_wheel.hpp"
+#include "creatures/players/storages/storages.hpp"
 #include "game/game.h"
 #include "game/scheduling/scheduler.h"
 #include "grouping/familiars.h"
@@ -617,7 +618,7 @@ void Player::addSkillAdvance(skills_t skill, uint64_t count) {
 	}
 
 	g_events().eventPlayerOnGainSkillTries(this, skill, count);
-	g_callbacks().executeCallback(EventCallback_t::PlayerOnGainSkillTries, &EventCallback::playerOnGainSkillTries, this, skill, count);
+	g_callbacks().executeCallback(EventCallback_t::playerOnGainSkillTries, &EventCallback::playerOnGainSkillTries, this, skill, count);
 	if (count == 0) {
 		return;
 	}
@@ -823,7 +824,7 @@ void Player::addStorageValue(const uint32_t key, const int32_t value, const bool
 		if (!isLogin) {
 			auto currentFrameTime = g_dispatcher().getDispatcherCycle();
 			g_events().eventOnStorageUpdate(this, key, value, getStorageValue(key), currentFrameTime);
-			g_callbacks().executeCallback(EventCallback_t::PlayerOnStorageUpdate, &EventCallback::playerOnStorageUpdate, this, key, value, getStorageValue(key), currentFrameTime);
+			g_callbacks().executeCallback(EventCallback_t::playerOnStorageUpdate, &EventCallback::playerOnStorageUpdate, this, key, value, getStorageValue(key), currentFrameTime);
 		}
 	} else {
 		storageMap.erase(key);
@@ -839,6 +840,26 @@ int32_t Player::getStorageValue(const uint32_t key) const {
 
 	value = it->second;
 	return value;
+}
+
+int32_t Player::getStorageValueByName(const std::string &storageName) const {
+	auto it = g_storages().getStorageMap().find(storageName);
+	if (it == g_storages().getStorageMap().end()) {
+		return -1;
+	}
+	uint32_t key = it->second;
+
+	return getStorageValue(key);
+}
+
+void Player::addStorageValueByName(const std::string &storageName, const int32_t value, const bool isLogin /* = false*/) {
+	auto it = g_storages().getStorageMap().find(storageName);
+	if (it == g_storages().getStorageMap().end()) {
+		spdlog::error("[{}] Storage name '{}' not found in storage map, register your storage in 'storages.xml' first for use", __func__, storageName);
+		return;
+	}
+	uint32_t key = it->second;
+	addStorageValue(key, value, isLogin);
 }
 
 bool Player::canSee(const Position &pos) const {
@@ -1634,12 +1655,12 @@ void Player::onChangeZone(ZoneType_t zone) {
 	sendIcons();
 	g_events().eventPlayerOnChangeZone(this, zone);
 
-	g_callbacks().executeCallback(EventCallback_t::PlayerOnChangeZone, &EventCallback::playerOnChangeZone, this, zone);
+	g_callbacks().executeCallback(EventCallback_t::playerOnChangeZone, &EventCallback::playerOnChangeZone, this, zone);
 }
 
 void Player::onChangeHazard(bool isHazard) {
 	g_events().eventPlayerOnChangeHazard(this, isHazard);
-	g_callbacks().executeCallback(EventCallback_t::PlayerOnChangeHazard, &EventCallback::playerOnChangeHazard, this, isHazard);
+	g_callbacks().executeCallback(EventCallback_t::playerOnChangeHazard, &EventCallback::playerOnChangeHazard, this, isHazard);
 	sendIcons();
 }
 
@@ -1725,7 +1746,7 @@ bool Player::openShopWindow(Npc* npc) {
 	npc->addShopPlayer(this);
 
 	sendShop(npc);
-	std::map<uint16_t, uint16_t> inventoryMap;
+	phmap::btree_map<uint16_t, uint16_t> inventoryMap;
 	sendSaleItemList(getAllSaleItemIdAndCount(inventoryMap));
 	return true;
 }
@@ -2115,7 +2136,7 @@ void Player::addManaSpent(uint64_t amount) {
 	}
 
 	g_events().eventPlayerOnGainSkillTries(this, SKILL_MAGLEVEL, amount);
-	g_callbacks().executeCallback(EventCallback_t::PlayerOnGainSkillTries, &EventCallback::playerOnGainSkillTries, this, SKILL_MAGLEVEL, amount);
+	g_callbacks().executeCallback(EventCallback_t::playerOnGainSkillTries, &EventCallback::playerOnGainSkillTries, this, SKILL_MAGLEVEL, amount);
 	if (amount == 0) {
 		return;
 	}
@@ -2171,7 +2192,7 @@ void Player::addExperience(Creature* target, uint64_t exp, bool sendText /* = fa
 		return;
 	}
 
-	g_callbacks().executeCallback(EventCallback_t::PlayerOnGainExperience, &EventCallback::playerOnGainExperience, this, target, exp, rawExp);
+	g_callbacks().executeCallback(EventCallback_t::playerOnGainExperience, &EventCallback::playerOnGainExperience, this, target, exp, rawExp);
 
 	g_events().eventPlayerOnGainExperience(this, target, exp, rawExp);
 	if (exp == 0) {
@@ -2277,7 +2298,7 @@ void Player::removeExperience(uint64_t exp, bool sendText /* = false*/) {
 	}
 
 	g_events().eventPlayerOnLoseExperience(this, exp);
-	g_callbacks().executeCallback(EventCallback_t::PlayerOnLoseExperience, &EventCallback::playerOnLoseExperience, this, exp);
+	g_callbacks().executeCallback(EventCallback_t::playerOnLoseExperience, &EventCallback::playerOnLoseExperience, this, exp);
 	if (exp == 0) {
 		return;
 	}
@@ -2573,7 +2594,7 @@ void Player::death(Creature* lastHitCreature) {
 		// Level loss
 		uint64_t expLoss = static_cast<uint64_t>(experience * deathLossPercent);
 		g_events().eventPlayerOnLoseExperience(this, expLoss);
-		g_callbacks().executeCallback(EventCallback_t::PlayerOnLoseExperience, &EventCallback::playerOnLoseExperience, this, expLoss);
+		g_callbacks().executeCallback(EventCallback_t::playerOnLoseExperience, &EventCallback::playerOnLoseExperience, this, expLoss);
 
 		sendTextMessage(MESSAGE_EVENT_ADVANCE, "You are dead.");
 		std::ostringstream lostExp;
@@ -3879,14 +3900,14 @@ std::vector<Item*> Player::getEquippedItems() const {
 	return valid_items;
 }
 
-std::map<uint32_t, uint32_t> &Player::getAllItemTypeCount(std::map<uint32_t, uint32_t> &countMap) const {
+phmap::btree_map<uint32_t, uint32_t> &Player::getAllItemTypeCount(phmap::btree_map<uint32_t, uint32_t> &countMap) const {
 	for (const auto item : getAllInventoryItems()) {
 		countMap[static_cast<uint32_t>(item->getID())] += Item::countByType(item, -1);
 	}
 	return countMap;
 }
 
-std::map<uint16_t, uint16_t> &Player::getAllSaleItemIdAndCount(std::map<uint16_t, uint16_t> &countMap) const {
+phmap::btree_map<uint16_t, uint16_t> &Player::getAllSaleItemIdAndCount(phmap::btree_map<uint16_t, uint16_t> &countMap) const {
 	for (const auto item : getAllInventoryItems(false, true)) {
 		if (!item->hasImbuements()) {
 			countMap[item->getID()] += item->getItemCount();
@@ -3896,7 +3917,7 @@ std::map<uint16_t, uint16_t> &Player::getAllSaleItemIdAndCount(std::map<uint16_t
 	return countMap;
 }
 
-void Player::getAllItemTypeCountAndSubtype(std::map<uint32_t, uint32_t> &countMap) const {
+void Player::getAllItemTypeCountAndSubtype(phmap::btree_map<uint32_t, uint32_t> &countMap) const {
 	for (const auto item : getAllInventoryItems()) {
 		uint16_t itemId = item->getID();
 		if (Item::items[itemId].isFluidContainer()) {
@@ -5699,7 +5720,7 @@ bool Player::addOfflineTrainingTries(skills_t skill, uint64_t tries) {
 		oldPercentToNextLevel = static_cast<long double>(manaSpent * 100) / nextReqMana;
 
 		g_events().eventPlayerOnGainSkillTries(this, SKILL_MAGLEVEL, tries);
-		g_callbacks().executeCallback(EventCallback_t::PlayerOnGainSkillTries, &EventCallback::playerOnGainSkillTries, this, SKILL_MAGLEVEL, tries);
+		g_callbacks().executeCallback(EventCallback_t::playerOnGainSkillTries, &EventCallback::playerOnGainSkillTries, this, SKILL_MAGLEVEL, tries);
 
 		uint32_t currMagLevel = magLevel;
 		while ((manaSpent + tries) >= nextReqMana) {
@@ -5754,7 +5775,7 @@ bool Player::addOfflineTrainingTries(skills_t skill, uint64_t tries) {
 		oldPercentToNextLevel = static_cast<long double>(skills[skill].tries * 100) / nextReqTries;
 
 		g_events().eventPlayerOnGainSkillTries(this, skill, tries);
-		g_callbacks().executeCallback(EventCallback_t::PlayerOnGainSkillTries, &EventCallback::playerOnGainSkillTries, this, skill, tries);
+		g_callbacks().executeCallback(EventCallback_t::playerOnGainSkillTries, &EventCallback::playerOnGainSkillTries, this, skill, tries);
 		uint32_t currSkillLevel = skills[skill].level;
 
 		while ((skills[skill].tries + tries) >= nextReqTries) {
@@ -6043,7 +6064,7 @@ uint64_t Player::getItemCustomPrice(uint16_t itemId, bool buyPrice /* = false*/)
 		return it->second;
 	}
 
-	std::map<uint16_t, uint64_t> itemMap { { itemId, 1 } };
+	phmap::btree_map<uint16_t, uint64_t> itemMap { { itemId, 1 } };
 	return g_game().getItemMarketPrice(itemMap, buyPrice);
 }
 
@@ -6431,7 +6452,7 @@ void Player::requestDepotItems() {
 
 			uint8_t itemTier = Item::items[(*it)->getID()].upgradeClassification > 0 ? (*it)->getTier() + 1 : 0;
 			if (itemMap_it == itemMap.end()) {
-				std::map<uint8_t, uint32_t> itemTierMap;
+				phmap::btree_map<uint8_t, uint32_t> itemTierMap;
 				itemTierMap[itemTier] = Item::countByType((*it), -1);
 				itemMap[(*it)->getID()] = itemTierMap;
 				count++;
@@ -6453,7 +6474,7 @@ void Player::requestDepotItems() {
 		}
 
 		if (itemMap_it == itemMap.end()) {
-			std::map<uint8_t, uint32_t> itemTierMap;
+			phmap::btree_map<uint8_t, uint32_t> itemTierMap;
 			itemTierMap[0] = itemCount;
 			itemMap[itemId] = itemTierMap;
 			count++;
@@ -6615,13 +6636,13 @@ Item* Player::getItemFromDepotSearch(uint16_t itemId, const Position &pos) {
 	return nullptr;
 }
 
-std::pair<std::vector<Item*>, std::map<uint16_t, std::map<uint8_t, uint32_t>>> Player::requestLockerItems(DepotLocker* depotLocker, bool sendToClient /*= false*/, uint8_t tier /*= 0*/) const {
+std::pair<std::vector<Item*>, phmap::btree_map<uint16_t, phmap::btree_map<uint8_t, uint32_t>>> Player::requestLockerItems(DepotLocker* depotLocker, bool sendToClient /*= false*/, uint8_t tier /*= 0*/) const {
 	if (depotLocker == nullptr) {
 		SPDLOG_ERROR("{} - Depot locker is nullptr", __FUNCTION__);
 		return {};
 	}
 
-	std::map<uint16_t, std::map<uint8_t, uint32_t>> lockerItems;
+	phmap::btree_map<uint16_t, phmap::btree_map<uint8_t, uint32_t>> lockerItems;
 	std::vector<Item*> itemVector;
 	std::vector<Container*> containers { depotLocker };
 
@@ -6752,7 +6773,7 @@ bool Player::saySpell(
 		tmpPlayer->onCreatureSay(this, type, text);
 		if (this != tmpPlayer) {
 			g_events().eventCreatureOnHear(tmpPlayer, this, text, type);
-			g_callbacks().executeCallback(EventCallback_t::CreatureOnHear, &EventCallback::creatureOnHear, tmpPlayer, this, text, type);
+			g_callbacks().executeCallback(EventCallback_t::creatureOnHear, &EventCallback::creatureOnHear, tmpPlayer, this, text, type);
 		}
 	}
 	return true;

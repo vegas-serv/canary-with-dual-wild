@@ -78,6 +78,8 @@ std::string LuaFunctionsLoader::getErrorDesc(ErrorCode_t code) {
 			return "Spell not found";
 		case LUA_ERROR_ACTION_NOT_FOUND:
 			return "Action not found";
+		case LUA_ERROR_TALK_ACTION_NOT_FOUND:
+			return "TalkAction not found";
 		default:
 			return "Bad error code";
 	}
@@ -204,7 +206,7 @@ void LuaFunctionsLoader::setMetatable(lua_State* L, int32_t index, const std::st
 }
 
 void LuaFunctionsLoader::setWeakMetatable(lua_State* L, int32_t index, const std::string &name) {
-	static std::set<std::string> weakObjectTypes;
+	static phmap::btree_set<std::string> weakObjectTypes;
 	const std::string &weakName = name + "_weak";
 
 	auto result = weakObjectTypes.emplace(name);
@@ -626,4 +628,11 @@ std::string LuaFunctionsLoader::escapeString(const std::string &string) {
 int LuaFunctionsLoader::luaUserdataCompare(lua_State* L) {
 	pushBoolean(L, getUserdata<void>(L, 1) == getUserdata<void>(L, 2));
 	return 1;
+}
+
+int LuaFunctionsLoader::luaGarbageCollection(lua_State* L) {
+	if (const auto ptr = getRawUserDataShared<Condition>(L, 1)) {
+		ptr->reset();
+	}
+	return 0;
 }

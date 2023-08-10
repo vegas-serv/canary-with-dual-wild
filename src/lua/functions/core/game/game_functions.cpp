@@ -18,7 +18,9 @@
 #include "io/io_bosstiary.hpp"
 #include "io/iologindata.h"
 #include "lua/functions/core/game/game_functions.hpp"
+#include "lua/functions/events/event_callback_functions.hpp"
 #include "game/scheduling/tasks.h"
+#include "lua/creature/talkaction.h"
 #include "lua/functions/creatures/npc/npc_type_functions.hpp"
 #include "lua/scripts/lua_environment.hpp"
 #include "lua/scripts/scripts.h"
@@ -90,7 +92,7 @@ int GameFunctions::luaGameGetBestiaryList(lua_State* L) {
 	bool name = getBoolean(L, 2, false);
 
 	if (lua_gettop(L) <= 2) {
-		std::map<uint16_t, std::string> mtype_list = g_game().getBestiaryList();
+		phmap::btree_map<uint16_t, std::string> mtype_list = g_game().getBestiaryList();
 		for (auto ita : mtype_list) {
 			if (name) {
 				pushString(L, ita.second);
@@ -101,7 +103,7 @@ int GameFunctions::luaGameGetBestiaryList(lua_State* L) {
 		}
 	} else {
 		if (isNumber(L, 2)) {
-			std::map<uint16_t, std::string> tmplist = g_iobestiary().findRaceByName("CANARY", false, getNumber<BestiaryType_t>(L, 2));
+			phmap::btree_map<uint16_t, std::string> tmplist = g_iobestiary().findRaceByName("CANARY", false, getNumber<BestiaryType_t>(L, 2));
 			for (auto itb : tmplist) {
 				if (name) {
 					pushString(L, itb.second);
@@ -111,7 +113,7 @@ int GameFunctions::luaGameGetBestiaryList(lua_State* L) {
 				lua_rawseti(L, -2, ++index);
 			}
 		} else {
-			std::map<uint16_t, std::string> tmplist = g_iobestiary().findRaceByName(getString(L, 2));
+			phmap::btree_map<uint16_t, std::string> tmplist = g_iobestiary().findRaceByName(getString(L, 2));
 			for (auto itc : tmplist) {
 				if (name) {
 					pushString(L, itc.second);
@@ -404,7 +406,7 @@ int GameFunctions::luaGameCreateMonster(lua_State* L) {
 	bool force = getBoolean(L, 4, false);
 	if (g_game().placeCreature(monster, position, extended, force)) {
 		g_events().eventMonsterOnSpawn(monster, position);
-		g_callbacks().executeCallback(EventCallback_t::MonsterOnSpawn, &EventCallback::monsterOnSpawn, monster, position);
+		g_callbacks().executeCallback(EventCallback_t::monsterOnSpawn, &EventCallback::monsterOnSpawn, monster, position);
 		auto mtype = monster->getMonsterType();
 		if (mtype && mtype->info.bossRaceId > 0 && mtype->info.bosstiaryRace == BosstiaryRarity_t::RARITY_ARCHFOE) {
 			SpectatorHashSet spectators;
@@ -728,5 +730,35 @@ int GameFunctions::luaGameCreateHazardArea(lua_State* L) {
 	const Position &positionTo = getPosition(L, 2);
 
 	pushBoolean(L, g_game().createHazardArea(positionFrom, positionTo));
+	return 1;
+}
+
+int GameFunctions::luaGameGetTalkActions(lua_State* L) {
+	// Game.getTalkActions()
+	const auto &talkactionsMap = g_talkActions().getTalkActionsMap();
+	lua_createtable(L, static_cast<int>(talkactionsMap.size()), 0);
+
+	for (const auto &[talkName, talkactionSharedPtr] : talkactionsMap) {
+		pushUserdata<TalkAction>(L, talkactionSharedPtr);
+		setMetatable(L, -1, "TalkAction");
+		lua_setfield(L, -2, talkName.c_str());
+	}
+	return 1;
+}
+
+int GameFunctions::luaGameGetEventCallbacks(lua_State* L) {
+	lua_createtable(L, 0, 0);
+	lua_pushcfunction(L, EventCallbackFunctions::luaEventCallbackLoad);
+	for (auto [value, name] : magic_enum::enum_entries<EventCallback_t>()) {
+		if (value != EventCallback_t::none) {
+			std::string methodName = magic_enum::enum_name(value).data();
+			lua_pushstring(L, methodName.c_str());
+			// Copy the function reference to the top of the stack
+			lua_pushvalue(L, -2);
+			lua_settable(L, -4);
+		}
+	}
+	// Pop the function
+	lua_pop(L, 1);
 	return 1;
 }
