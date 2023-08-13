@@ -1059,9 +1059,6 @@ void PlayerWheel::resetPlayerBonusData() {
 }
 
 void PlayerWheel::initializePlayerData() {
-	if (m_player.client && m_player.client->oldProtocol) {
-		return;
-	}
 
 	resetPlayerBonusData();
 	loadPlayerBonusData();
