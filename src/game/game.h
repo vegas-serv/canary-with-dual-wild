@@ -54,10 +54,7 @@ class Game {
 		Game &operator=(const Game &) = delete;
 
 		static Game &getInstance() {
-			// Guaranteed to be destroyed
-			static Game instance;
-			// Instantiated on first use
-			return instance;
+			return inject<Game>();
 		}
 
 		void resetMonsters() const;
@@ -115,13 +112,13 @@ class Game {
 
 		Npc* getNpcByID(uint32_t id);
 
-		Player* getPlayerByID(uint32_t id);
-
 		Creature* getCreatureByName(const std::string &s);
 
 		Npc* getNpcByName(const std::string &s);
 
-		Player* getPlayerByName(const std::string &s);
+		Player* getPlayerByID(uint32_t id, bool allowOffline = false);
+
+		Player* getPlayerByName(const std::string &s, bool allowOffline = false);
 
 		Player* getPlayerByGUID(const uint32_t &guid);
 
@@ -379,7 +376,7 @@ class Game {
 
 		void setBoostedName(std::string name) {
 			boostedCreature = name;
-			SPDLOG_INFO("Boosted creature: {}", name);
+			g_logger().info("Boosted creature: {}", name);
 		}
 
 		std::string getBoostedMonsterName() const {
@@ -497,7 +494,8 @@ class Game {
 		void addMonster(Monster* npc);
 		void removeMonster(Monster* npc);
 
-		Guild* getGuild(uint32_t id) const;
+		Guild* getGuild(uint32_t id, bool allowOffline = false) const;
+		Guild* getGuildByName(const std::string &name, bool allowOffline = false) const;
 		void addGuild(Guild* guild);
 		void removeGuild(uint32_t guildId);
 		void decreaseBrowseFieldRef(const Position &pos);
@@ -662,6 +660,7 @@ class Game {
 		bool playerYell(Player* player, const std::string &text);
 		bool playerSpeakTo(Player* player, SpeakClasses type, const std::string &receiver, const std::string &text);
 		void playerSpeakToNpc(Player* player, const std::string &text);
+		std::shared_ptr<Task> createPlayerTask(uint32_t delay, std::function<void(void)> f);
 
 		/**
 		 * Player wants to loot a corpse
@@ -870,6 +869,6 @@ class Game {
 		std::unique_ptr<IOWheel> m_IOWheel;
 };
 
-constexpr auto g_game = &Game::getInstance;
+constexpr auto g_game = Game::getInstance;
 
 #endif // SRC_GAME_GAME_H_

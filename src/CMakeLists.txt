@@ -198,11 +198,12 @@ PRIVATE
 	database/databasetasks.cpp
 	game/functions/game_reload.cpp
 	game/game.cpp
+	game/bank/bank.cpp
 	game/movement/position.cpp
 	game/movement/teleport.cpp
 	game/scheduling/scheduler.cpp
 	game/scheduling/events_scheduler.cpp
-	game/scheduling/tasks.cpp
+	game/scheduling/dispatcher.cpp
 	io/fileloader.cpp
 	io/io_wheel.cpp
 	io/iobestiary.cpp
@@ -235,7 +236,7 @@ PRIVATE
 	items/tile.cpp
 	items/trashholder.cpp
 	items/weapons/weapons.cpp
-	lib/logging/LogWithSpdLog.cpp
+	lib/logging/log_with_spd_log.cpp
 	lua/callbacks/creaturecallback.cpp
 	lua/callbacks/event_callback.cpp
 	lua/callbacks/events_callbacks.cpp
@@ -248,6 +249,7 @@ PRIVATE
 	lua/functions/lua_functions_loader.cpp
 	lua/functions/core/game/config_functions.cpp
 	lua/functions/core/game/game_functions.cpp
+	lua/functions/core/game/bank_functions.cpp
 	lua/functions/core/game/global_functions.cpp
 	lua/functions/core/game/lua_enums.cpp
 	lua/functions/core/game/modal_window_functions.cpp
@@ -304,8 +306,8 @@ PRIVATE
 	map/house/house.cpp
 	map/house/housetile.cpp
 	map/map.cpp
+	canary_server.cpp
 	otserv.cpp
-	pch.cpp
 	security/argon.cpp
 	security/rsa.cpp
 	server/network/connection/connection.cpp

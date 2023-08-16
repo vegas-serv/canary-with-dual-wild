@@ -10,13 +10,13 @@ local config = {
 		Position(32448, 32512, 7)
 	},
 	firstPlayerPosition = Position(32457, 32508, 6),
-    centerPosition = Position(32439, 32523, 7), -- Center Room  
+    centerPosition = Position(32439, 32523, 7), -- Center Room
 	exitPosition = Position(32453, 32503, 7), -- Exit Position
 	newPosition = Position(32453, 32510, 7),
 	rangeX = 22,
 	rangeY = 16,
-	timeToKill = 15, -- time in minutes to remove the player	
-}	
+	timeToKill = 15, -- time in minutes to remove the player
+}
 
 local currentEvent = nil
 
@@ -72,7 +72,7 @@ function drumeAction.onUse(player, item, fromPosition, target, toPosition, isHot
 	if #players == 0 then return false end
 	for _, pi in pairs(players) do
 		if pi:getStorageValue(Storage.TheOrderOfTheLion.Drume.Timer) > os.time() then
-			player:sendCancelMessage("Someone of your team has already fought in the skirmish in the last 5h.")
+			player:sendCancelMessage("Someone of your team has already fought in the skirmish in the last 20h.")
 			player:getPosition():sendMagicEffect(CONST_ME_POFF)
 			return true
 		end
@@ -105,10 +105,10 @@ function drumeAction.onUse(player, item, fromPosition, target, toPosition, isHot
 		totalUsurper = totalUsurper + 1
 	end
 	for _, pi in pairs(players) do
-		pi:setStorageValue(Storage.TheOrderOfTheLion.Drume.Timer, os.time() + (5 * 60 * 60))
+		pi:setStorageValue(Storage.TheOrderOfTheLion.Drume.Timer, os.time() + (configManager.getNumber(configKeys.BOSS_DEFAULT_TIME_TO_FIGHT_AGAIN)))
 		pi:teleportTo(config.newPosition)
 		pi:sendTextMessage(MESSAGE_EVENT_ADVANCE, "You have " ..config.timeToKill.." minutes to defeat Drume.")
-		
+
 	end
 	if currentEvent then
 		stopEvent(currentEvent)
