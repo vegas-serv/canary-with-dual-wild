@@ -6,18 +6,21 @@
  * Contributors: https://github.com/opentibiabr/canary/graphs/contributors
  * Website: https://docs.opentibiabr.com/
  */
+#include <spdlog/spdlog.h>
+
 #include "pch.hpp"
 
 LogWithSpdLog::LogWithSpdLog() {
+	setLevel("debug");
 	spdlog::set_pattern("[%Y-%d-%m %H:%M:%S.%e] [%^%l%$] %v ");
 
 #ifdef DEBUG_LOG
-	setLevel("debug");
+	spdlog::set_pattern("[%Y-%d-%m %H:%M:%S.%e] [thread %t] [%^%l%$] %v ");
 #endif
 }
 
-LogWithSpdLog &LogWithSpdLog::getInstance() {
-	return inject<LogWithSpdLog>();
+Logger &LogWithSpdLog::getInstance() {
+	return inject<Logger>();
 }
 
 void LogWithSpdLog::setLevel(const std::string &name) {
