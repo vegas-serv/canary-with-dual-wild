@@ -4374,11 +4374,7 @@ void ProtocolGame::sendResourceBalance(Resource_t resourceType, uint64_t value) 
 void ProtocolGame::sendSaleItemList(const std::vector<ShopBlock> &shopVector, const std::map<uint16_t, uint16_t> &inventoryMap) {
 	// Since we already have full inventory map we shouldn't call getMoney here - it is simply wasting cpu power
 	uint64_t playerMoney = 0;
-	auto it = inventoryMap.find(ITEM_BAR_OF_GOLD);
-	if (it != inventoryMap.end()) {
-		playerMoney += static_cast<uint64_t>(it->second) * 1000000;
-	}
-	it = inventoryMap.find(ITEM_CRYSTAL_COIN);
+	auto it = inventoryMap.find(ITEM_CRYSTAL_COIN);
 	if (it != inventoryMap.end()) {
 		playerMoney += static_cast<uint64_t>(it->second) * 10000;
 	}
@@ -4792,7 +4788,7 @@ void ProtocolGame::sendForgingData() {
 
 	// Version 13.16
 	// Forge Config Bytes
-	
+
 	// Exalted core table per tier
 	msg.addByte(static_cast<uint8_t>(tierCorePrices.size()));
 	for (const auto &[tier, cores] : tierCorePrices) {
@@ -6359,66 +6355,6 @@ void ProtocolGame::sendHouseWindow(uint32_t windowTextId, const std::string &tex
 void ProtocolGame::sendOutfitWindow() {
 	NetworkMessage msg;
 	msg.addByte(0xC8);
-	
-	if (oldProtocol) {
-		Outfit_t currentOutfit = player->getDefaultOutfit();
-		Mount* currentMount = g_game().mounts.getMountByID(player->getCurrentMount());
-		if (currentMount) {
-			currentOutfit.lookMount = currentMount->clientId;
-		}
-
-		AddOutfit(msg, currentOutfit);
-
-		std::vector<ProtocolOutfit> protocolOutfits;
-		if (player->isAccessPlayer()) {
-			static const std::string gamemasterOutfitName = "Game Master";
-			protocolOutfits.emplace_back(gamemasterOutfitName, 75, 0);
-
-			static const std::string gmCustomerSupport = "Customer Support";
-			protocolOutfits.emplace_back(gmCustomerSupport, 266, 0);
-
-			static const std::string communityManager = "Community Manager";
-			protocolOutfits.emplace_back(communityManager, 302, 0);
-		}
-
-		const auto &outfits = Outfits::getInstance().getOutfits(player->getSex());
-		protocolOutfits.reserve(outfits.size());
-		for (const Outfit &outfit : outfits) {
-			uint8_t addons;
-			if (!player->getOutfitAddons(outfit, addons)) {
-				continue;
-			}
-
-			protocolOutfits.emplace_back(outfit.name, outfit.lookType, addons);
-			// Game client doesn't allow more than 100 outfits
-			if (protocolOutfits.size() == 150) {
-				break;
-			}
-		}
-
-		msg.addByte(protocolOutfits.size());
-		for (const ProtocolOutfit &outfit : protocolOutfits) {
-			msg.add<uint16_t>(outfit.lookType);
-			msg.addString(outfit.name);
-			msg.addByte(outfit.addons);
-		}
-
-		std::vector<const Mount*> mounts;
-		for (const Mount &mount : g_game().mounts.getMounts()) {
-			if (player->hasMount(&mount)) {
-				mounts.push_back(&mount);
-			}
-		}
-
-		msg.addByte(mounts.size());
-		for (const Mount* mount : mounts) {
-			msg.add<uint16_t>(mount->clientId);
-			msg.addString(mount->name);
-		}
-
-		writeToOutputBuffer(msg);
-		return;
-	}
 
 	if (oldProtocol) {
 		Outfit_t currentOutfit = player->getDefaultOutfit();
@@ -6726,7 +6662,7 @@ void ProtocolGame::sendUpdatedVIPStatus(uint32_t guid, VipStatus_t newStatus) {
 	if (oldProtocol && newStatus == VIPSTATUS_TRAINING) {
 		return;
 	}
-	
+
 	NetworkMessage msg;
 	msg.addByte(0xD3);
 	msg.add<uint32_t>(guid);
@@ -6738,7 +6674,7 @@ void ProtocolGame::sendVIP(uint32_t guid, const std::string &name, const std::st
 	if (oldProtocol && status == VIPSTATUS_TRAINING) {
 		return;
 	}
-	
+
 	NetworkMessage msg;
 	msg.addByte(0xD2);
 	msg.add<uint32_t>(guid);
@@ -7720,7 +7656,7 @@ void ProtocolGame::sendInventoryImbuements(const std::map<Slots_t, Item*> items)
 	if (oldProtocol) {
 		return;
 	}
-	
+
 	NetworkMessage msg;
 	msg.addByte(0x5D);
 

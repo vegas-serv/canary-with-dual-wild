@@ -3059,9 +3059,6 @@ uint32_t Item::getWorth() const {
 
 		case ITEM_CRYSTAL_COIN:
 			return count * 10000;
-			
-		case ITEM_BAR_OF_GOLD:
-            return count * 1000000;
 
 		default:
 			return 0;

@@ -39,7 +39,7 @@ void ProtocolLogin::getCharacterList(const std::string &accountIdentifier, const
 		disconnectClient(fmt::format("Only protocol version {}.{} or outdated 11.00 is allowed.", CLIENT_VERSION_UPPER, CLIENT_VERSION_LOWER));
 		return;
 	}
-	
+
 	if (!IOLoginData::authenticateAccountPassword(accountIdentifier, password, &account)) {
 		std::ostringstream ss;
 		ss << (oldProtocol ? "Username" : "Email") << " or password is not correct.";

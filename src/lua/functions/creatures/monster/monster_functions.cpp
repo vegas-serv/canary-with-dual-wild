@@ -522,36 +522,6 @@ int MonsterFunctions::luaMonsterGetName(lua_State* L) {
 	return 1;
 }
 
-int MonsterFunctions::luaMonsterSetMasterPosition(lua_State* L)
-{
-    // monster:setMasterPosition(pos)
-    Monster* monster = getUserdata<Monster>(L, 1);
-    if (!monster) {
-        lua_pushnil(L);
-        return 1;
-    }
-
-    Position position;
-    if (isTable(L, 2)) {
-        position = getPosition(L, 2);
-    }
-    else {
-        position.x = getNumber<uint16_t>(L, 2);
-        position.y = getNumber<uint16_t>(L, 3);
-        position.z = getNumber<uint16_t>(L, 4);
-    }
-
-    Tile* tile = g_game().map.getTile(position);
-    if (!tile) {
-        lua_pushnil(L);
-        return 1;
-    }
-
-    monster->setMasterPos(position);
-    pushBoolean(L, true);
-    return 1;
-}
-
 int MonsterFunctions::luaMonsterHazard(lua_State* L) {
 	// get: monster:hazard() ; set: monster:hazard(hazard)
 	Monster* monster = getUserdata<Monster>(L, 1);
