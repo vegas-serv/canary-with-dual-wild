@@ -386,7 +386,7 @@ void Game::setGameState(GameState_t newState) {
 	}
 }
 
-void Game::saveGameState() {
+void Game::saveGameState(bool crash /*= false*/){
 	if (gameState == GAME_STATE_NORMAL) {
 		setGameState(GAME_STATE_MAINTAIN);
 	}
@@ -394,7 +394,11 @@ void Game::saveGameState() {
 	g_logger().info("Saving server...");
 
 	for (const auto &it : players) {
-		it.second->loginPosition = it.second->getPosition();
+		if (crash) {
+			it.second->loginPosition = it.second->getTown()->getTemplePosition();
+		} else {
+			it.second->loginPosition = it.second->getPosition();
+		}
 		IOLoginData::savePlayer(it.second);
 	}
 
@@ -2202,6 +2206,21 @@ void Game::addMoney(Cylinder* cylinder, uint64_t money, uint32_t flags /*= 0*/) 
 	if (money == 0) {
 		return;
 	}
+	
+	uint32_t barofgolds = money / 1000000;
+	money -= barofgolds * 1000000;
+	while (barofgolds > 0) {
+		const uint16_t count = std::min<uint32_t>(100, barofgolds);
+
+		Item* remaindItem = Item::CreateItem(ITEM_BAR_OF_GOLD, count);
+
+		ReturnValue ret = internalAddItem(cylinder, remaindItem, INDEX_WHEREEVER, flags);
+		if (ret != RETURNVALUE_NOERROR) {
+			internalAddItem(cylinder->getTile(), remaindItem, INDEX_WHEREEVER, FLAG_NOLIMIT);
+		}
+
+		barofgolds -= count;
+	}
 
 	uint32_t crystalCoins = money / 10000;
 	money -= crystalCoins * 10000;
@@ -2806,6 +2825,8 @@ uint64_t Game::getItemMarketPrice(const std::map<uint16_t, uint64_t> &itemMap, b
 			total += 100 * it.second;
 		} else if (it.first == ITEM_CRYSTAL_COIN) {
 			total += 10000 * it.second;
+		} else if (it.first == ITEM_BAR_OF_GOLD) {
+			total += 1000000 * it.second;
 		} else {
 			auto marketIt = itemsPriceMap.find(it.first);
 			if (marketIt != itemsPriceMap.end()) {

@@ -79,6 +79,13 @@ int CanaryServer::run() {
 			IOMarket::getInstance().updateStatistics();
 
 			logger.info("Loaded all modules, server starting up...");
+			
+#ifndef _WIN32
+__attribute__ ((used)) void saveServer() {
+	if(g_game().getPlayersOnline() > 0)
+		g_game().saveGameState(true);
+}
+#endif
 
 #ifndef _WIN32
 			if (getuid() == 0 || geteuid() == 0) {

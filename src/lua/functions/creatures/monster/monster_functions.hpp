@@ -53,6 +53,8 @@ private:
 		registerMethod(L, "Monster", "configureForgeSystem", MonsterFunctions::luaMonsterConfigureForgeSystem);
 		registerMethod(L, "Monster", "clearFiendishStatus", MonsterFunctions::luaMonsterClearFiendishStatus);
 		registerMethod(L, "Monster", "isForgeable", MonsterFunctions::luaMonsterIsForgeable);
+		
+		registerMethod(L, "Monster", "setMasterPosition", MonsterFunctions::luaMonsterSetMasterPosition);
 
 		registerMethod(L, "Monster", "getName", MonsterFunctions::luaMonsterGetName);
 
@@ -66,6 +68,8 @@ private:
 		MonsterSpellFunctions::init(L);
 		MonsterTypeFunctions::init(L);
 	}
+	
+	static int luaMonsterSetMasterPosition(lua_State* L);
 
 	static int luaMonsterCreate(lua_State* L);
 
