@@ -445,7 +445,7 @@ bool Game::loadItemsPrice() {
 void Game::loadMainMap(const std::string &filename) {
 	Monster::despawnRange = g_configManager().getNumber(DEFAULT_DESPAWNRANGE);
 	Monster::despawnRadius = g_configManager().getNumber(DEFAULT_DESPAWNRADIUS);
-	map.loadMap(g_configManager().getString(DATA_DIRECTORY) + "/world/" + filename + ".otbm", true, true, false, false);
+	map.loadMap(g_configManager().getString(DATA_DIRECTORY) + "/world/" + filename + ".otbm", true, true, true, true);
 }
 
 void Game::loadCustomMaps(const std::filesystem::path &customMapPath) {
@@ -840,10 +840,8 @@ bool Game::internalPlaceCreature(Creature* creature, const Position &pos, bool e
 	if (creature->getParent() != nullptr) {
 		return false;
 	}
-
-	auto fromZones = creature->getZones();
 	auto toZones = Zone::getZones(pos);
-	if (auto ret = onCreatureZoneChange(creature, fromZones, toZones); ret != RETURNVALUE_NOERROR) {
+	if (auto ret = beforeCreatureZoneChange(creature, {}, toZones); ret != RETURNVALUE_NOERROR) {
 		return false;
 	}
 
@@ -859,7 +857,7 @@ bool Game::internalPlaceCreature(Creature* creature, const Position &pos, bool e
 		addCreatureCheck(creature);
 		creature->onPlacedCreature();
 	}
-
+	afterCreatureZoneChange(creature, {}, toZones);
 	return true;
 }
 
@@ -927,9 +925,7 @@ bool Game::removeCreature(Creature* creature, bool isLogout /* = true*/) {
 	}
 
 	creature->getParent()->postRemoveNotification(creature, nullptr, 0);
-	for (const auto zone : creature->getZones()) {
-		zone->creatureRemoved(creature);
-	}
+	afterCreatureZoneChange(creature, creature->getZones(), {});
 
 	creature->removeList();
 	creature->setRemoved();
@@ -956,6 +952,7 @@ void Game::executeDeath(uint32_t creatureId) {
 	Creature* creature = getCreatureByID(creatureId);
 	if (creature && !creature->isRemoved()) {
 		creature->onDeath();
+		afterCreatureZoneChange(creature, creature->getZones(), {});
 	}
 }
 
@@ -1280,12 +1277,6 @@ ReturnValue Game::internalMoveCreature(Creature &creature, Tile &toTile, uint32_
 		if (field && !field->isBlocking() && field->getDamage() != 0) {
 			return RETURNVALUE_NOTPOSSIBLE;
 		}
-	}
-
-	auto fromZones = creature.getZones();
-	auto toZones = toTile.getZones();
-	if (auto ret = onCreatureZoneChange(&creature, fromZones, toZones); ret != RETURNVALUE_NOERROR) {
-		return ret;
 	}
 
 	map.moveCreature(creature, toTile);
@@ -2412,12 +2403,6 @@ ReturnValue Game::internalTeleport(Thing* thing, const Position &newPos, bool pu
 	}
 
 	if (Creature* creature = thing->getCreature()) {
-		auto fromZones = creature->getZones();
-		auto toZones = toTile->getZones();
-		if (auto ret = onCreatureZoneChange(creature, fromZones, toZones); ret != RETURNVALUE_NOERROR) {
-			return ret;
-		}
-
 		ReturnValue ret = toTile->queryAdd(0, *creature, 1, FLAG_NOLIMIT);
 		if (ret != RETURNVALUE_NOERROR) {
 			return ret;
@@ -3714,7 +3699,7 @@ void Game::playerSetShowOffSocket(uint32_t playerId, Outfit_t &outfit, const Pos
 		outfit.lookAddons = 0;
 	}
 
-	const auto &mount = mounts.getMountByClientID(outfit.lookMount);
+	const auto mount = mounts.getMountByClientID(outfit.lookMount);
 	if (!mount || !player->hasMount(mount)) {
 		outfit.lookMount = 0;
 	}
@@ -5356,7 +5341,7 @@ void Game::playerChangeOutfit(uint32_t playerId, Outfit_t outfit, uint8_t isMoun
 	}
 
 	if (outfit.lookMount != 0) {
-		const auto &mount = mounts.getMountByClientID(outfit.lookMount);
+		const auto mount = mounts.getMountByClientID(outfit.lookMount);
 		if (!mount) {
 			return;
 		}
@@ -5376,7 +5361,7 @@ void Game::playerChangeOutfit(uint32_t playerId, Outfit_t outfit, uint8_t isMoun
 
 		auto deltaSpeedChange = mount->speed;
 		if (player->isMounted()) {
-			const auto &prevMount = mounts.getMountByID(player->getCurrentMount());
+			const auto prevMount = mounts.getMountByID(player->getCurrentMount());
 			if (prevMount) {
 				deltaSpeedChange -= prevMount->speed;
 			}
@@ -5963,11 +5948,11 @@ bool Game::combatBlockHit(CombatDamage &damage, Creature* attacker, Creature* ta
 		if (!damage.extension && attacker) {
 			if (targetPlayer && attacker->getMonster() && damage.primary.type != COMBAT_HEALING) {
 				// Charm rune (target as player)
-				const auto &mType = g_monsters().getMonsterType(attacker->getName());
+				const auto mType = g_monsters().getMonsterType(attacker->getName());
 				if (mType) {
 					charmRune_t activeCharm = g_iobestiary().getCharmFromTarget(targetPlayer, mType);
 					if (activeCharm == CHARM_PARRY) {
-						const auto &charm = g_iobestiary().getBestiaryCharm(activeCharm);
+						const auto charm = g_iobestiary().getBestiaryCharm(activeCharm);
 						if (charm && charm->type == CHARM_DEFENSIVE && (charm->chance > normal_random(0, 100))) {
 							g_iobestiary().parseCharmCombat(charm, targetPlayer, attacker, (damage.primary.value + damage.secondary.value));
 						}
@@ -6356,7 +6341,7 @@ bool Game::combatChangeHealth(Creature* attacker, Creature* target, CombatDamage
 		if (damage.origin != ORIGIN_NONE) {
 			const auto &events = target->getCreatureEvents(CREATURE_EVENT_HEALTHCHANGE);
 			if (!events.empty()) {
-				for (const auto &creatureEvent : events) {
+				for (const auto creatureEvent : events) {
 					creatureEvent->executeHealthChange(target, attacker, damage);
 				}
 				damage.origin = ORIGIN_NONE;
@@ -6557,7 +6542,7 @@ bool Game::combatChangeHealth(Creature* attacker, Creature* target, CombatDamage
 			// Charm rune (target as player)
 			if (charmRune_t activeCharm = g_iobestiary().getCharmFromTarget(targetPlayer, g_monsters().getMonsterTypeByRaceId(attackerMonster->getRaceId()));
 				activeCharm != CHARM_NONE && activeCharm != CHARM_CLEANSE) {
-				if (const auto &charm = g_iobestiary().getBestiaryCharm(activeCharm);
+				if (const auto charm = g_iobestiary().getBestiaryCharm(activeCharm);
 					charm->type == CHARM_DEFENSIVE && charm->chance > normal_random(0, 100) && g_iobestiary().parseCharmCombat(charm, targetPlayer, attacker, (damage.primary.value + damage.secondary.value))) {
 					return false; // Dodge charm
 				}
@@ -6586,7 +6571,7 @@ bool Game::combatChangeHealth(Creature* attacker, Creature* target, CombatDamage
 				if (damage.origin != ORIGIN_NONE) {
 					const auto &events = target->getCreatureEvents(CREATURE_EVENT_MANACHANGE);
 					if (!events.empty()) {
-						for (const auto &creatureEvent : events) {
+						for (const auto creatureEvent : events) {
 							creatureEvent->executeManaChange(target, attacker, damage);
 						}
 						healthChange = damage.primary.value + damage.secondary.value;
@@ -6685,7 +6670,7 @@ bool Game::combatChangeHealth(Creature* attacker, Creature* target, CombatDamage
 		if (damage.origin != ORIGIN_NONE) {
 			const auto &events = target->getCreatureEvents(CREATURE_EVENT_HEALTHCHANGE);
 			if (!events.empty()) {
-				for (const auto &creatureEvent : events) {
+				for (const auto creatureEvent : events) {
 					creatureEvent->executeHealthChange(target, attacker, damage);
 				}
 				damage.origin = ORIGIN_NONE;
@@ -6705,7 +6690,7 @@ bool Game::combatChangeHealth(Creature* attacker, Creature* target, CombatDamage
 		if (realDamage == 0) {
 			return true;
 		} else if (realDamage >= targetHealth) {
-			for (const auto &creatureEvent : target->getCreatureEvents(CREATURE_EVENT_PREPAREDEATH)) {
+			for (const auto creatureEvent : target->getCreatureEvents(CREATURE_EVENT_PREPAREDEATH)) {
 				if (!creatureEvent->executeOnPrepareDeath(target, attacker)) {
 					return false;
 				}
@@ -6933,7 +6918,7 @@ void Game::applyCharmRune(
 	}
 	if (charmRune_t activeCharm = g_iobestiary().getCharmFromTarget(attackerPlayer, g_monsters().getMonsterTypeByRaceId(targetMonster->getRaceId()));
 		activeCharm != CHARM_NONE) {
-		const auto &charm = g_iobestiary().getBestiaryCharm(activeCharm);
+		const auto charm = g_iobestiary().getBestiaryCharm(activeCharm);
 		int8_t chance = charm->id == CHARM_CRIPPLE ? charm->chance : charm->chance + attackerPlayer->getCharmChanceModifier();
 		g_logger().debug("charm chance: {}, base: {}, bonus: {}", chance, charm->chance, attackerPlayer->getCharmChanceModifier());
 		if (charm->type == CHARM_OFFENSIVE && (chance >= normal_random(0, 100))) {
@@ -6959,8 +6944,8 @@ void Game::applyManaLeech(
 	if (targetMonster) {
 		if (uint16_t playerCharmRaceidVoid = attackerPlayer->parseRacebyCharm(CHARM_VOID, false, 0);
 			playerCharmRaceidVoid != 0 && playerCharmRaceidVoid == targetMonster->getRace()) {
-			if (const auto &voidc = g_iobestiary().getBestiaryCharm(CHARM_VOID)) {
-				manaSkill += voidc->percent;
+			if (const auto charm = g_iobestiary().getBestiaryCharm(CHARM_VOID)) {
+				manaSkill += charm->percent;
 			}
 		}
 	}
@@ -7030,7 +7015,7 @@ bool Game::combatChangeMana(Creature* attacker, Creature* target, CombatDamage &
 		if (damage.origin != ORIGIN_NONE) {
 			const auto &events = target->getCreatureEvents(CREATURE_EVENT_MANACHANGE);
 			if (!events.empty()) {
-				for (const auto &creatureEvent : events) {
+				for (const auto creatureEvent : events) {
 					creatureEvent->executeManaChange(target, attacker, damage);
 				}
 				damage.origin = ORIGIN_NONE;
@@ -7127,7 +7112,7 @@ bool Game::combatChangeMana(Creature* attacker, Creature* target, CombatDamage &
 		if (damage.origin != ORIGIN_NONE) {
 			const auto &events = target->getCreatureEvents(CREATURE_EVENT_MANACHANGE);
 			if (!events.empty()) {
-				for (const auto &creatureEvent : events) {
+				for (const auto creatureEvent : events) {
 					creatureEvent->executeManaChange(target, attacker, damage);
 				}
 				damage.origin = ORIGIN_NONE;
@@ -7137,11 +7122,11 @@ bool Game::combatChangeMana(Creature* attacker, Creature* target, CombatDamage &
 
 		if (targetPlayer && attacker && attacker->getMonster()) {
 			// Charm rune (target as player)
-			const auto &mType = g_monsters().getMonsterType(attacker->getName());
+			const auto mType = g_monsters().getMonsterType(attacker->getName());
 			if (mType) {
 				charmRune_t activeCharm = g_iobestiary().getCharmFromTarget(targetPlayer, mType);
 				if (activeCharm != CHARM_NONE && activeCharm != CHARM_CLEANSE) {
-					const auto &charm = g_iobestiary().getBestiaryCharm(activeCharm);
+					const auto charm = g_iobestiary().getBestiaryCharm(activeCharm);
 					if (charm && charm->type == CHARM_DEFENSIVE && (charm->chance > normal_random(0, 100))) {
 						if (g_iobestiary().parseCharmCombat(charm, targetPlayer, attacker, manaChange)) {
 							sendDoubleSoundEffect(targetPlayer->getPosition(), charm->soundCastEffect, charm->soundImpactEffect, targetPlayer);
@@ -7749,7 +7734,7 @@ void Game::sendGuildMotd(uint32_t playerId) {
 		return;
 	}
 
-	const auto &guild = player->getGuild();
+	const auto guild = player->getGuild();
 	if (guild) {
 		player->sendChannelMessage("Message of the Day", guild->getMotd(), TALKTYPE_CHANNEL_R1, CHANNEL_GUILD);
 	}
@@ -8774,7 +8759,7 @@ void Game::parsePlayerExtendedOpcode(uint32_t playerId, uint8_t opcode, const st
 		return;
 	}
 
-	for (const auto &creatureEvent : player->getCreatureEvents(CREATURE_EVENT_EXTENDED_OPCODE)) {
+	for (const auto creatureEvent : player->getCreatureEvents(CREATURE_EVENT_EXTENDED_OPCODE)) {
 		creatureEvent->executeExtendedOpcode(player, opcode, buffer);
 	}
 }
@@ -8968,7 +8953,7 @@ void Game::playerSetMonsterPodium(uint32_t playerId, uint32_t monsterRaceId, con
 		monsterRaceId = static_cast<uint32_t>(podiumMonsterRace->getInteger());
 	}
 
-	const auto &mType = g_monsters().getMonsterTypeByRaceId(static_cast<uint16_t>(monsterRaceId), itemId == ITEM_PODIUM_OF_VIGOUR);
+	const auto mType = g_monsters().getMonsterTypeByRaceId(static_cast<uint16_t>(monsterRaceId), itemId == ITEM_PODIUM_OF_VIGOUR);
 	if (!mType) {
 		player->sendCancelMessage(RETURNVALUE_CONTACTADMINISTRATOR);
 		g_logger().error("[{}] player {} is trying to add invalid monster to podium {}", __FUNCTION__, player->getName(), item->getName());
@@ -9243,7 +9228,7 @@ std::shared_ptr<Guild> Game::getGuildByName(const std::string &name, bool allowO
 	return it->second;
 }
 
-void Game::addGuild(const std::shared_ptr<Guild> &guild) {
+void Game::addGuild(const std::shared_ptr<Guild> guild) {
 	if (!guild) {
 		return;
 	}
@@ -9855,49 +9840,57 @@ phmap::parallel_flat_hash_set<T> setDifference(const phmap::parallel_flat_hash_s
 	return setResult;
 }
 
-ReturnValue Game::onCreatureZoneChange(Creature* creature, const phmap::parallel_flat_hash_set<std::shared_ptr<Zone>> &fromZones, const phmap::parallel_flat_hash_set<std::shared_ptr<Zone>> &toZones) {
+ReturnValue Game::beforeCreatureZoneChange(Creature* creature, const phmap::parallel_flat_hash_set<std::shared_ptr<Zone>> &fromZones, const phmap::parallel_flat_hash_set<std::shared_ptr<Zone>> &toZones, bool force /* = false*/) const {
 	if (!creature) {
 		return RETURNVALUE_NOTPOSSIBLE;
 	}
 
 	// fromZones - toZones = zones that creature left
-	auto zonesLeft = setDifference(fromZones, toZones);
+	auto zonesLeaving = setDifference(fromZones, toZones);
 	// toZones - fromZones = zones that creature entered
-	auto zonesEntered = setDifference(toZones, fromZones);
-	// intersection of fromZones and toZones = zones that creature is still in
-	auto zonesStillIn = setDifference(fromZones, zonesLeft);
+	auto zonesEntering = setDifference(toZones, fromZones);
 
-	for (const auto &zone : zonesStillIn) {
-		// creatureAdded is idempotent, so we can just call it. This is useful for
-		// when a creature is added to a zone since the from is going to be the same
-		// as the to.
-		if (zone) {
-			zone->creatureAdded(creature);
-		}
-	}
-
-	if (zonesLeft.empty() && zonesEntered.empty()) {
+	if (zonesLeaving.empty() && zonesEntering.empty()) {
 		return RETURNVALUE_NOERROR;
 	}
 
-	for (const auto &zone : zonesLeft) {
-		bool allowed = g_callbacks().checkCallback(EventCallback_t::zoneOnCreatureLeave, &EventCallback::zoneOnCreatureLeave, zone, creature);
-		if (!allowed) {
+	for (const auto &zone : zonesLeaving) {
+		bool allowed = g_callbacks().checkCallback(EventCallback_t::zoneBeforeCreatureLeave, &EventCallback::zoneBeforeCreatureLeave, zone, creature);
+		if (!force && !allowed) {
 			return RETURNVALUE_NOTPOSSIBLE;
 		}
-	}
-	for (const auto &zone : zonesLeft) {
-		zone->creatureRemoved(creature);
 	}
 
-	for (const auto &zone : zonesEntered) {
-		bool allowed = g_callbacks().checkCallback(EventCallback_t::zoneOnCreatureEnter, &EventCallback::zoneOnCreatureEnter, zone, creature);
-		if (!allowed) {
+	for (const auto &zone : zonesEntering) {
+		bool allowed = g_callbacks().checkCallback(EventCallback_t::zoneBeforeCreatureEnter, &EventCallback::zoneBeforeCreatureEnter, zone, creature);
+		if (!force && !allowed) {
 			return RETURNVALUE_NOTPOSSIBLE;
 		}
 	}
-	for (const auto &zone : zonesEntered) {
+	return RETURNVALUE_NOERROR;
+}
+
+void Game::afterCreatureZoneChange(Creature* creature, const phmap::parallel_flat_hash_set<std::shared_ptr<Zone>> &fromZones, const phmap::parallel_flat_hash_set<std::shared_ptr<Zone>> &toZones) const {
+	if (!creature) {
+		return;
+	}
+
+	// fromZones - toZones = zones that creature left
+	auto zonesLeaving = setDifference(fromZones, toZones);
+	// toZones - fromZones = zones that creature entered
+	auto zonesEntering = setDifference(toZones, fromZones);
+
+	for (const auto &zone : zonesLeaving) {
+		zone->creatureRemoved(creature);
+	}
+	for (const auto &zone : zonesEntering) {
 		zone->creatureAdded(creature);
 	}
-	return RETURNVALUE_NOERROR;
+
+	for (const auto &zone : zonesLeaving) {
+		g_callbacks().executeCallback(EventCallback_t::zoneAfterCreatureLeave, &EventCallback::zoneAfterCreatureLeave, zone, creature);
+	}
+	for (const auto &zone : zonesEntering) {
+		g_callbacks().executeCallback(EventCallback_t::zoneAfterCreatureEnter, &EventCallback::zoneAfterCreatureEnter, zone, creature);
+	}
 }
