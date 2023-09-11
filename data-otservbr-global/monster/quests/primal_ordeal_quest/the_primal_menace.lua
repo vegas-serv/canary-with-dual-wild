@@ -37,7 +37,7 @@ local thePrimalMenaceConfig = {
 			"Beast Sabretooth",
 			"Stalking Stalk",
 			"Sulphider",
-		}
+		},
 	},
 
 	PodConfig = {
@@ -53,7 +53,7 @@ local thePrimalMenaceConfig = {
 }
 
 monster.description = "The Primal Menace"
-monster.experience = 80000
+monster.experience = 0
 monster.outfit = {
 	lookType = 1566,
 	lookHead = 0,
@@ -61,11 +61,11 @@ monster.outfit = {
 	lookLegs = 0,
 	lookFeet = 0,
 	lookAddons = 0,
-	lookMount = 0
+	lookMount = 0,
 }
 
 monster.events = {
-	"ThePrimalMenaceDeath"
+	"ThePrimalMenaceDeath",
 }
 
 monster.health = 400000
@@ -73,10 +73,11 @@ monster.maxHealth = 400000
 monster.race = "blood"
 monster.corpse = 39530
 monster.speed = 180
+monster.manaCost = 0
 
 monster.changeTarget = {
 	interval = 2000,
-	chance = 10
+	chance = 10,
 }
 
 monster.flags = {
@@ -101,7 +102,7 @@ monster.flags = {
 
 monster.light = {
 	level = 0,
-	color = 0
+	color = 0,
 }
 
 monster.voices = {
@@ -138,7 +139,7 @@ monster.elements = {
 	{ type = COMBAT_DROWNDAMAGE, percent = 0 },
 	{ type = COMBAT_ICEDAMAGE, percent = 50 },
 	{ type = COMBAT_HOLYDAMAGE, percent = 40 },
-	{ type = COMBAT_DEATHDAMAGE, percent = 0 }
+	{ type = COMBAT_DEATHDAMAGE, percent = 0 },
 }
 
 monster.immunities = {
@@ -146,7 +147,7 @@ monster.immunities = {
 	{ type = "outfit", condition = false },
 	{ type = "invisible", condition = true },
 	{ type = "drunk", condition = true },
-	{ type = "bleed", condition = false }
+	{ type = "bleed", condition = false },
 }
 
 local function initialize(monster)
@@ -175,7 +176,9 @@ end
 
 local function getHazardPoints(monster)
 	local hazard = Hazard.getByName("hazard.gnomprona-gardens")
-	if not hazard then return 0 end
+	if not hazard then
+		return 0
+	end
 
 	local _, hazardPoints = hazard:getHazardPlayerAndPoints(monster:getDamageMap())
 	return hazardPoints
@@ -280,12 +283,17 @@ local function spawnMonster(monsterId, spawnPosition)
 	end
 
 	local randomMonsterIndex = math.random(#thePrimalMenaceConfig.MonsterConfig.MonsterPool)
+	local primalMonster = Game.createMonster(thePrimalMenaceConfig.MonsterConfig.MonsterPool[randomMonsterIndex], spawnPosition)
+	if not primalMonster then
+		logger.error("Cannot create primal monster {}", thePrimalMenaceConfig.MonsterConfig.MonsterPool[randomMonsterIndex])
+		return
+	end
 	local primalBeastEntry = {
-		Monster = Game.createMonster(thePrimalMenaceConfig.MonsterConfig.MonsterPool[randomMonsterIndex], spawnPosition),
-		Created = os.time()
+		MonsterId = primalMonster:getId(),
+		Created = os.time(),
 	}
-	local monsterMaxHealth = primalBeastEntry.Monster:getMaxHealth()
-	primalBeastEntry.Monster:setHealth(monsterMaxHealth * thePrimalMenaceConfig.MonsterConfig.HpRateOnSpawn)
+	local monsterMaxHealth = primalMonster:getMaxHealth()
+	primalMonster:setHealth(monsterMaxHealth * thePrimalMenaceConfig.MonsterConfig.HpRateOnSpawn)
 
 	local primalBeasts = monster:getStorageValue(thePrimalMenaceConfig.Storage.PrimalBeasts)
 	table.insert(primalBeasts, primalBeastEntry)
@@ -314,13 +322,13 @@ local function handlePrimalBeasts(monster)
 	local indexesToRemove = {}
 
 	for index, beastData in pairs(primalBeasts) do
-		local monster = beastData.Monster
+		local primalMonster = Monster(beastData.MonsterId)
 		local created = beastData.Created
-		if not monster:getHealth() or monster:getHealth() == 0 then
+		if not primalMonster or not primalMonster:getHealth() or primalMonster:getHealth() == 0 then
 			table.insert(indexesToRemove, index)
-		elseif os.time() - created > 20 and monster:getHealth() > 0 then
-			local position = monster:getPosition()
-			monster:remove()
+		elseif os.time() - created > 20 and primalMonster:getHealth() > 0 then
+			local position = primalMonster:getPosition()
+			primalMonster:remove()
 			table.insert(indexesToRemove, index)
 			if position then
 				Game.createMonster("Fungosaurus", position)

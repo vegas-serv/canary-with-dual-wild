@@ -1,5 +1,5 @@
 Hazard = {
-	areas = {}
+	areas = {},
 }
 
 function Hazard.new(prototype)
@@ -46,7 +46,8 @@ function Hazard:getHazardPlayerAndPoints(damageMap)
 end
 
 function Hazard:getPlayerCurrentLevel(player)
-	return player:getStorageValue(self.storageCurrent) < 0 and 0 or player:getStorageValue(self.storageCurrent)
+	local fromStorage = player:getStorageValue(self.storageCurrent)
+	return fromStorage <= 0 and 1 or fromStorage
 end
 
 function Hazard:setPlayerCurrentLevel(player, level)
@@ -56,7 +57,9 @@ function Hazard:setPlayerCurrentLevel(player, level)
 	end
 	player:setStorageValue(self.storageCurrent, level)
 	local zones = player:getZones()
-	if not zones then return true end
+	if not zones then
+		return true
+	end
 	for _, zone in ipairs(zones) do
 		local hazard = Hazard.getByName(zone:getName())
 		if hazard then
@@ -71,7 +74,8 @@ function Hazard:setPlayerCurrentLevel(player, level)
 end
 
 function Hazard:getPlayerMaxLevel(player)
-	return player:getStorageValue(self.storageMax) < 0 and 0 or player:getStorageValue(self.storageMax)
+	local fromStorage = player:getStorageValue(self.storageMax)
+	return fromStorage <= 0 and 1 or fromStorage
 end
 
 function Hazard:levelUp(player)
@@ -91,7 +95,9 @@ end
 
 function Hazard:isInZone(position)
 	local zones = position:getZones()
-	if not zones then return false end
+	if not zones then
+		return false
+	end
 	for _, zone in ipairs(zones) do
 		local hazard = Hazard.getByName(zone:getName())
 		if hazard then
@@ -110,13 +116,17 @@ function Hazard:register()
 
 	function event.afterEnter(zone, creature)
 		local player = creature:getPlayer()
-		if not player then return end
+		if not player then
+			return
+		end
 		player:setHazardSystemPoints(self:getPlayerCurrentLevel(player))
 	end
 
 	function event.afterLeave(zone, creature)
 		local player = creature:getPlayer()
-		if not player then return end
+		if not player then
+			return
+		end
 		player:setHazardSystemPoints(0)
 	end
 
@@ -129,7 +139,7 @@ function Hazard.getByName(name)
 end
 
 if not HazardMonster then
-	HazardMonster = { eventName = 'HazardMonster' }
+	HazardMonster = { eventName = "HazardMonster" }
 end
 
 function HazardMonster.onSpawn(monster, position)
@@ -139,7 +149,9 @@ function HazardMonster.onSpawn(monster, position)
 	end
 
 	local zones = position:getZones()
-	if not zones then return true end
+	if not zones then
+		return true
+	end
 	for _, zone in ipairs(zones) do
 		local hazard = Hazard.getByName(zone:getName())
 		if hazard then

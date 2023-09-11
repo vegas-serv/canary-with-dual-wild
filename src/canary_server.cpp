@@ -108,7 +108,8 @@ __attribute__ ((used)) void saveServer() {
 
 			loaderSignal.notify_all();
 		}
-	});
+	},
+						   "CanaryServer::run");
 
 	loaderSignal.wait(loaderUniqueLock, [this] { return loaderDone || loadFailed; });
 
