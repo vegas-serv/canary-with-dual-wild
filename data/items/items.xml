@@ -4823,7 +4823,6 @@
 	<item id="3048" article="a" name="might ring">
 		<attribute key="showCharges" value="1"/>
 		<attribute key="showAttributes" value="1"/>
-<!-- 		<attribute key="absorbpercentall" value="20"/> -->
 		<attribute key="absorbpercentphysical" value="20"/>
 		<attribute key="absorbpercentfire" value="20"/>
 		<attribute key="absorbpercentpoison" value="20"/>
@@ -7673,7 +7672,7 @@
 		<attribute key="weight" value="1500"/>
 	</item>
 	<item id="3453" article="a" name="scythe">
-		<attribute key="weaponType" value="axe"/>
+		<attribute key="weaponType" value="club"/>
 		<attribute key="slotType" value="two-handed"/>
 		<attribute key="attack" value="8"/>
 		<attribute key="defense" value="3"/>
@@ -19146,7 +19145,7 @@
 		<attribute key="weight" value="700"/>
 	</item>
 	<item id="9304" article="a" name="shockwave amulet">
-		<attribute key="showattributes" value="1" />
+		<attribute key="showattributes" value="1"/>
 		<attribute key="description" value="It tickles your neck in a rather pleasant way and absorbs loads of damage"/>
 		<attribute key="showCharges" value="1"/>
 		<attribute key="absorbpercentphysical" value="60"/>
@@ -19383,7 +19382,7 @@
 	</item>
 	<item id="9384" article="a" name="scythe of the reaper">
 		<attribute key="description" value="This scythe has harvested countless souls and still hungers for more"/>
-		<attribute key="weaponType" value="club"/>
+		<attribute key="weaponType" value="axe"/>
 		<attribute key="slotType" value="two-handed"/>
 		<attribute key="attack" value="16"/>
 		<attribute key="defense" value="6"/>
@@ -19433,7 +19432,7 @@
 		<attribute key="weight" value="500"/>
 	</item>
 	<item id="9393" article="a" name="claw of 'The Noxious Spawn'">
-		<attribute key="description" value="It's like a glove and you can't wear a ring on it. You are not sure if you should really put it on." />
+		<attribute key="description" value="It's like a glove and you can't wear a ring on it. You are not sure if you should really put it on."/>
 		<attribute key="transformequipto" value="9392"/>
 		<attribute key="weight" value="500"/>
 	</item>
@@ -23625,7 +23624,7 @@
 		<attribute key="weight" value="4000"/>
 	</item>
 	<item id="12683" article="a" name="heavy trident">
-		<attribute key="weaponType" value="sword"/>
+		<attribute key="weaponType" value="axe"/>
 		<attribute key="slotType" value="two-handed"/>
 		<attribute key="attack" value="35"/>
 		<attribute key="defense" value="17"/>
@@ -30845,7 +30844,7 @@
 		<attribute key="weight" value="6200"/>
 	</item>
 	<item id="19250" article="a" name="reward chest">
-		<attribute key="type" value="rewardchest" />
+		<attribute key="type" value="rewardchest"/>
 		<attribute key="description" value="This chest contains your rewards earned in battles."/>
 		<attribute key="moveable" value="0"/>
 		<attribute key="allowpickUpAble" value="0"/>
@@ -44168,7 +44167,7 @@
 		</attribute>
 	</item>
 	<item id="29432" article="a" name="hireling lamp">
-		<attribute key="weight" value="1000" />
+		<attribute key="weight" value="1000"/>
 		<attribute key="description" value="This mysterious lamp summons your very own personal hireling." />
 		<attribute key="moveable" value="0" />
 	</item>
@@ -44222,6 +44221,7 @@
 	</item>
 	<item id="29980" article="a" name="portal">
 		<attribute key="type" value="teleport"/>
+		<attribute key="effect" value="teleport"/>
 	</item>
 	<item fromid="29981" toid="29986" article="an" name="old desk"/>
 	<!-- possible quest -->
@@ -47251,8 +47251,8 @@
 		<attribute key="weaponType" value="sword"/>
 		<attribute key="slotType" value="two-handed"/>
 		<attribute key="elementearth" value="49"/>
-		<attribute key="skillsword" value="5"/>
-		<attribute key="attack" value="17"/>
+		<attribute key="skillsword" value="8"/>
+		<attribute key="attack" value="25"/>
 		<attribute key="defense" value="32"/>
 		<attribute key="weight" value="8100"/>
 		<attribute key="imbuementslot" value="2">
@@ -51211,6 +51211,7 @@
 	</item>
 	<item id="34015" article="a" name="lion statue"/>
 	<item id="34016" article="a" name="lit torch">
+		<attribute key="showAttributes" value="1"/>
 		<attribute key="description" value="It sparkles slightly"/>
 		<attribute key="absorbpercentholy" value="2"/>
 		<attribute key="weight" value="500"/>
@@ -55041,6 +55042,7 @@
 		<attribute key="cleavepercent" value="3"/>
         <attribute key="reflectdamage" value="3"/>
 		<attribute key="weight" value="3500"/>
+		<attribute key="healingmagiclevelpoints" value="2"/>
 		<attribute key="imbuementslot" value="2">
 			<attribute key="mana leech" value="3"/>
 			<attribute key="skillboost axe" value="3"/>
@@ -55063,6 +55065,7 @@
 		<attribute key="cleavepercent" value="3"/>
         <attribute key="reflectdamage" value="3"/>
 		<attribute key="weight" value="3600"/>
+		<attribute key="healingmagiclevelpoints" value="2"/>
 		<attribute key="imbuementslot" value="2">
 			<attribute key="mana leech" value="3"/>
 			<attribute key="skillboost axe" value="3"/>
@@ -56418,7 +56421,7 @@
 		<attribute key="weight" value="500"/>
 	</item>
 	<item id="37170" name="unremarkable hammer">
-		<attribute key="description" value="Charge it by using it on (handing it to) a Community Manager of your choice" />
+		<attribute key="description" value="Charge it by using it on (handing it to) a Community Manager of your choice"/>
 		<attribute key="weight" value="6450"/>
 	</item>
 	<item id="37171" name="the ban hammer">
@@ -56652,7 +56655,7 @@
 		<attribute key="description" value="Juding by the pinching of his beak, this one seems to be born to joust"/>
 		<attribute key="wrapableto" value="23398"/>
 	</item>
-	<!--  Unmoveable decorative items --> 
+	<!--  Unmoveable decorative items -->
 	<item id="37213" article="a" name="blue balloon"/>
 	<item id="37214" article="a" name="green balloon"/>
 	<item id="37215" article="an" name="orange balloon"/>
@@ -57245,26 +57248,26 @@
 		<attribute key="wrapableto" value="23398"/>
 	</item>
 	<item id="37530" article="a" name="bottle of champagne">
-		<attribute key="description" value="It was created by Tibia's finest vintagers for the celebration of 25 years of Tibia" />
+		<attribute key="description" value="It was created by Tibia's finest vintagers for the celebration of 25 years of Tibia"/>
 		<attribute key="weight" value="100"/>
 	</item>
 	<item id="37531" article="a" name="candy floss">
 		<attribute key="weight" value="40"/>
 	</item>
 	<item id="37532" article="an" name="ice cream cone">
-		<attribute key="description" value="It is covered in colourful sprinkles" />
+		<attribute key="description" value="It is covered in colourful sprinkles"/>
 		<attribute key="weight" value="70"/>
 	</item>
 	<item id="37533" article="a" name="birthday layer cake">
-		<attribute key="description" value="It was created by Tibia's finest bakers for the celebration of 25 years of Tibia" />
+		<attribute key="description" value="It was created by Tibia's finest bakers for the celebration of 25 years of Tibia"/>
 		<attribute key="weight" value="500"/>
 	</item>
 	<item fromid="37534" toid="37535" article="a" name="tapestry of honour">
-		<attribute key="description" value="It was awarded during the festivities of Tibia's anniversary" />
+		<attribute key="description" value="It was awarded during the festivities of Tibia's anniversary"/>
 		<attribute key="weight" value="800"/>
 	</item>
 	<item id="37536" article="a" name="changing backpack">
-		<attribute key="description" value="It changes its appearance in the course of years, just like Tibia" />
+		<attribute key="description" value="It changes its appearance in the course of years, just like Tibia"/>
 		<attribute key="containersize" value="20"/>
 		<attribute key="weight" value="1500"/>
 		<attribute key="imbuementslot" value="1">
@@ -57291,7 +57294,7 @@
 		<attribute key="weight" value="1200"/>
 	</item>
 	<item id="37546" article="a" name="tapestry of honour">
-		<attribute key="description" value="It was awarded during the festivities of Tibia's anniversary" />
+		<attribute key="description" value="It was awarded during the festivities of Tibia's anniversary"/>
 	</item>
 	<item fromid="37547" toid="37556" name="presents">
 		<attribute key="wrapableto" value="23473"/>
@@ -57331,27 +57334,27 @@
 		<attribute key="weight" value="2500"/>
 	</item>
 	<item id="37566" article="a" name="blue and red presents kit">
-		<attribute key="description" value="Use it in your house to place a blue and a red present" />
+		<attribute key="description" value="Use it in your house to place a blue and a red present"/>
 		<attribute key="weight" value="2500"/>
 	</item>
 	<item id="37567" article="a" name="blue present kit">
-		<attribute key="description" value="Use it in your house to place a blue present" />
+		<attribute key="description" value="Use it in your house to place a blue present"/>
 		<attribute key="weight" value="2500"/>
 	</item>
 	<item id="37568" article="a" name="red present kit">
-		<attribute key="description" value="Use it in your house to place a red present" />
+		<attribute key="description" value="Use it in your house to place a red present"/>
 		<attribute key="weight" value="2500"/>
 	</item>
 	<item id="37569" article="a" name="small blue present kit">
-		<attribute key="description" value="Use it in your house to place a small blue present" />
+		<attribute key="description" value="Use it in your house to place a small blue present"/>
 		<attribute key="weight" value="2500"/>
 	</item>
 	<item id="37570" article="a" name="yellow present kit">
-		<attribute key="description" value="Use it in your house to place a yellow present" />
+		<attribute key="description" value="Use it in your house to place a yellow present"/>
 		<attribute key="weight" value="2500"/>
 	</item>
 	<item id="37571" article="an" name="another yellow present kit">
-		<attribute key="description" value="Use it in your house to place another yellow present" />
+		<attribute key="description" value="Use it in your house to place another yellow present"/>
 		<attribute key="weight" value="2500"/>
 	</item>
 	<item id="37572" article="a" name="vessel of Gaz'haragoth">
@@ -57527,6 +57530,10 @@
 		</attribute>
 	</item>
 	<item id="37611" name="Morshabaal's mask">
+		<!--attribute key="firemagiclevelpoints" value="1"/-->
+		<!--attribute key="icemagiclevelpoints" value="1"/-->
+		<!--attribute key="earthmagiclevelpoints" value="1"/-->
+		<!--attribute key="energymagiclevelpoints" value="1"/-->
 		<attribute key="weight" value="4100"/>
 	</item>
 	<item id="37613" article="a" name="Morshabaal's brain">
@@ -57566,31 +57573,31 @@
 	<item id="37711" name="7197 Theons" />
 	<item id="37712" name="200 Theons" />
 	<item id="37717" article="a" name="dragon pinata kit">
-		<attribute key="description" value="Use it in your house to place a dragon pinata" />
+		<attribute key="description" value="Use it in your house to place a dragon pinata"/>
 		<attribute key="weight" value="2500"/>
 	</item>
 	<item id="37743" article="a" name="draptor doll">
-		<attribute key="description" value="Only the chosen ones have witnessed this extremely rare phenomenon of draptor transformation. Awarded by TibiaDraptor.com" />
+		<attribute key="description" value="Only the chosen ones have witnessed this extremely rare phenomenon of draptor transformation. Awarded by TibiaDraptor.com"/>
 		<attribute key="weight" value="1116"/>
 	</item>
 	<item id="37744" article="a" name="draptor doll">
-		<attribute key="description" value="Only the chosen ones have witnessed this extremely rare phenomenon of draptor transformation. Awarded by TibiaDraptor.com" />
+		<attribute key="description" value="Only the chosen ones have witnessed this extremely rare phenomenon of draptor transformation. Awarded by TibiaDraptor.com"/>
 		<attribute key="weight" value="1116"/>
 		<attribute key="duration" value="2"/>
 		<attribute key="decayto" value="37745"/>
 	</item>
 	<item id="37745" article="a" name="draptor doll">
-		<attribute key="description" value="Only the chosen ones have witnessed this extremely rare phenomenon of draptor transformation. Awarded by TibiaDraptor.com" />
+		<attribute key="description" value="Only the chosen ones have witnessed this extremely rare phenomenon of draptor transformation. Awarded by TibiaDraptor.com"/>
 		<attribute key="weight" value="1116"/>
 	</item>
 	<item id="37746" article="a" name="draptor doll">
-		<attribute key="description" value="Only the chosen ones have witnessed this extremely rare phenomenon of draptor transformation. Awarded by TibiaDraptor.com" />
+		<attribute key="description" value="Only the chosen ones have witnessed this extremely rare phenomenon of draptor transformation. Awarded by TibiaDraptor.com"/>
 		<attribute key="weight" value="1116"/>
 		<attribute key="duration" value="2"/>
 		<attribute key="decayto" value="37743"/>
 	</item>
 	<item fromid="37749" toid="37750" article="a" name="dark oracle">
-		<attribute key="description" value="Rumours say that someone took the skull of Goshnar from his grave to create this scary magical device. Awarded by TibiaVip.app" />
+		<attribute key="description" value="Rumours say that someone took the skull of Goshnar from his grave to create this scary magical device. Awarded by TibiaVip.app"/>
 		<attribute key="weight" value="666"/>
 	</item>
 	<item fromid="37763" toid="37774" name="Zaoan bamboo tiles">
@@ -57758,11 +57765,11 @@
 		<attribute key="wrapableTo" value="23398"/>
 	</item>
 	<item id="37798" article="a" name="Zaoan bonsai">
-		<attribute key="description" value="It looks and feels like a miniature tree" />
+		<attribute key="description" value="It looks and feels like a miniature tree"/>
 		<attribute key="wrapableto" value="23398"/>
 	</item>
 	<item id="37799" article="a" name="Zaoan pot bamboo">
-		<attribute key="description" value="Bamboo from the Zaoan plains" />
+		<attribute key="description" value="Bamboo from the Zaoan plains"/>
 		<attribute key="wrapableto" value="23398"/>
 	</item>
 	<item id="37800" article="a" name="Zaoan drawing">
@@ -57795,17 +57802,17 @@
 	</item>
 	<item id="37810" name="Morshabaal's extract" />
 	<item fromid="37811" toid="37812" article = "a" name="sculpture of a fox">
-		<attribute key="description" value="It symbolises the spirit of the fox. A mystic aura surrounds this sculpture" />
+		<attribute key="description" value="It symbolises the spirit of the fox. A mystic aura surrounds this sculpture"/>
 		<attribute key="wrapableto" value="23398"/>
 	</item>
 	<item id="37813" article = "a" name="sculpture of a fox">
-		<attribute key="description" value="It symbolises the spirit of the fox. A mystic aura surrounds this sculpture" />
+		<attribute key="description" value="It symbolises the spirit of the fox. A mystic aura surrounds this sculpture"/>
 		<attribute key="wrapableto" value="23398"/>
 		<attribute key="duration" value="4"/>
 		<attribute key="decayto" value="37812"/>
 	</item>
 	<item id="37814" article = "a" name="sculpture of a fox">
-		<attribute key="description" value="It symbolises the spirit of the fox. A mystic aura surrounds this sculpture" />
+		<attribute key="description" value="It symbolises the spirit of the fox. A mystic aura surrounds this sculpture"/>
 		<attribute key="wrapableto" value="23398"/>
 		<attribute key="duration" value="2"/>
 		<attribute key="decayto" value="37811"/>
@@ -57990,23 +57997,23 @@
 	<item fromid="38662" toid="38674" name="flooded sand"/>
 	<item fromid="38675" toid="38676" name="lianas"/>
 	<item id="38677" article="a" name="beaver of wisdom">
-		<attribute key="description" value="This wise beaver will happily solve all your math problems! Awarded by TibiaPal.com" />
+		<attribute key="description" value="This wise beaver will happily solve all your math problems! Awarded by TibiaPal.com"/>
 		<attribute key="weight" value="600"/>
 	</item>
 	<item id="38678" name="lianas"/>
 	<item id="38680" article="a" name="beaver of wisdom">
-		<attribute key="description" value="This wise beaver will happily solve all your math problems! Awarded by TibiaPal.com" />
+		<attribute key="description" value="This wise beaver will happily solve all your math problems! Awarded by TibiaPal.com"/>
 		<attribute key="weight" value="600"/>
 		<attribute key="duration" value="3"/>
 		<attribute key="decayto" value="38704"/>
 	</item>
 	<item fromid="38681" toid="38703" name="lianas"/>
 	<item id="38704" article="a" name="beaver of wisdom">
-		<attribute key="description" value="This wise beaver will happily solve all your math problems! Awarded by TibiaPal.com" />
+		<attribute key="description" value="This wise beaver will happily solve all your math problems! Awarded by TibiaPal.com"/>
 		<attribute key="weight" value="600"/>
 	</item>
 	<item id="38705" article="a" name="beaver of wisdom">
-		<attribute key="description" value="This wise beaver will happily solve all your math problems! Awarded by TibiaPal.com" />
+		<attribute key="description" value="This wise beaver will happily solve all your math problems! Awarded by TibiaPal.com"/>
 		<attribute key="weight" value="600"/>
 		<attribute key="duration" value="4"/>
 		<attribute key="decayto" value="38677"/>
@@ -58060,7 +58067,7 @@
 	<item fromid="38895" toid="38926" article="a" name="stone floor"/>
 	<item fromid="38927" toid="38932" article="a" name="water trickle"/>
 	<item id="38934" article="a" name="handwritten message">
-		<attribute key="description" value="&quot;Myladies, I was so bold as to take this little treasure for myself. Very pleasing to the eye, indeed. Take this as a warning and stay clear of my territory. Yours sincerely, Sir Valorcrest&quot;" />
+		<attribute key="description" value="&quot;Myladies, I was so bold as to take this little treasure for myself. Very pleasing to the eye, indeed. Take this as a warning and stay clear of my territory. Yours sincerely, Sir Valorcrest&quot;"/>
 		<attribute key="weight" value="100"/>
 	</item>
 	<item fromid="38935" toid="38979" article="a" name="stone floor"/>
@@ -58068,23 +58075,23 @@
 	<item id="39003" article="a" name="tentugly"/>
 	<item fromid="39004" toid="39035" name="shallow water"/>
 	<item id="39036" article="a" name="Exclusive Hunt">
-	<attribute key="description" value="12 hrs Exclusive Hunt Dungeon Grimeleech" />
+	<attribute key="description" value="12 hrs Exclusive Hunt Dungeon Grimeleech"/>
 		<attribute key="weight" value="175"/>
 	</item>
 	<item id="39037" article="a" name="Exclusive Hunt">
-	<attribute key="description" value="12 hrs Exclusive Hunt Dungeon Fury" />
+	<attribute key="description" value="12 hrs Exclusive Hunt Dungeon Fury"/>
 		<attribute key="weight" value="175"/>
 	</item>
 	<item id="39038" article="a" name="Exclusive Hunt">
-	<attribute key="description" value="12 hrs Exclusive Hunt Dungeon Hellflayer" />
+	<attribute key="description" value="12 hrs Exclusive Hunt Dungeon Hellflayer"/>
 		<attribute key="weight" value="175"/>
 	</item>
 	<item id="39039" article="a" name="Exclusive Hunt">
-	<attribute key="description" value="12 hrs Exclusive Hunt Dungeon Vexclaw" />
+	<attribute key="description" value="12 hrs Exclusive Hunt Dungeon Vexclaw"/>
 		<attribute key="weight" value="175"/>
 	</item>
 	<item id="39040" article="a" name="Exclusive Hunt">
-	<attribute key="description" value="12 hrs Exclusive Hunt Dungeon Many Faces" />
+	<attribute key="description" value="12 hrs Exclusive Hunt Dungeon Many Faces"/>
 		<attribute key="weight" value="175"/>
 	</item>
 	<item fromid="39041" toid="39091" article="a" name="bridge"/>
