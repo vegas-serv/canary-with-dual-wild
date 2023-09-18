@@ -145,11 +145,8 @@ public:
 		return paidUntil;
 	}
 
-	void setSize(uint32_t newSize) {
-		this->size = newSize;
-	}
-	uint32_t getSize() const {
-		return size;
+	size_t getSize() const {
+		return houseTiles.size();
 	}
 	uint32_t getPrice() const;
 
@@ -235,7 +232,6 @@ private:
 	uint32_t ownerAccountId = 0;
 	uint32_t rentWarnings = 0;
 	uint32_t rent = 0;
-	uint32_t size = 0;
 	uint32_t townId = 0;
 	uint32_t maxBeds = 4;
 	int32_t bedsCount = -1;
