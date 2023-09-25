@@ -2024,6 +2024,26 @@ std::string Item::parseShowAttributesDescription(std::shared_ptr<Item> item, con
 				}
 				itemDescription << '%';
 			}
+			
+			if (itemType.abilities->getHealthGain() > 0) {
+                if (begin) {
+                    begin = false;
+                    itemDescription << " (";
+                } else {
+                    itemDescription << ", ";
+                }
+				itemDescription << "+" << std::showpos << itemType.abilities->getHealthGain() << std::noshowpos << " hp/s";
+            }
+       
+            if (itemType.abilities->getManaGain() > 0) {
+                if (begin) {
+                    begin = false;
+                    itemDescription << " (";
+                } else {
+                    itemDescription << ", ";
+                }
+				itemDescription << "+" << std::showpos << itemType.abilities->getManaGain() << std::noshowpos << " mana/s";
+            }
 
 			if (itemType.abilities->stats[STAT_MAGICPOINTS]) {
 				if (begin) {
