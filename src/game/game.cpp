@@ -964,8 +964,8 @@ bool Game::removeCreature(std::shared_ptr<Creature> creature, bool isLogout /* =
 void Game::executeDeath(uint32_t creatureId) {
 	std::shared_ptr<Creature> creature = getCreatureByID(creatureId);
 	if (creature && !creature->isRemoved()) {
-		creature->onDeath();
 		afterCreatureZoneChange(creature, creature->getZones(), {});
+		creature->onDeath();
 	}
 }
 
@@ -1610,7 +1610,9 @@ ReturnValue Game::checkMoveItemToCylinder(std::shared_ptr<Player> player, std::s
 
 		if (item->isStoreItem()) {
 			bool isValidMoveItem = false;
-			if (auto fromHouseTile = fromCylinder->getTile()->dynamic_self_cast<HouseTile>(); fromHouseTile && fromHouseTile->getHouse()->getOwner() != player->getGUID()) {
+			auto fromHouseTile = fromCylinder->getTile();
+			auto house = fromHouseTile ? fromHouseTile->getHouse() : nullptr;
+			if (house && house->getHouseAccessLevel(player) < HOUSE_OWNER) {
 				return RETURNVALUE_NOTPOSSIBLE;
 			}
 
@@ -1635,10 +1637,11 @@ ReturnValue Game::checkMoveItemToCylinder(std::shared_ptr<Player> player, std::s
 			}
 		}
 	} else if (toCylinder->getTile()) {
-		const auto toHouseTile = std::dynamic_pointer_cast<HouseTile>(toCylinder->getTile());
+		const auto toHouseTile = toCylinder->getTile();
+		auto house = toHouseTile ? toHouseTile->getHouse() : nullptr;
 		if (fromCylinder->getContainer()) {
 			if (item->isStoreItem()) {
-				if (!toHouseTile || toHouseTile && toHouseTile->getHouse()->getOwner() != player->getGUID()) {
+				if (house && house->getHouseAccessLevel(player) < HOUSE_OWNER) {
 					return RETURNVALUE_NOTPOSSIBLE;
 				}
 			}
@@ -1650,11 +1653,11 @@ ReturnValue Game::checkMoveItemToCylinder(std::shared_ptr<Player> player, std::s
 				}
 			}
 
-			return RETURNVALUE_NOERROR;
-		}
+			if (item->isStoreItem() && !toHouseTile) {
+				return RETURNVALUE_NOTPOSSIBLE;
+			}
 
-		if (item->isStoreItem() && !toHouseTile) {
-			return RETURNVALUE_NOTPOSSIBLE;
+			return RETURNVALUE_NOERROR;
 		}
 	}
 
@@ -5733,6 +5736,7 @@ void Game::checkCreatures(size_t index) {
 				creature->onAttacking(EVENT_CREATURE_THINK_INTERVAL);
 				creature->executeConditions(EVENT_CREATURE_THINK_INTERVAL);
 			} else {
+				afterCreatureZoneChange(creature, creature->getZones(), {});
 				creature->onDeath();
 			}
 			++it;
