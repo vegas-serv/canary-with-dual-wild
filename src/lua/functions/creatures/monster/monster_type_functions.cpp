@@ -1664,3 +1664,35 @@ int MonsterTypeFunctions::luaMonsterTypedeathSound(lua_State* L) {
 
 	return 1;
 }
+
+int MonsterTypeFunctions::luaMonsterTypeminLevel(lua_State* L) {
+	// monsterType:getChangeTargetChance()
+	const auto monsterType = getUserdataShared<MonsterType>(L, 1);
+	if (monsterType) {
+		if (lua_gettop(L) == 1) {
+			lua_pushnumber(L, monsterType->info.minLevel);
+		} else {
+			monsterType->info.minLevel = getNumber<int32_t>(L, 2);
+			pushBoolean(L, true);
+		}
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+int MonsterTypeFunctions::luaMonsterTypemaxLevel(lua_State* L) {
+	// get: monsterType:changeTargetSpeed() set: monsterType:changeTargetSpeed(speed)
+	const auto monsterType = getUserdataShared<MonsterType>(L, 1);
+	if (monsterType) {
+		if (lua_gettop(L) == 1) {
+			lua_pushnumber(L, monsterType->info.maxLevel);
+		} else {
+			monsterType->info.maxLevel = getNumber<uint32_t>(L, 2);
+			pushBoolean(L, true);
+		}
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}

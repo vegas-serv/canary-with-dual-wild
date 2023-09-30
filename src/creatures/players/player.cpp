@@ -2230,6 +2230,9 @@ void Player::addExperience(std::shared_ptr<Creature> target, uint64_t exp, bool 
 	if (handleHazardExperience) {
 		exp += (exp * (1.75 * getHazardSystemPoints() * g_configManager().getNumber(HAZARD_EXP_BONUS_MULTIPLIER))) / 100.;
 	}
+	if (monster && monster->getLevel() > 0){
+        exp += (exp * 0.08) * monster->getLevel();
+    }
 
 	experience += exp;
 

@@ -38,6 +38,7 @@ Monster::Monster(const std::shared_ptr<MonsterType> mType) :
 	defaultOutfit = mType->info.outfit;
 	currentOutfit = mType->info.outfit;
 	skull = mType->info.skull;
+	level = uniform_random(mType->info.minLevel, mType->info.maxLevel);
 	health = mType->info.health * mType->getHealthMultiplier();
 	healthMax = mType->info.healthMax * mType->getHealthMultiplier();
 	runAwayHealth = mType->info.runAwayHealth * mType->getHealthMultiplier();
@@ -45,6 +46,35 @@ Monster::Monster(const std::shared_ptr<MonsterType> mType) :
 	internalLight = mType->info.light;
 	hiddenHealth = mType->info.hiddenHealth;
 	targetDistance = mType->info.targetDistance;
+	
+	// Elite Monsters skull by LEVEL:
+    if (level >= 1 && level <= 100) {
+        skull = SKULL_WHITE;
+    }
+    else if (level >= 101 && level <= 200) {
+        skull = SKULL_YELLOW;
+    }
+    else if (level >= 201 && level <= 450) {
+        skull = SKULL_GREEN;
+    }
+    else if (level >= 451 && level <= 900) {
+        skull = SKULL_RED;
+    }
+    else if (level >= 901) {
+        skull = SKULL_BLACK;
+}
+	
+	if (level > 0) {
+		float bonusHp = g_configManager().getFloat(MLVL_BONUSHP) * level;
+		if (bonusHp != 0.0) {
+			healthMax += healthMax * bonusHp;
+			health += health * bonusHp;
+		}
+		float bonusSpeed = g_configManager().getFloat(MLVL_BONUSSPEED) * level;
+		if (bonusSpeed != 0.0) {
+			baseSpeed += baseSpeed * bonusSpeed;
+		}
+	}
 
 	// Register creature events
 	for (const std::string &scriptName : mType->info.scripts) {

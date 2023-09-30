@@ -50,6 +50,9 @@ public:
 		registerMethod(L, "MonsterType", "enemyFactions", MonsterTypeFunctions::luaMonsterTypeEnemyFactions);
 		registerMethod(L, "MonsterType", "targetPreferPlayer", MonsterTypeFunctions::luaMonsterTypeTargetPreferPlayer);
 		registerMethod(L, "MonsterType", "targetPreferMaster", MonsterTypeFunctions::luaMonsterTypeTargetPreferMaster);
+		
+		registerMethod(L, "MonsterType", "maxLevel", MonsterTypeFunctions::luaMonsterTypemaxLevel);
+        registerMethod(L, "MonsterType", "minLevel", MonsterTypeFunctions::luaMonsterTypeminLevel);
 
 		registerMethod(L, "MonsterType", "raceId", MonsterTypeFunctions::luaMonsterTypeRaceid);
 		registerMethod(L, "MonsterType", "Bestiaryclass", MonsterTypeFunctions::luaMonsterTypeBestiaryclass);
@@ -177,6 +180,9 @@ private:
 	static int luaMonsterTypeEnemyFactions(lua_State* L);
 	static int luaMonsterTypeTargetPreferPlayer(lua_State* L);
 	static int luaMonsterTypeTargetPreferMaster(lua_State* L);
+	
+	static int luaMonsterTypeminLevel(lua_State* L);
+	static int luaMonsterTypemaxLevel(lua_State* L);
 
 	static int luaMonsterTypeRaceid(lua_State* L);
 	static int luaMonsterTypeBestiaryclass(lua_State* L);

@@ -252,6 +252,10 @@ bool ConfigManager::load() {
 	integer[GLOBAL_SERVER_SAVE_NOTIFY_DURATION] = getGlobalNumber(L, "globalServerSaveNotifyDuration", 5);
 
 	integer[PARTY_LIST_MAX_DISTANCE] = getGlobalNumber(L, "partyListMaxDistance", 0);
+	
+	floating[MLVL_BONUSDMG] = getGlobalFloat(L, "monsterBonusDamage", 0);
+	floating[MLVL_BONUSSPEED] = getGlobalFloat(L, "monsterBonusSpeed", 0);
+	floating[MLVL_BONUSHP] = getGlobalFloat(L, "monsterBonusHealth", 0);
 
 	integer[PUSH_DELAY] = getGlobalNumber(L, "pushDelay", 1000);
 	integer[PUSH_DISTANCE_DELAY] = getGlobalNumber(L, "pushDistanceDelay", 1500);
