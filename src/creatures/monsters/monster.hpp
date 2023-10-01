@@ -58,7 +58,7 @@ public:
 	const std::string &getNameDescription() const override {
 		return mType->nameDescription;
 	}
-	std::string getDescription(int32_t) const override {
+	std::string getDescription(int32_t) override {
 		return strDescription + ", it is level " + std::to_string(level) + '.';
 	}
 

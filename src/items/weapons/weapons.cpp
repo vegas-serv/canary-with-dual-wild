@@ -805,8 +805,8 @@ void WeaponWand::configureWeapon(const ItemType &it) {
 	Weapon::configureWeapon(it);
 }
 
-int32_t WeaponWand::getWeaponDamage(std::shared_ptr<Player>, std::shared_ptr<Creature>, std::shared_ptr<Item>, bool maxDamage /*= false*/) const {
-{
+int32_t WeaponWand::getWeaponDamage(std::shared_ptr<Player> player, std::shared_ptr<Creature>, std::shared_ptr<Item> item, bool maxDamage /*= false*/) const {
+
     using namespace std;
     int32_t attackSkill = player->getWeaponSkill(item) * 2.6;
     int32_t attackValue = std::max<int32_t>(0, item->getAttack());

@@ -6995,7 +6995,7 @@ void ProtocolGame::AddCreature(NetworkMessage &msg, std::shared_ptr<Creature> cr
 		if (!oldProtocol && creature->isHealthHidden()) {
 			msg.addString("");
 		} else {
-			const Monster* monster = creature->getMonster();
+			std::shared_ptr<Monster> monster = creature->getMonster();
 		if (monster && monster->getLevel() > 0) {
 			msg.addString(creature->getName() + " [" + std::to_string(monster->getLevel()) + "]");
 		} else {

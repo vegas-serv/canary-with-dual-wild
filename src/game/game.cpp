@@ -2224,7 +2224,7 @@ void Game::addMoney(std::shared_ptr<Cylinder> cylinder, uint64_t money, uint32_t
 	while (barofgolds > 0) {
 		const uint16_t count = std::min<uint32_t>(100, barofgolds);
 
-		Item* remaindItem = Item::CreateItem(ITEM_BAR_OF_GOLD, count);
+		std::shared_ptr<Item> remaindItem = Item::CreateItem(ITEM_BAR_OF_GOLD, count);
 
 		ReturnValue ret = internalAddItem(cylinder, remaindItem, INDEX_WHEREEVER, flags);
 		if (ret != RETURNVALUE_NOERROR) {
@@ -6381,7 +6381,7 @@ bool Game::combatChangeHealth(std::shared_ptr<Creature> attacker, std::shared_pt
 			return false;
 		}
 		
-		Monster* monster = attacker ? attacker->getMonster() : nullptr;
+		std::shared_ptr<Monster> monster = attacker ? attacker->getMonster() : nullptr;
 		if (monster && monster->getLevel() > 0) {
 			float bonusDmg = g_configManager().getFloat(MLVL_BONUSDMG) * monster->getLevel();
 			if (bonusDmg != 0.0) {
@@ -7062,7 +7062,7 @@ bool Game::combatChangeMana(std::shared_ptr<Creature> attacker, std::shared_ptr<
 			return false;
 		}
 		
-		Monster* monster = attacker ? attacker->getMonster() : nullptr;
+		std::shared_ptr<Monster> monster = attacker ? attacker->getMonster() : nullptr;
 	if (monster && monster->getLevel() > 0) {
 		float bonusDmg = g_configManager().getFloat(MLVL_BONUSDMG) * monster->getLevel();
 		if (bonusDmg != 0.0) {

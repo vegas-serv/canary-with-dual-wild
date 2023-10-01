@@ -599,7 +599,7 @@ int MonsterFunctions::luaMonsterHazardDamageBoost(lua_State* L) {
 int MonsterFunctions::luaMonsterSetMasterPosition(lua_State* L)
 {
     // monster:setMasterPosition(pos)
-    Monster* monster = getUserdata<Monster>(L, 1);
+    std::shared_ptr<Monster> monster = getUserdataShared<Monster>(L, 1);
     if (!monster) {
         lua_pushnil(L);
         return 1;
@@ -615,7 +615,7 @@ int MonsterFunctions::luaMonsterSetMasterPosition(lua_State* L)
         position.z = getNumber<uint16_t>(L, 4);
     }
 
-    Tile* tile = g_game().map.getTile(position);
+    std::shared_ptr<Tile> tile = g_game().map.getTile(position);
     if (!tile) {
         lua_pushnil(L);
         return 1;
