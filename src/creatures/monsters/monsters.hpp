@@ -130,6 +130,7 @@ class MonsterType {
 		int32_t armor = 0;
 		int32_t minLevel = 0;
 		int32_t maxLevel = 0;
+		uint16_t critChance = 0;
 		int32_t strategiesTargetNearest = 0;
 		int32_t strategiesTargetHealth = 0;
 		int32_t strategiesTargetDamage = 0;
