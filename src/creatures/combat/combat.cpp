@@ -67,7 +67,7 @@ CombatDamage Combat::getCombatDamage(std::shared_ptr<Creature> creature, std::sh
 				params.valueCallback->getMinMaxValues(player, damage, params.useCharges);
 			} else if (formulaType == COMBAT_FORMULA_LEVELMAGIC) {
 				std::shared_ptr<Item> tool = player->getWeapon();
-				const Weapon* weapon = g_weapons().getWeapon(tool);
+				const WeaponShared_ptr weapon = g_weapons().getWeapon(tool);
 				if (weapon) {
 					damage.primary.value = normal_random(
 						static_cast<int32_t>(minb),
