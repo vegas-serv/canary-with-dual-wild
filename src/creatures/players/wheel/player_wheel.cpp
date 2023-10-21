@@ -1040,9 +1040,6 @@ void PlayerWheel::resetPlayerBonusData() {
 }
 
 void PlayerWheel::initializePlayerData() {
-	if (m_player.client) {
-		return;
-	}
 
 	resetPlayerBonusData();
 	loadPlayerBonusData();
