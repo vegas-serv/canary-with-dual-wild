@@ -3105,7 +3105,6 @@ void Item::startDecaying() {
 }
 
 void Item::stopDecaying() {
-	g_logger().debug("Item::stopDecaying");
 	g_decay().stopDecay(static_self_cast<Item>());
 }
 
