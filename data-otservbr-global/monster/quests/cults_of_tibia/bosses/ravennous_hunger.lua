@@ -65,7 +65,8 @@ monster.flags = {
 
 monster.events = {
 	"LeidenHeal",
-	"Deadmonsters"
+	"Deadmonsters",
+	"CultsOfTibiaBossDeath",
 }
 
 monster.light = {
