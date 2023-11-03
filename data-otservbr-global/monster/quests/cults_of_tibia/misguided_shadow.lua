@@ -18,6 +18,10 @@ min = 225,
 max = 475
 }
 
+monster.events = {
+	"GlowingRubbishAmuletDeath",
+}
+
 monster.health = 3000
 monster.maxHealth = 3000
 monster.race = "blood"

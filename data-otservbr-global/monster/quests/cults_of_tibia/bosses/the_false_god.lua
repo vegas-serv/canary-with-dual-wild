@@ -18,6 +18,15 @@ min = 350,
 max = 550
 }
 
+monster.events = {
+	"CultsOfTibiaBossDeath",
+}
+
+monster.bosstiary = {
+	bossRaceId = 1409,
+	bossRace = RARITY_ARCHFOE,
+}
+
 monster.health = 300000
 monster.maxHealth = 300000
 monster.race = "blood"

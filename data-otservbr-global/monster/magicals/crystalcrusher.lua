@@ -18,6 +18,10 @@ min = 25,
 max = 55
 }
 
+monster.events = {
+	"MiddleSpikeDeath",
+}
+
 monster.raceId = 869
 monster.Bestiary = {
 	class = "Magical",

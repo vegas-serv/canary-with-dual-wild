@@ -18,6 +18,10 @@ min = 45,
 max = 85
 }
 
+monster.events = {
+	"ParasiteDeath",
+}
+
 monster.health = 550
 monster.maxHealth = 550
 monster.race = "venom"

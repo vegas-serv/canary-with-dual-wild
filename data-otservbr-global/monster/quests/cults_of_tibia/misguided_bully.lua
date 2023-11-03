@@ -18,6 +18,10 @@ min = 225,
 max = 475
 }
 
+monster.events = {
+	"GlowingRubbishAmuletDeath",
+}
+
 monster.raceId = 1412
 monster.Bestiary = {
 	class = "Humanoid",

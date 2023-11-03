@@ -19,6 +19,10 @@ min = 13,
 max = 40
 }
 
+monster.events = {
+	"NomadDeath",
+}
+
 monster.raceId = 777
 monster.Bestiary = {
 	class = "Human",

@@ -18,6 +18,10 @@ min = 225,
 max = 375
 }
 
+monster.events = {
+	"LizardMagistratusDeath",
+}
+
 monster.raceId = 655
 monster.Bestiary = {
 	class = "Reptile",

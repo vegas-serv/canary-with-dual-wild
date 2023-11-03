@@ -30,6 +30,10 @@ monster.changeTarget = {
 	chance = 8
 }
 
+monster.events = {
+	"AscendantBossesDeath",
+}
+
 monster.bosstiary = {
 	bossRaceId = 1177,
 	bossRace = RARITY_ARCHFOE,

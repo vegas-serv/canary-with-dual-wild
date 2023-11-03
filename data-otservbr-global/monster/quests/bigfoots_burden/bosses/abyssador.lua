@@ -18,6 +18,15 @@ min = 225,
 max = 875
 }
 
+monster.events = {
+	"BossesWarzoneDeath",
+}
+
+monster.bosstiary = {
+	bossRaceId = 887,
+	bossRace = RARITY_ARCHFOE,
+}
+
 monster.health = 3400000
 monster.maxHealth = 3400000
 monster.race = "blood"

@@ -18,6 +18,15 @@ min = 125,
 max = 245
 }
 
+monster.events = {
+	"ThreatenedDreamsNightmareMonstersDeath",
+}
+
+monster.bosstiary = {
+	bossRaceId = 1515,
+	bossRace = RARITY_BANE,
+}
+
 monster.health = 30000
 monster.maxHealth = 30000
 monster.race = "undead"

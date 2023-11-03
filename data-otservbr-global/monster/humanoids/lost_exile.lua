@@ -18,6 +18,10 @@ min = 123,
 max = 240
 }
 
+monster.events = {
+	"LastExileDeath",
+}
+
 monster.raceId = 1529
 monster.Bestiary = {
 	class = "Humanoid",

@@ -18,6 +18,11 @@ min = 50,
 max = 200
 }
 
+monster.events = {
+	"TheGreatDragonHuntDeath",
+	"TheFirstDragonDragonTaskDeath",
+}
+
 monster.raceId = 34
 monster.Bestiary = {
 	class = "Dragon",

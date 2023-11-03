@@ -18,6 +18,10 @@ min = 123,
 max = 240
 }
 
+monster.events = {
+	"MinotaurCultTaskDeath",
+}
+
 monster.raceId = 1509
 monster.Bestiary = {
 	class = "Humanoid",

@@ -18,6 +18,10 @@ min = 75,
 max = 95
 }
 
+monster.events = {
+	"EnergizedRagingMageDeath",
+}
+
 monster.health = 3500
 monster.maxHealth = 3500
 monster.race = "blood"

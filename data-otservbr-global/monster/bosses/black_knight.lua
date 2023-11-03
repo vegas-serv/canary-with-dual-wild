@@ -18,6 +18,15 @@ min = 75,
 max = 150
 }
 
+monster.events = {
+	"BlackKnightDeath",
+}
+
+monster.bosstiary = {
+	bossRaceId = 46,
+	bossRace = RARITY_BANE,
+}
+
 monster.health = 1800
 monster.maxHealth = 1800
 monster.race = "blood"

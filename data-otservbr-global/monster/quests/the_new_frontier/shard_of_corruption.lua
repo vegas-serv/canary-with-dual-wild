@@ -18,6 +18,10 @@ min = 250,
 max = 650
 }
 
+monster.events = {
+	"ShardOfCorruptionDeath",
+}
+
 monster.health = 600
 monster.maxHealth = 600
 monster.race = "undead"

@@ -18,6 +18,10 @@ min = 113,
 max = 240
 }
 
+monster.events = {
+	"ThreatenedDreamsNightmareMonstersDeath",
+}
+
 monster.raceId = 1442
 monster.Bestiary = {
 	class = "Magical",

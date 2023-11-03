@@ -18,6 +18,10 @@ min = 225,
 max = 475
 }
 
+monster.events = {
+	"CarlinVortexDeath",
+}
+
 monster.raceId = 1514
 monster.Bestiary = {
 	class = "Human",

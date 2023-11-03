@@ -18,6 +18,10 @@ min = 228,
 max = 425
 }
 
+monster.events = {
+	"WarzoneWormDeath",
+}
+
 monster.raceId = 1531
 monster.Bestiary = {
 	class = "Vermin",

@@ -18,6 +18,10 @@ min = 125,
 max = 245
 }
 
+monster.events = {
+	"PythiusTheRottenDeath",
+}
+
 monster.health = 9000
 monster.maxHealth = 9000
 monster.race = "undead"

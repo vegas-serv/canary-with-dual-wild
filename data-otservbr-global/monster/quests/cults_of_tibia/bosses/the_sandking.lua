@@ -34,6 +34,10 @@ monster.events = {
 	"Deadmonsters"
 }
 
+monster.events = {
+	"CultsOfTibiaBossDeath",
+}
+
 monster.bosstiary = {
 	bossRaceId = 1444,
 	bossRace = RARITY_ARCHFOE,

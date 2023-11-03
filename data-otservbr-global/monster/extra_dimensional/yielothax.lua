@@ -18,6 +18,10 @@ min = 100,
 max = 300
 }
 
+monster.events = {
+	"YielothaxDeath",
+}
+
 monster.raceId = 717
 monster.Bestiary = {
 	class = "Extra Dimensional",

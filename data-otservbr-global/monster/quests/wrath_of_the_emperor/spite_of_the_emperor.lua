@@ -18,6 +18,10 @@ min = 255,
 max = 455
 }
 
+monster.events = {
+	"WrathOfTheEmperorBossDeath",
+}
+
 monster.health = 48000
 monster.maxHealth = 48000
 monster.race = "undead"

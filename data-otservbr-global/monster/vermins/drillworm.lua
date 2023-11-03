@@ -18,6 +18,10 @@ min = 85,
 max = 225
 }
 
+monster.events = {
+	"LowerSpikeDeath",
+}
+
 monster.raceId = 878
 monster.Bestiary = {
 	class = "Vermin",

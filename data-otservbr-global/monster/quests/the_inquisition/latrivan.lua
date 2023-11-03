@@ -18,6 +18,10 @@ min = 150,
 max = 450
 }
 
+monster.events = {
+	"InquisitionBossDeath",
+}
+
 monster.health = 25000
 monster.maxHealth = 25000
 monster.race = "fire"

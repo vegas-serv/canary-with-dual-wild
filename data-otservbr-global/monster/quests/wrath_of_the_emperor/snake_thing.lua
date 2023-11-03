@@ -18,6 +18,10 @@ min = 255,
 max = 455
 }
 
+monster.events = {
+	"ZalamonDeath",
+}
+
 monster.health = 70000
 monster.maxHealth = 70000
 monster.race = "venom"

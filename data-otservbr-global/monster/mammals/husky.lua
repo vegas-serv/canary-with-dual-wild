@@ -18,6 +18,10 @@ min = 15,
 max = 55
 }
 
+monster.events = {
+	"HuskyDeath",
+}
+
 monster.raceId = 325
 monster.Bestiary = {
 	class = "Mammal",

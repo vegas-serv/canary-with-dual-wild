@@ -18,6 +18,10 @@ min = 425,
 max = 875
 }
 
+monster.events = {
+	"TheShattererDeath",
+}
+
 monster.health = 220000
 monster.maxHealth = 220000
 monster.race = "fire"

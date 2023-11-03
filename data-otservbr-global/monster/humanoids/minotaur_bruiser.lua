@@ -18,6 +18,10 @@ min = 12,
 max = 40
 }
 
+monster.events = {
+	"MorrisMinotaurDeath",
+}
+
 monster.health = 100
 monster.maxHealth = 100
 monster.race = "blood"

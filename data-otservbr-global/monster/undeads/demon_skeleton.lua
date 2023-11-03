@@ -18,6 +18,10 @@ min = 35,
 max = 85
 }
 
+monster.events = {
+	"UpperSpikeDeath",
+}
+
 monster.raceId = 37
 monster.Bestiary = {
 	class = "Undead",

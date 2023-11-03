@@ -30,6 +30,10 @@ monster.changeTarget = {
 	chance = 0
 }
 
+monster.events = {
+	"FeasterOfSoulsBossDeath",
+}
+
 monster.bosstiary = {
 	bossRaceId = 1872,
 	bossRace = RARITY_ARCHFOE,

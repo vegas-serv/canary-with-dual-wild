@@ -18,6 +18,15 @@ min = 25,
 max = 45
 }
 
+monster.events = {
+	"DiseasedTrioDeath",
+}
+
+monster.bosstiary = {
+	bossRaceId = 485,
+	bossRace = RARITY_BANE,
+}
+
 monster.health = 1000
 monster.maxHealth = 1000
 monster.race = "venom"

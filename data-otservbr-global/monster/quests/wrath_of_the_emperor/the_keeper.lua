@@ -18,6 +18,10 @@ min = 255,
 max = 455
 }
 
+monster.events = {
+	"TheKeeperDeath",
+}
+
 monster.health = 40000
 monster.maxHealth = 40000
 monster.race = "venom"

@@ -25,6 +25,10 @@ monster.corpse = 35846
 monster.speed = 515
 monster.manaCost = 0
 
+monster.events = {
+	"RatmiralBlackwhiskersDeath",
+}
+
 monster.changeTarget = {
 	interval = 4000,
 	chance = 10

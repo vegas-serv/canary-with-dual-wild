@@ -18,6 +18,10 @@ min = 225,
 max = 675
 }
 
+monster.events = {
+	"VesperothDeath",
+}
+
 monster.health = 100000
 monster.maxHealth = 100000
 monster.race = "venom"

@@ -18,6 +18,10 @@ min = 213,
 max = 440
 }
 
+monster.events = {
+	"FafnarMissionsDeath",
+}
+
 monster.raceId = 1798
 monster.Bestiary = {
 	class = "Human",

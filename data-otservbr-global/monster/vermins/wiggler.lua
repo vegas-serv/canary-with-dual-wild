@@ -18,6 +18,10 @@ min = 180,
 max = 325
 }
 
+monster.events = {
+	"WigglerDeath",
+}
+
 monster.raceId = 899
 monster.Bestiary = {
 	class = "Vermin",

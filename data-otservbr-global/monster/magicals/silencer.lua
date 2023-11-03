@@ -18,6 +18,10 @@ min = 213,
 max = 440
 }
 
+monster.events = {
+	"RoshamuulKillsDeath",
+}
+
 monster.raceId = 1014
 monster.Bestiary = {
 	class = "Magical",
