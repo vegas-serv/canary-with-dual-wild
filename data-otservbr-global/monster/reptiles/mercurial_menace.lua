@@ -2,15 +2,27 @@ local mType = Game.createMonsterType("Mercurial Menace")
 local monster = {}
 
 monster.description = "a mercurial menace"
-monster.experience = 12095
+monster.experience = 14030 
 monster.outfit = {
 	lookType = 1561,
-	lookHead = 85,
-	lookBody = 1,
-	lookLegs = 85,
-	lookFeet = 105,
-	lookAddons = 3,
-	lookMount = 0,
+	lookHead = 0,
+	lookBody = 0,
+	lookLegs = 0,
+	lookFeet = 0,
+	lookAddons = 0,
+	lookMount = 0
+}
+
+monster.level = {
+min = 425,
+max = 775
+}
+
+monster.hazard = {
+	criticalChance = 10.5, -- 10,5%
+	canDodge = true, -- Activate/deactivate crit possibility on the animal
+	canSpawnPod = true, -- Enable/disable possibility to drop spawn pod when killing the bug
+	canDealMoreDamage = true -- Enable/Disable Increased Damage
 }
 
 monster.raceId = 2279
@@ -18,28 +30,23 @@ monster.Bestiary = {
 	class = "Reptile",
 	race = BESTY_RACE_REPTILE,
 	toKill = 5000,
-	FirstUnlock = 200,
-	SecondUnlock = 2000,
+	FirstUnlock = 100,
+	SecondUnlock = 1000,
 	CharmsPoints = 100,
 	Stars = 5,
 	Occurrence = 0,
-	Locations = "Crystal Enigma",
+	Locations = "Crystal Enigma"
 }
-
-monster.health = 18500
-monster.maxHealth = 18500
+monster.health = 16800
+monster.maxHealth = 16800
 monster.race = "blood"
 monster.corpse = 39335
 monster.speed = 190
 monster.manaCost = 0
 
 monster.changeTarget = {
-	interval = 4000,
-	chance = 10,
-}
-
-monster.strategiesTarget = {
-	nearest = 100,
+	interval = 2000,
+	chance = 0
 }
 
 monster.flags = {
@@ -53,72 +60,70 @@ monster.flags = {
 	canPushItems = true,
 	canPushCreatures = true,
 	staticAttackChance = 90,
-	targetDistance = 3,
+	targetDistance = 4,
 	runHealth = 0,
 	healthHidden = false,
 	isBlockable = false,
-	canWalkOnEnergy = true,
-	canWalkOnFire = true,
-	canWalkOnPoison = true,
+	canWalkOnEnergy = false,
+	canWalkOnFire = false,
+	canWalkOnPoison = false
 }
 
 monster.light = {
 	level = 0,
-	color = 0,
+	color = 0
 }
 
 monster.voices = {
 	interval = 5000,
 	chance = 10,
-	{ text = "Shwooo...", yell = false },
+	{text = "Shwooo...", yell = false}
 }
 
 monster.loot = {
-	{ name = "Crystal Coin", chance = 24890, minCount = 1, maxCount = 2 },
-	{ name = "Mercurial Wing", chance = 21500 },
-	{ name = "Terra Boots", chance = 4250 },
-	{ name = "Silver Brooch", chance = 2700 },
-	{ name = "Terra Rod", chance = 1660 },
-	{ name = "Wand of Defiance", chance = 1230 },
-	{ name = "Dream Blossom Staff", chance = 1090 },
-	{ name = "Coral Brooch", chance = 1030 },
-	{ name = "Lightning Boots", chance = 1000 },
-	{ name = "Wand of Cosmic Energy", chance = 860 },
-	{ name = "Gemmed Figurine", chance = 830 },
-	{ name = "Butterfly Ring", chance = 800 },
+	{ name = "crystal coin", chance = 28571, maxCount = 2},
+	{ name = "mercurial wing", chance = 15000},
+	{ name = "terra rod", chance = 12000},
+	{ name = "wand of defiance", chance = 12000},
+	{ name = "terra boots", chance = 12000},
+	{ name = "coral brooch", chance = 12000},
+	{ name = "silver brooch", chance = 12000},
+	{ name = "lightning boots", chance = 6000},
+	{ name = "wand of cosmic energy", chance = 6000},
+	{ name = "gemmed figurine", chance = 6000},
+	{ name = "dream blossom staff", chance = 6000},
 }
 
 monster.attacks = {
-	{ name = "melee", interval = 2000, chance = 100, minDamage = 0, maxDamage = -900 },
-	{ name = "combat", interval = 2000, chance = 75, type = COMBAT_PHYSICALDAMAGE, minDamage = 0, maxDamage = -750, range = 4, shootEffect = CONST_ANI_SMALLSTONE, target = true },
-	{ name = "combat", interval = 3000, chance = 40, type = COMBAT_ENERGYDAMAGE, minDamage = -800, maxDamage = -1500, range = 3, effect = CONST_ME_BLUE_ENERGY_SPARK, target = true },
-	{ name = "mercurial menace ring", interval = 4500, chance = 37, minDamage = -500, maxDamage = -700 },
+	{name ="combat", interval = 2000, chance = 100, type = COMBAT_ENERGYDAMAGE, minDamage = -400, maxDamage = -600, range = 7, shootEffect = CONST_ANI_ENERGY, target = true},
+	{name ="combat", interval = 2500, chance = 35, type = COMBAT_ENERGYDAMAGE, minDamage = -950, maxDamage = -1200, range = 5, radius = 5, effect = CONST_ME_PURPLESMOKE, target = false},
 }
 
 monster.defenses = {
-	defense = 110,
-	armor = 91,
-	mitigation = 2.54,
+	defense = 91,
+	armor = 91
 }
 
 monster.elements = {
-	{ type = COMBAT_PHYSICALDAMAGE, percent = 5 },
-	{ type = COMBAT_ENERGYDAMAGE, percent = -20 },
-	{ type = COMBAT_EARTHDAMAGE, percent = -10 },
-	{ type = COMBAT_FIREDAMAGE, percent = 20 },
-	{ type = COMBAT_LIFEDRAIN, percent = 0 },
-	{ type = COMBAT_MANADRAIN, percent = 0 },
-	{ type = COMBAT_DROWNDAMAGE, percent = 0 },
-	{ type = COMBAT_ICEDAMAGE, percent = 10 },
-	{ type = COMBAT_HOLYDAMAGE, percent = 100 },
-	{ type = COMBAT_DEATHDAMAGE, percent = -5 },
+	{type = COMBAT_PHYSICALDAMAGE, percent = 5},
+	{type = COMBAT_ENERGYDAMAGE, percent = -20},
+	{type = COMBAT_EARTHDAMAGE, percent = -10},
+	{type = COMBAT_FIREDAMAGE, percent = 20},
+	{type = COMBAT_LIFEDRAIN, percent = 0},
+	{type = COMBAT_MANADRAIN, percent = 0},
+	{type = COMBAT_DROWNDAMAGE, percent = 0},
+	{type = COMBAT_ICEDAMAGE, percent = 10},
+	{type = COMBAT_HOLYDAMAGE , percent = 100},
+	{type = COMBAT_DEATHDAMAGE , percent = -5}
 }
 
 monster.immunities = {
-	{ type = "paralyze", condition = true },
-	{ type = "outfit", condition = false },
-	{ type = "invisible", condition = true },
-	{ type = "bleed", condition = false },
+	{type = "paralyze", condition = true},
+	{type = "outfit", condition = false},
+	{type = "invisible", condition = true},
+	{type = "drunk", condition = true},
+	{type = "bleed", condition = false}
 }
+
 
 mType:register(monster)

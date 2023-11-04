@@ -2,7 +2,7 @@ local mType = Game.createMonsterType("Grorlam")
 local monster = {}
 
 monster.description = "Grorlam"
-monster.experience = 2400
+monster.experience = 240000
 monster.outfit = {
 	lookType = 205,
 	lookHead = 0,
@@ -10,16 +10,16 @@ monster.outfit = {
 	lookLegs = 0,
 	lookFeet = 0,
 	lookAddons = 0,
-	lookMount = 0,
+	lookMount = 0
 }
 
-monster.bosstiary = {
-	bossRaceId = 205,
-	bossRace = RARITY_NEMESIS,
+monster.level = {
+min = 525,
+max = 975
 }
 
-monster.health = 3000
-monster.maxHealth = 3000
+monster.health = 30000
+monster.maxHealth = 30000
 monster.race = "blood"
 monster.corpse = 6005
 monster.speed = 120
@@ -27,7 +27,12 @@ monster.manaCost = 0
 
 monster.changeTarget = {
 	interval = 5000,
-	chance = 3,
+	chance = 3
+}
+
+monster.bosstiary = {
+	bossRaceId = 205,
+	bossRace = RARITY_NEMESIS
 }
 
 monster.strategiesTarget = {
@@ -40,7 +45,7 @@ monster.flags = {
 	hostile = true,
 	convinceable = false,
 	pushable = false,
-	rewardBoss = true,
+	rewardBoss = false,
 	illusionable = false,
 	canPushItems = true,
 	canPushCreatures = true,
@@ -51,12 +56,12 @@ monster.flags = {
 	isBlockable = false,
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
-	canWalkOnPoison = true,
+	canWalkOnPoison = false
 }
 
 monster.light = {
 	level = 0,
-	color = 0,
+	color = 0
 }
 
 monster.voices = {
@@ -65,43 +70,42 @@ monster.voices = {
 }
 
 monster.loot = {
-	{ id = 3031, chance = 100000, maxCount = 20 }, -- gold coin
-	{ id = 3377, chance = 10000 }, -- scale armor
-	{ id = 1781, chance = 20000, maxCount = 5 }, -- small stone
-	{ id = 3283, chance = 2500 }, -- carlin sword
+	{id = 3031, chance = 100000, maxCount = 20}, -- gold coin
+	{id = 3377, chance = 10000}, -- scale armor
+	{id = 1781, chance = 20000, maxCount = 5}, -- small stone
+	{id = 3283, chance = 2500} -- carlin sword
 }
 
 monster.attacks = {
-	{ name = "melee", interval = 2000, chance = 100, skill = 75, attack = 60 },
-	{ name = "combat", interval = 1000, chance = 15, type = COMBAT_PHYSICALDAMAGE, minDamage = -150, maxDamage = -200, range = 7, shootEffect = CONST_ANI_LARGEROCK, target = false },
+	{name ="melee", interval = 2000, chance = 100, skill = 75, attack = 60},
+	{name ="combat", interval = 1000, chance = 15, type = COMBAT_PHYSICALDAMAGE, minDamage = -150, maxDamage = -200, range = 7, shootEffect = CONST_ANI_LARGEROCK, target = false}
 }
 
 monster.defenses = {
 	defense = 25,
 	armor = 15,
-	mitigation = 1.60,
-	{ name = "combat", interval = 1000, chance = 25, type = COMBAT_HEALING, minDamage = 100, maxDamage = 150, effect = CONST_ME_MAGIC_BLUE, target = false },
-	{ name = "speed", interval = 1000, chance = 6, speedChange = 270, effect = CONST_ME_MAGIC_RED, target = false, duration = 6000 },
+	{name ="combat", interval = 1000, chance = 25, type = COMBAT_HEALING, minDamage = 100, maxDamage = 150, effect = CONST_ME_MAGIC_BLUE, target = false},
+	{name ="speed", interval = 1000, chance = 6, speedChange = 270, effect = CONST_ME_MAGIC_RED, target = false, duration = 6000}
 }
 
 monster.elements = {
-	{ type = COMBAT_PHYSICALDAMAGE, percent = 30 },
-	{ type = COMBAT_ENERGYDAMAGE, percent = 20 },
-	{ type = COMBAT_EARTHDAMAGE, percent = 100 },
-	{ type = COMBAT_FIREDAMAGE, percent = -10 },
-	{ type = COMBAT_LIFEDRAIN, percent = 0 },
-	{ type = COMBAT_MANADRAIN, percent = 0 },
-	{ type = COMBAT_DROWNDAMAGE, percent = 0 },
-	{ type = COMBAT_ICEDAMAGE, percent = 0 },
-	{ type = COMBAT_HOLYDAMAGE, percent = 20 },
-	{ type = COMBAT_DEATHDAMAGE, percent = -1 },
+	{type = COMBAT_PHYSICALDAMAGE, percent = 30},
+	{type = COMBAT_ENERGYDAMAGE, percent = 20},
+	{type = COMBAT_EARTHDAMAGE, percent = 100},
+	{type = COMBAT_FIREDAMAGE, percent = -10},
+	{type = COMBAT_LIFEDRAIN, percent = 0},
+	{type = COMBAT_MANADRAIN, percent = 0},
+	{type = COMBAT_DROWNDAMAGE, percent = 0},
+	{type = COMBAT_ICEDAMAGE, percent = 0},
+	{type = COMBAT_HOLYDAMAGE , percent = 20},
+	{type = COMBAT_DEATHDAMAGE , percent = -5}
 }
 
 monster.immunities = {
-	{ type = "paralyze", condition = true },
-	{ type = "outfit", condition = false },
-	{ type = "invisible", condition = true },
-	{ type = "bleed", condition = false },
+	{type = "paralyze", condition = true},
+	{type = "outfit", condition = false},
+	{type = "invisible", condition = true},
+	{type = "bleed", condition = false}
 }
 
 mType:register(monster)

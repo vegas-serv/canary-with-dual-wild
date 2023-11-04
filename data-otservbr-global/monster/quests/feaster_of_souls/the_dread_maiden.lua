@@ -2,7 +2,7 @@ local mType = Game.createMonsterType("The Dread Maiden")
 local monster = {}
 
 monster.description = "The Dread Maiden"
-monster.experience = 72000
+monster.experience = 13000000
 monster.outfit = {
 	lookType = 1278,
 	lookHead = 0,
@@ -10,24 +10,34 @@ monster.outfit = {
 	lookLegs = 0,
 	lookFeet = 0,
 	lookAddons = 0,
-	lookMount = 0,
+	lookMount = 0
+}
+
+monster.level = {
+min = 425,
+max = 875
+}
+
+monster.health = 1300000
+monster.maxHealth = 1300000
+monster.race = "undead"
+monster.corpse = 32744
+monster.speed = 425
+monster.manaCost = 0
+
+monster.changeTarget = {
+	interval = 60000,
+	chance = 0
+}
+
+monster.events = {
+	"FeasterOfSoulsBossDeath",
 }
 
 monster.bosstiary = {
 	bossRaceId = 1872,
 	bossRace = RARITY_ARCHFOE,
-}
-
-monster.health = 300000
-monster.maxHealth = 300000
-monster.race = "undead"
-monster.corpse = 32744
-monster.speed = 125
-monster.manaCost = 0
-
-monster.changeTarget = {
-	interval = 60000,
-	chance = 0,
+	storageCooldown = Storage.Quest.U12_30.FeasterOfSouls.DreadMaidenTimer
 }
 
 monster.strategiesTarget = {
@@ -35,6 +45,10 @@ monster.strategiesTarget = {
 	health = 10,
 	damage = 10,
 	random = 10,
+}
+
+monster.events = {
+	"Deadmonsters"
 }
 
 monster.flags = {
@@ -49,87 +63,100 @@ monster.flags = {
 	canPushCreatures = false,
 	staticAttackChance = 95,
 	targetDistance = 1,
-	runHealth = 0,
+	runHealth = 1,
 	healthHidden = false,
 	isBlockable = false,
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
-	canWalkOnPoison = true,
+	canWalkOnPoison = true
 }
 
 monster.light = {
 	level = 0,
-	color = 0,
+	color = 0
 }
 
 monster.voices = {
 	interval = 5000,
 	chance = 10,
-	{ text = "You will be mine for eternity!", yell = false },
+	{text = "Where... Where am I?", yell = false},
+	{text = "Is that you, Tom?", yell = false},
+	{text = "Phew, what an awful smell ... oh, that's me.", yell = false}
 }
 
 monster.loot = {
-	{ id = 3043, chance = 100000, minCount = 1, maxCount = 2 }, -- crystal coin
-	{ id = 32770, chance = 48000 }, -- diamond
-	{ id = 32769, chance = 48000 }, -- white gem
-	{ id = 23373, chance = 44000, minCount = 3, maxCount = 11 }, -- ultimate mana potion
-	{ id = 32771, chance = 40000, minCount = 1, maxCount = 2 }, -- moonstone
-	{ id = 23374, chance = 36000, minCount = 2, maxCount = 9 }, -- ultimate spirit potion
-	{ id = 32772, chance = 20000 }, -- silver hand mirror
-	{ id = 23375, chance = 20000, minCount = 4, maxCount = 9 }, -- supreme health potion
-	{ id = 7443, chance = 16000, minCount = 2, maxCount = 16 }, -- bullseye potion
-	{ id = 32773, chance = 16000 }, -- ivory comb
-	{ id = 32626, chance = 12000 }, -- amber
-	{ id = 7439, chance = 12000, minCount = 6, maxCount = 15 }, -- berserk potion
-	{ id = 7440, chance = 12000, minCount = 4, maxCount = 15 }, -- mastermind potion
-	{ id = 32703, chance = 8000, minCount = 1, maxCount = 3 }, -- death toll
-	{ id = 32589, chance = 4000 }, -- angel figurine
-	{ id = 32774, chance = 4000 }, -- cursed bone
-	{ id = 32596, chance = 4000 }, -- dark bell (Silver)
-	{ id = 32622, chance = 4000 }, -- giant amethyst
-	{ id = 32595, chance = 4000 }, -- jagged sickle
-	{ id = 32591, chance = 4000 }, -- soulforged lantern
-	{ id = 32619, chance = 730 }, -- pair of nightmare boots
-	{ id = 32631, chance = 730 }, -- ghost claw
-	{ id = 32630, chance = 730 }, -- spooky hood
+	{name = "crystal coin", chance = 96080, maxCount = 2},
+	{name = "white gem", chance = 52940, maxCount = 2},
+	{name = "moonstone", chance = 52940, maxCount = 2},
+	{name = "ultimate mana potion", chance = 43140, maxCount = 6},
+	{name = "supreme health potion", chance = 29410, maxCount = 6},
+	{name = "silver hand mirror", chance = 27450},
+	{name = "berserk potion", chance = 23530, maxCount = 10},
+	{name = "ultimate spirit potion", chance = 23530, maxCount = 6},
+	{name = "bullseye potion", chance = 19610, maxCount = 10},
+	{name = "mastermind potion", chance = 19610, maxCount = 10},
+	{name = "death toll", chance = 13730, maxCount = 2},
+	{name = "ivory comb", chance = 13730},
+	{name = "angel figurine", chance = 11760},
+	{name = "diamond", chance = 11760},
+	{name = "cursed bone", chance = 7840},
+	{name = "soulforged lantern", chance = 7840},
+	{name = "grimace", chance = 5880},
+	{name = "amber", chance = 5880},
+	{name = "amber with a dragonfly", chance = 3920},
+	{name = "ghost claw", chance = 160},
+	{name = "bloody tears", chance = 1500},
+	{name = "ghost chestplate", chance = 150},
+	{name = "spooky hood", chance = 150},
+	{name = "giant sapphire", chance = 16800},
+    {name = "Giant Amethyst", chance = 16800},
+    {name = "Giant Emerald", chance = 16800},
+    {name = "Giant Ruby", chance = 16800},
+    {name = "Giant Topaz", chance = 16800},
+    {name = "Hexagonal Ruby", chance = 16800},
+    {name = "crystal coin", minCount = 0, maxCount = 30, chance = 50000},
 }
 
 monster.attacks = {
-	{ name = "melee", interval = 2000, chance = 100, minDamage = -100, maxDamage = -600, condition = { type = CONDITION_POISON, totalDamage = 4, interval = 4000 } },
-	{ name = "combat", interval = 2000, chance = 35, type = COMBAT_DEATHDAMAGE, minDamage = -350, maxDamage = -750, radius = 4, shootEffect = CONST_ANI_DEATH, effect = CONST_ME_SMALLCLOUDS, target = true },
-	{ name = "combat", interval = 4000, chance = 50, type = COMBAT_DEATHDAMAGE, minDamage = -600, maxDamage = -1500, length = 7, effect = CONST_ME_POFF, target = false },
-	{ name = "dread rcircle", interval = 2000, chance = 40, minDamage = -400, maxDamage = -1000 },
+	{name ="melee", interval = 2000, chance = 100, minDamage = 600, maxDamage = -1050, condition = {type = CONDITION_POISON, totalDamage = 4, interval = 4000}},
+	{name ="combat", interval = 2000, chance = 100, type = COMBAT_LIFEDRAIN, minDamage = -900, maxDamage = -1400, effect = CONST_ME_MAGIC_RED, target = true},
+	{name ="combat", interval = 1000, chance = 40, type = COMBAT_PHYSICALDAMAGE, minDamage = -1000, maxDamage = -1750, radius = 2, shootEffect = CONST_ANI_SMALLEARTH, target = false},
+	{name ="drunk", interval = 1000, chance = 70, range = 7, shootEffect = CONST_ANI_ENERGY, effect = CONST_ME_ENERGYAREA, target = false},
+	{name ="strength", interval = 1000, chance = 60, range = 7, shootEffect = CONST_ANI_LARGEROCK, effect = CONST_ME_ENERGYAREA, target = false},
+	{name ="combat", interval = 2000, chance = 15, type = COMBAT_ENERGYDAMAGE, minDamage = 0, maxDamage = -2900, length = 5, spread = 3, effect = CONST_ME_ENERGYHIT, target = false},
+	{name ="combat", interval = 1000, chance = 34, type = COMBAT_FIREDAMAGE, minDamage = -600, maxDamage = -3200, range = 7, radius = 7, shootEffect = CONST_ANI_FIRE, effect = CONST_ME_FIREAREA, target = true},
+	{name ="speed", interval = 3000, chance = 40, speedChange = -700, effect = CONST_ME_MAGIC_RED, target = true, duration = 20000}
 }
 
 monster.defenses = {
-	defense = 170,
-	armor = 170,
-	--	mitigation = ???,
-	{ name = "speed", interval = 10000, chance = 40, speedChange = 510, effect = CONST_ME_MAGIC_GREEN, target = false, duration = 20000 },
-	{ name = "combat", interval = 5000, chance = 60, type = COMBAT_HEALING, minDamage = 1000, maxDamage = 2500, effect = CONST_ME_MAGIC_BLUE, target = false },
+	defense = 15,
+	armor = 10,
+	{name ="speed", interval = 10000, chance = 40, speedChange = 510, effect = CONST_ME_MAGIC_GREEN, target = false, duration = 20000},
+	{name ="combat", interval = 5000, chance = 60, type = COMBAT_HEALING, minDamage = 1000, maxDamage = 2500, effect = CONST_ME_MAGIC_BLUE, target = false}
 }
 
 monster.elements = {
-	{ type = COMBAT_PHYSICALDAMAGE, percent = 0 },
-	{ type = COMBAT_ENERGYDAMAGE, percent = 0 },
-	{ type = COMBAT_EARTHDAMAGE, percent = 0 },
-	{ type = COMBAT_FIREDAMAGE, percent = -10 },
-	{ type = COMBAT_LIFEDRAIN, percent = 0 },
-	{ type = COMBAT_MANADRAIN, percent = 0 },
-	{ type = COMBAT_DROWNDAMAGE, percent = 0 },
-	{ type = COMBAT_ICEDAMAGE, percent = 0 },
-	{ type = COMBAT_HOLYDAMAGE, percent = 0 },
-	{ type = COMBAT_DEATHDAMAGE, percent = 100 },
+	{type = COMBAT_PHYSICALDAMAGE, percent = 0},
+	{type = COMBAT_ENERGYDAMAGE, percent = 0},
+	{type = COMBAT_EARTHDAMAGE, percent = 0},
+	{type = COMBAT_FIREDAMAGE, percent = 0},
+	{type = COMBAT_LIFEDRAIN, percent = 0},
+	{type = COMBAT_MANADRAIN, percent = 0},
+	{type = COMBAT_DROWNDAMAGE, percent = 0},
+	{type = COMBAT_ICEDAMAGE, percent = 0},
+	{type = COMBAT_HOLYDAMAGE , percent = 0},
+	{type = COMBAT_DEATHDAMAGE , percent = 0}
 }
 
 monster.immunities = {
-	{ type = "paralyze", condition = true },
-	{ type = "outfit", condition = false },
-	{ type = "invisible", condition = true },
-	{ type = "bleed", condition = false },
+	{type = "paralyze", condition = true},
+	{type = "outfit", condition = false},
+	{type = "invisible", condition = true},
+	{type = "bleed", condition = false}
 }
 
-mType.onThink = function(monster, interval) end
+mType.onThink = function(monster, interval)
+end
 
 mType.onAppear = function(monster, creature)
 	if monster:getType():isRewardBoss() then
@@ -137,10 +164,13 @@ mType.onAppear = function(monster, creature)
 	end
 end
 
-mType.onDisappear = function(monster, creature) end
+mType.onDisappear = function(monster, creature)
+end
 
-mType.onMove = function(monster, creature, fromPosition, toPosition) end
+mType.onMove = function(monster, creature, fromPosition, toPosition)
+end
 
-mType.onSay = function(monster, creature, type, message) end
+mType.onSay = function(monster, creature, type, message)
+end
 
 mType:register(monster)

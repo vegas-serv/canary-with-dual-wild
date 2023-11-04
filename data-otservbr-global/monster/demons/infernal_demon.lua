@@ -2,7 +2,7 @@ local mType = Game.createMonsterType("Infernal Demon")
 local monster = {}
 
 monster.description = "an infernal demon"
-monster.experience = 17430
+monster.experience = 26000
 monster.outfit = {
 	lookType = 1313,
 	lookHead = 0,
@@ -10,7 +10,12 @@ monster.outfit = {
 	lookLegs = 0,
 	lookFeet = 0,
 	lookAddons = 0,
-	lookMount = 0,
+	lookMount = 0
+}
+
+monster.level = {
+min = 532,
+max = 744
 }
 
 monster.raceId = 1938
@@ -23,8 +28,8 @@ monster.Bestiary = {
 	CharmsPoints = 100,
 	Stars = 5,
 	Occurrence = 0,
-	Locations = "Claustrophobic Inferno.",
-}
+	Locations = "Claustrophobic Inferno."
+	}
 
 monster.health = 32000
 monster.maxHealth = 32000
@@ -35,7 +40,7 @@ monster.manaCost = 0
 
 monster.changeTarget = {
 	interval = 4000,
-	chance = 0,
+	chance = 0
 }
 
 monster.strategiesTarget = {
@@ -73,36 +78,34 @@ monster.light = {
 monster.voices = {
 	interval = 5000,
 	chance = 10,
-	{ text = "The smell of fear follows you.", yell = false },
-	{ text = "Your soul will burn.", yell = false },
+	{text = "The smell of fear follows you.", yell = false},
+	{text = "Your soul will burn.", yell = false},
 }
 
 monster.loot = {
-	{ name = "crystal coin", chance = 64000 },
-	{ name = "ultimate health potion", chance = 22860, maxCount = 5 },
-	{ name = "gold ingot", chance = 18860 },
-	{ name = "cyan crystal fragment", chance = 7430 },
-	{ name = "red crystal fragment", chance = 7430 },
-	{ name = "blue crystal shard", chance = 5710 },
-	{ name = "small diamond", chance = 4570 },
-	{ name = "blue gem", chance = 4570 },
-	{ name = "green crystal fragment", chance = 3430 },
-	{ name = "magma amulet", chance = 3430 },
-	{ name = "mercenary sword", chance = 2860 },
-	{ name = "onyx chip", chance = 2860 },
-	{ name = "war axe", chance = 2860 },
-	{ name = "giant sword", chance = 2860 },
-	{ name = "magma boots", chance = 2290 },
-	{ name = "stone skin amulet", chance = 570 },
-	{ id = 34109, chance = 20 }, -- bag you desire
+	{name = "crystal coin", chance = 70540},
+	{name = "platinum coin", chance = 90540, maxCount = 50},
+	{name = "ultimate health potion", chance = 32220, maxCount = 7},
+	{name = "small diamond", chance = 65560, maxCount = 7},
+	{name = "gold ingot", chance = 25560},
+	{name = "blue crystal splinter", chance = 25560},
+	{name = "cyan crystal fragment", chance = 25560},
+	{name = "red crystal fragment", chance = 25560},
+	{name = "magma boots", chance = 35500},
+	{name = "blue gem", chance = 65560},
+	{name = "giant sword", chance = 13500},
+	{name = "war axe", chance = 9500},
+	{name = "mercenary sword", chance = 11500},
+	{name = "green crystal fragment", chance = 9500},
+	{name = "onyx chip", chance = 7500}
 }
 
 monster.attacks = {
-	{ name = "melee", interval = 2000, chance = 100, minDamage = 0, maxDamage = -1450 },
-	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_FIREDAMAGE, minDamage = -1150, maxDamage = -1400, range = 7, shootEffect = CONST_ANI_FIRE, effect = CONST_ME_FIREAREA, target = false },
-	{ name = "combat", interval = 2000, chance = 10, type = COMBAT_FIREDAMAGE, minDamage = -800, maxDamage = -1250, length = 8, effect = CONST_ME_EXPLOSIONHIT, target = false },
-	{ name = "combat", interval = 2000, chance = 20, type = COMBAT_DEATHDAMAGE, minDamage = -1000, maxDamage = -1350, radius = 4, effect = CONST_ME_MORTAREA, target = false },
-	{ name = "death chain", interval = 2000, chance = 20, minDamage = -1100, maxDamage = -1380, target = true },
+	{name ="melee", interval = 2000, chance = 100, minDamage = 0, maxDamage = -1450},
+	{name ="combat", interval = 2000, chance = 15, type = COMBAT_FIREDAMAGE, minDamage = -1150, maxDamage = -1400, range = 7, shootEffect = CONST_ANI_FIRE, effect = CONST_ME_FIREAREA, target = false},
+	{name ="combat", interval = 2000, chance = 10, type = COMBAT_FIREDAMAGE, minDamage = -800, maxDamage = -1250, length = 8, effect = CONST_ME_EXPLOSIONHIT, target = false},
+	{name ="combat", interval = 2000, chance = 20, type = COMBAT_DEATHDAMAGE, minDamage = -1000, maxDamage = -1350, radius = 4, effect = CONST_ME_MORTAREA, target = false},
+	{name ="death chain", interval = 2000, chance = 20, minDamage = -1100, maxDamage = -1380, target = true},
 }
 
 monster.defenses = {
@@ -112,23 +115,23 @@ monster.defenses = {
 }
 
 monster.elements = {
-	{ type = COMBAT_PHYSICALDAMAGE, percent = 30 },
-	{ type = COMBAT_ENERGYDAMAGE, percent = 0 },
-	{ type = COMBAT_EARTHDAMAGE, percent = 0 },
-	{ type = COMBAT_FIREDAMAGE, percent = 40 },
-	{ type = COMBAT_LIFEDRAIN, percent = 0 },
-	{ type = COMBAT_MANADRAIN, percent = 0 },
-	{ type = COMBAT_DROWNDAMAGE, percent = 0 },
-	{ type = COMBAT_ICEDAMAGE, percent = -20 },
-	{ type = COMBAT_HOLYDAMAGE, percent = -25 },
-	{ type = COMBAT_DEATHDAMAGE, percent = 50 },
+	{type = COMBAT_PHYSICALDAMAGE, percent = 30},
+	{type = COMBAT_ENERGYDAMAGE, percent = 0},
+	{type = COMBAT_EARTHDAMAGE, percent = 0},
+	{type = COMBAT_FIREDAMAGE, percent = 40},
+	{type = COMBAT_LIFEDRAIN, percent = 0},
+	{type = COMBAT_MANADRAIN, percent = 0},
+	{type = COMBAT_DROWNDAMAGE, percent = 0},
+	{type = COMBAT_ICEDAMAGE, percent = -20},
+	{type = COMBAT_HOLYDAMAGE , percent = -25},
+	{type = COMBAT_DEATHDAMAGE , percent = 50},
 }
 
 monster.immunities = {
-	{ type = "paralyze", condition = true },
-	{ type = "outfit", condition = true },
-	{ type = "invisible", condition = true },
-	{ type = "bleed", condition = false },
+	{type = "paralyze", condition = true},
+	{type = "outfit", condition = true},
+	{type = "invisible", condition = true},
+	{type = "bleed", condition = false}
 }
 
 mType:register(monster)

@@ -2,27 +2,32 @@ local mType = Game.createMonsterType("Ribstride")
 local monster = {}
 
 monster.description = "Ribstride"
-monster.experience = 1100
+monster.experience = 1100000
 monster.outfit = {
-	lookType = 101,
+	lookType = 1656,
 	lookHead = 0,
 	lookBody = 0,
 	lookLegs = 0,
 	lookFeet = 0,
 	lookAddons = 0,
-	lookMount = 0,
+	lookMount = 0
 }
 
-monster.health = 1000
-monster.maxHealth = 1000
+monster.level = {
+min = 425,
+max = 775
+}
+
+monster.health = 100000
+monster.maxHealth = 100000
 monster.race = "undead"
-monster.corpse = 6030
-monster.speed = 105
+monster.corpse = 22495
+monster.speed = 505
 monster.manaCost = 0
 
 monster.changeTarget = {
 	interval = 4000,
-	chance = 10,
+	chance = 10
 }
 
 monster.strategiesTarget = {
@@ -38,7 +43,7 @@ monster.flags = {
 	hostile = true,
 	convinceable = false,
 	pushable = false,
-	rewardBoss = false,
+	rewardBoss = true,
 	illusionable = false,
 	canPushItems = true,
 	canPushCreatures = true,
@@ -49,12 +54,12 @@ monster.flags = {
 	isBlockable = false,
 	canWalkOnEnergy = false,
 	canWalkOnFire = false,
-	canWalkOnPoison = false,
+	canWalkOnPoison = false
 }
 
 monster.light = {
 	level = 0,
-	color = 0,
+	color = 0
 }
 
 monster.voices = {
@@ -63,52 +68,87 @@ monster.voices = {
 }
 
 monster.loot = {
-	{ id = 10277, chance = 100000 }, -- bony tail
-	{ id = 5925, chance = 98910, maxCount = 3 }, -- hardened bone
-	{ id = 3035, chance = 98910, maxCount = 8 }, -- platinum coin
-	{ id = 3028, chance = 61960, maxCount = 4 }, -- small diamond
-	{ id = 3441, chance = 60000 }, -- bone shield
-	{ id = 3732, chance = 60000, maxCount = 4 }, -- green mushroom
-	{ id = 10244, chance = 29000 }, -- bonebeast trophy
-	{ id = 5741, chance = 8700 }, -- skull helmet
-	{ id = 12304, chance = 2000 }, -- maxilla maximus
+	{id = 10277, chance = 100000}, -- bony tail
+	{id = 5925, chance = 98910, maxCount = 3}, -- hardened bone
+	{id = 3035, chance = 98910, maxCount = 8}, -- platinum coin
+	{id = 3028, chance = 61960, maxCount = 4}, -- small diamond
+	{id = 3441, chance = 60000}, -- bone shield
+	{id = 3732, chance = 60000, maxCount = 4}, -- green mushroom
+	{id = 10244, chance = 29000}, -- bonebeast trophy
+	{id = 5741, chance = 8700}, -- skull helmet
+	{id = 12304, chance = 2000}, -- maxilla maximus
+	{id = 3076, chance = 22500, maxCount = 3}, -- gold token
+    {id = 3076, chance = 22500, maxCount = 3}, -- silver token
+    {id = 19082, chance = 1200, maxCount = 1}, -- tornament token
+    {id = 3043, chance = 55500, maxCount = 30}, -- crystal coin
+	{name = "giant sapphire", chance = 16800},
+    {name = "Giant Amethyst", chance = 16800},
+    {name = "Giant Emerald", chance = 16800},
+    {name = "Giant Ruby", chance = 16800},
+    {name = "Giant Topaz", chance = 16800},
+    {name = "Hexagonal Ruby", chance = 16800},
+	{id = 39037, chance = 550},
+	{id = 32725, chance = 550},
+	{id = 32633, chance = 550},
+	{id = 39036, chance = 550},
+	{id = 39038, chance = 550},
+	{id = 39040, chance = 550},
+	{id = 39039, chance = 550}
 }
 
 monster.attacks = {
-	{ name = "melee", interval = 2000, chance = 100, minDamage = 0, maxDamage = -200, condition = { type = CONDITION_POISON, totalDamage = 5, interval = 4000 } },
-	{ name = "combat", interval = 2000, chance = 10, type = COMBAT_LIFEDRAIN, minDamage = -25, maxDamage = -47, radius = 3, effect = CONST_ME_MAGIC_RED, target = false },
-	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_EARTHDAMAGE, minDamage = -50, maxDamage = -90, range = 7, shootEffect = CONST_ANI_POISON, effect = CONST_ME_POISONAREA, target = false },
+	{name ="melee", interval = 2000, chance = 100, minDamage = 0, maxDamage = -1200, condition = {type = CONDITION_POISON, totalDamage = 5, interval = 4000}},
+	{name ="combat", interval = 2000, chance = 10, type = COMBAT_LIFEDRAIN, minDamage = -25, maxDamage = -47, radius = 3, effect = CONST_ME_MAGIC_RED, target = false},
+	{name ="combat", interval = 2000, chance = 15, type = COMBAT_EARTHDAMAGE, minDamage = -50, maxDamage = -1190, range = 7, shootEffect = CONST_ANI_POISON, effect = CONST_ME_POISONAREA, target = false},
 	-- poison
-	{ name = "condition", type = CONDITION_POISON, interval = 2000, chance = 10, minDamage = -50, maxDamage = -60, radius = 3, effect = CONST_ME_POISONAREA, target = false },
+	{name ="condition", type = CONDITION_POISON, interval = 2000, chance = 10, minDamage = -50, maxDamage = -2260, radius = 3, effect = CONST_ME_POISONAREA, target = false},
 	-- poison
-	{ name = "condition", type = CONDITION_POISON, interval = 2000, chance = 10, minDamage = -70, maxDamage = -80, length = 6, spread = 3, effect = CONST_ME_POISONAREA, target = false },
-	{ name = "speed", interval = 2000, chance = 15, speedChange = -300, target = true, duration = 13000 },
+	{name ="condition", type = CONDITION_POISON, interval = 2000, chance = 10, minDamage = -70, maxDamage = -80, length = 6, spread = 3, effect = CONST_ME_POISONAREA, target = false},
+	{name ="speed", interval = 2000, chance = 15, speedChange = -300, target = true, duration = 13000}
 }
 
 monster.defenses = {
 	defense = 35,
 	armor = 35,
-	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_HEALING, minDamage = 30, maxDamage = 50, effect = CONST_ME_HITBYPOISON, target = false },
+	{name ="combat", interval = 2000, chance = 15, type = COMBAT_HEALING, minDamage = 30, maxDamage = 50, effect = CONST_ME_HITBYPOISON, target = false}
 }
 
 monster.elements = {
-	{ type = COMBAT_PHYSICALDAMAGE, percent = 0 },
-	{ type = COMBAT_ENERGYDAMAGE, percent = 0 },
-	{ type = COMBAT_EARTHDAMAGE, percent = 100 },
-	{ type = COMBAT_FIREDAMAGE, percent = -10 },
-	{ type = COMBAT_LIFEDRAIN, percent = 100 },
-	{ type = COMBAT_MANADRAIN, percent = 0 },
-	{ type = COMBAT_DROWNDAMAGE, percent = 100 },
-	{ type = COMBAT_ICEDAMAGE, percent = 0 },
-	{ type = COMBAT_HOLYDAMAGE, percent = -20 },
-	{ type = COMBAT_DEATHDAMAGE, percent = 100 },
+	{type = COMBAT_PHYSICALDAMAGE, percent = 0},
+	{type = COMBAT_ENERGYDAMAGE, percent = 0},
+	{type = COMBAT_EARTHDAMAGE, percent = 100},
+	{type = COMBAT_FIREDAMAGE, percent = -10},
+	{type = COMBAT_LIFEDRAIN, percent = 100},
+	{type = COMBAT_MANADRAIN, percent = 0},
+	{type = COMBAT_DROWNDAMAGE, percent = 100},
+	{type = COMBAT_ICEDAMAGE, percent = 0},
+	{type = COMBAT_HOLYDAMAGE , percent = -20},
+	{type = COMBAT_DEATHDAMAGE , percent = 100}
 }
 
 monster.immunities = {
-	{ type = "paralyze", condition = true },
-	{ type = "outfit", condition = false },
-	{ type = "invisible", condition = true },
-	{ type = "bleed", condition = false },
+	{type = "paralyze", condition = true},
+	{type = "outfit", condition = false},
+	{type = "invisible", condition = true},
+	{type = "bleed", condition = false}
 }
+
+mType.onThink = function(monster, interval)
+end
+
+mType.onAppear = function(monster, creature)
+	if monster:getType():isRewardBoss() then
+		monster:setReward(true)
+	end
+end
+
+mType.onDisappear = function(monster, creature)
+end
+
+mType.onMove = function(monster, creature, fromPosition, toPosition)
+end
+
+mType.onSay = function(monster, creature, type, message)
+end
 
 mType:register(monster)

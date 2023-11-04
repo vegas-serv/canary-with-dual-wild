@@ -2,15 +2,27 @@ local mType = Game.createMonsterType("Sulphider")
 local monster = {}
 
 monster.description = "a sulphider"
-monster.experience = 13328
+monster.experience = 15460
 monster.outfit = {
 	lookType = 1546,
-	lookHead = 85,
-	lookBody = 1,
-	lookLegs = 85,
-	lookFeet = 105,
-	lookAddons = 3,
-	lookMount = 0,
+	lookHead = 0,
+	lookBody = 0,
+	lookLegs = 0,
+	lookFeet = 0,
+	lookAddons = 0,
+	lookMount = 0
+}
+
+monster.level = {
+min = 480,
+max = 625
+}
+
+monster.hazard = {
+	criticalChance = 10.5, -- 10,5%
+	canDodge = true, -- Activate/deactivate crit possibility on the animal
+	canSpawnPod = true, -- Enable/disable possibility to drop spawn pod when killing the bug
+	canDealMoreDamage = true -- Enable/Disable Increased Damage
 }
 
 monster.raceId = 2264
@@ -18,28 +30,23 @@ monster.Bestiary = {
 	class = "Vermin",
 	race = BESTY_RACE_VERMIN,
 	toKill = 5000,
-	FirstUnlock = 200,
-	SecondUnlock = 2000,
+	FirstUnlock = 100,
+	SecondUnlock = 1000,
 	CharmsPoints = 100,
 	Stars = 5,
 	Occurrence = 0,
-	Locations = "Monster Graveyard",
+	Locations = "Monster Graveyard"
 }
-
-monster.health = 21000
-monster.maxHealth = 21000
+monster.health = 18900
+monster.maxHealth = 18900
 monster.race = "blood"
 monster.corpse = 39275
 monster.speed = 215
 monster.manaCost = 0
 
 monster.changeTarget = {
-	interval = 4000,
-	chance = 10,
-}
-
-monster.strategiesTarget = {
-	nearest = 100,
+	interval = 2000,
+	chance = 0
 }
 
 monster.flags = {
@@ -57,33 +64,33 @@ monster.flags = {
 	runHealth = 0,
 	healthHidden = false,
 	isBlockable = false,
-	canWalkOnEnergy = true,
-	canWalkOnFire = true,
-	canWalkOnPoison = true,
+	canWalkOnEnergy = false,
+	canWalkOnFire = false,
+	canWalkOnPoison = false
 }
 
 monster.light = {
 	level = 0,
-	color = 0,
+	color = 0
 }
 
 monster.voices = {
 	interval = 5000,
 	chance = 10,
-	{ text = "Tikkee...Takka...", yell = false },
+	{text = "Tikkee...Takka...", yell = false}
 }
 
 monster.loot = {
-	{ name = "Sulphur Powder", chance = 29600 },
-	{ name = "Sulphider Shell", chance = 24660 },
-	{ name = "Ultimate Mana Potion", chance = 14620 },
-	{ name = "Crystal Coin", chance = 14430, minCount = 1, maxCount = 3 },
-	{ name = "White Pearl", chance = 5010 },
-	{ name = "Fire Axe", chance = 2450 },
-	{ name = "Magma Boots", chance = 1600 },
-	{ name = "Crown Shield", chance = 1230 },
-	{ name = "Amber Staff", chance = 1150 },
-	{ name = "Amulet of Loss", chance = 850 },
+	{ name="sulphur powder" , chance = 30853},
+	{ name="sulphider shell" , chance = 23632},
+	{ name="ultimate mana potion", chance = 14661},
+	{ name="crystal coin" , chance = 13348, maxCount = 3},
+	{ name="white pearl" , chance = 4376},
+	{ name="fire axe" , chance = 2845},
+	{ name="crown shield" , chance = 2188},
+	{ name="amber staff" , chance = 1969},
+	{ name="amulet of loss", chance = 1969},
+	{ name="magma boots" , chance = 1313}
 }
 
 monster.attacks = {
@@ -93,29 +100,30 @@ monster.attacks = {
 }
 
 monster.defenses = {
-	defense = 110,
-	armor = 83,
-	mitigation = 2.11,
+	defense = 83,
+	armor = 83
 }
 
 monster.elements = {
-	{ type = COMBAT_PHYSICALDAMAGE, percent = 0 },
-	{ type = COMBAT_ENERGYDAMAGE, percent = 0 },
-	{ type = COMBAT_EARTHDAMAGE, percent = 0 },
-	{ type = COMBAT_FIREDAMAGE, percent = 20 },
-	{ type = COMBAT_LIFEDRAIN, percent = 0 },
-	{ type = COMBAT_MANADRAIN, percent = 0 },
-	{ type = COMBAT_DROWNDAMAGE, percent = 0 },
-	{ type = COMBAT_ICEDAMAGE, percent = -20 },
-	{ type = COMBAT_HOLYDAMAGE, percent = -10 },
-	{ type = COMBAT_DEATHDAMAGE, percent = 20 },
+	{type = COMBAT_PHYSICALDAMAGE, percent = 0},
+	{type = COMBAT_ENERGYDAMAGE, percent = 0},
+	{type = COMBAT_EARTHDAMAGE, percent = 0},
+	{type = COMBAT_FIREDAMAGE, percent = 20},
+	{type = COMBAT_LIFEDRAIN, percent = 0},
+	{type = COMBAT_MANADRAIN, percent = 0},
+	{type = COMBAT_DROWNDAMAGE, percent = 0},
+	{type = COMBAT_ICEDAMAGE, percent = -20},
+	{type = COMBAT_HOLYDAMAGE , percent = -10},
+	{type = COMBAT_DEATHDAMAGE , percent = 20}
 }
 
 monster.immunities = {
-	{ type = "paralyze", condition = true },
-	{ type = "outfit", condition = false },
-	{ type = "invisible", condition = true },
-	{ type = "bleed", condition = false },
+	{type = "paralyze", condition = true},
+	{type = "outfit", condition = false},
+	{type = "invisible", condition = true},
+	{type = "drunk", condition = true},
+	{type = "bleed", condition = false}
 }
-
 mType:register(monster)
+
+

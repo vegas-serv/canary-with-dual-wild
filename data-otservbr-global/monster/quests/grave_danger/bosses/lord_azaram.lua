@@ -1,8 +1,8 @@
 local mType = Game.createMonsterType("Lord Azaram")
 local monster = {}
 
-monster.description = "Lord Azaram"
-monster.experience = 55000
+monster.description = "a Lord Azaram"
+monster.experience = 5500000
 monster.outfit = {
 	lookType = 1223,
 	lookHead = 19,
@@ -10,24 +10,30 @@ monster.outfit = {
 	lookLegs = 94,
 	lookFeet = 81,
 	lookAddons = 3,
-	lookMount = 0,
+	lookMount = 0
 }
 
-monster.health = 75000
-monster.maxHealth = 75000
+monster.level = {
+min = 425,
+max = 875
+}
+
+monster.health = 200000
+monster.maxHealth = 200000
 monster.race = "venom"
 monster.corpse = 31599
-monster.speed = 125
+monster.speed = 425
 monster.manaCost = 0
 
 monster.changeTarget = {
 	interval = 4000,
-	chance = 10,
+	chance = 10
 }
 
 monster.bosstiary = {
 	bossRaceId = 1756,
 	bossRace = RARITY_ARCHFOE,
+	storageCooldown = Storage.Quest.U12_20.GraveDanger.Bosses.LordAzaramKilled
 }
 
 monster.strategiesTarget = {
@@ -51,19 +57,23 @@ monster.flags = {
 	isBlockable = false,
 	canWalkOnEnergy = true,
 	canWalkOnFire = true,
-	canWalkOnPoison = true,
+	canWalkOnPoison = true
 }
 
 monster.light = {
 	level = 0,
-	color = 0,
+	color = 0
+}
+
+monster.events = {
+	"Deadmonsters"
 }
 
 monster.summon = {
 	maxSummons = 5,
 	summons = {
-		{ name = "Condensed Sins", chance = 50, interval = 2000, count = 5 },
-	},
+		{name = "Condensed Sins", chance = 50, interval = 2000, count = 5}
+	}
 }
 
 monster.voices = {
@@ -72,69 +82,77 @@ monster.voices = {
 }
 
 monster.loot = {
-	{ name = "platinum coin", minCount = 1, maxCount = 5, chance = 100000 },
-	{ name = "crystal coin", minCount = 0, maxCount = 2, chance = 50000 },
-	{ name = "supreme health potion", minCount = 0, maxCount = 6, chance = 35000 },
-	{ name = "ultimate mana potion", minCount = 0, maxCount = 20, chance = 32000 },
-	{ name = "ultimate spirit potion", minCount = 0, maxCount = 20, chance = 32000 },
-	{ name = "bullseye potion", minCount = 0, maxCount = 10, chance = 12000 },
-	{ name = "berserk potion", minCount = 0, maxCount = 10, chance = 12000 },
-	{ name = "piece of hell steel", minCount = 0, maxCount = 4, chance = 9000 },
-	{ id = 3039, minCount = 0, maxCount = 2, chance = 12000 }, -- red gem
-	{ name = "blue gem", minCount = 0, maxCount = 2, chance = 12000 },
-	{ name = "silver token", minCount = 0, maxCount = 2, chance = 9500 },
-	{ name = "ancient liche bone", chance = 5200 },
-	{ id = 23542, chance = 5200 }, -- collar of blue plasma
-	{ id = 23544, chance = 5200 }, -- collar of red plasma
-	{ id = 23543, chance = 5200 }, -- collar of green plasma
-	{ name = "giant sapphire", chance = 7000 },
-	{ name = "haunted blade", chance = 9000 },
-	{ name = "huge chunk of crude iron", chance = 4500 },
-	{ name = "knight armor", chance = 15000 },
-	{ name = "violet gem", minCount = 0, maxCount = 1, chance = 10000 },
-	{ name = "yellow gem", minCount = 0, maxCount = 1, chance = 10000 },
-	{ id = 23531, chance = 5000 }, -- ring of green plasma
-	{ id = 23533, chance = 5000 }, -- ring of red plasma
-	{ name = "young lich worm", chance = 5800 },
-	{ name = "bear skin", chance = 1600 },
-	{ name = "noble cape", chance = 1500 },
-	{ name = "terra helmet", chance = 720 },
-	{ name = "final judgement", chance = 410 },
+	{name = "platinum coin", minCount = 1, maxCount = 5, chance = 100000},
+	{name = "crystal coin", minCount = 0, maxCount = 2, chance = 50000},
+	{name = "supreme health potion", minCount = 0, maxCount = 6, chance = 35000},
+	{name = "ultimate mana potion", minCount = 0, maxCount = 20, chance = 32000},
+	{name = "ultimate spirit potion", minCount = 0, maxCount = 20, chance = 32000},
+	{name = "bullseye potion", minCount = 0, maxCount = 10, chance = 12000},
+	{name = "berserk potion", minCount = 0, maxCount = 10, chance = 12000},
+	{name = "piece of hell steel", minCount = 0, maxCount = 4, chance = 9000},
+	{id= 3039, minCount = 0, maxCount = 2, chance = 12000}, -- red gem
+	{name = "blue gem", minCount = 0, maxCount = 2, chance = 12000},
+	{name = "silver token", minCount = 0, maxCount = 2, chance = 9500},
+	{name = "ancient liche bone", chance = 5200},
+	{id = 23542, chance = 5200}, -- collar of blue plasma
+	{id = 23544, chance = 5200}, -- collar of red plasma
+	{id = 23543, chance = 5200}, -- collar of green plasma
+	{name = "giant sapphire", chance = 7000},
+	{name = "haunted blade", chance = 9000},
+	{name = "huge chunk of crude iron", chance = 4500},
+	{name = "knight armor", chance = 15000},
+	{name = "violet gem", minCount = 0, maxCount = 1, chance = 10000},
+	{name = "yellow gem", minCount = 0, maxCount = 1, chance = 10000},
+	{id = 23531, chance = 5000}, -- ring of green plasma
+	{id = 23533, chance = 5000}, -- ring of red plasma
+	{name = "young lich worm", chance = 5800},
+	{name = "bear skin", chance = 600},
+	{name = "noble cape", chance = 1500},
+	{name = "terra helmet", chance = 520},
+	{name = "final judgement", chance = 410},
+	{name = "giant sapphire", chance = 16800},
+    {name = "Giant Amethyst", chance = 16800},
+    {name = "Giant Emerald", chance = 16800},
+    {name = "Giant Ruby", chance = 16800},
+    {name = "Giant Topaz", chance = 16800},
+    {name = "Hexagonal Ruby", chance = 16800},
+    {name = "crystal coin", minCount = 0, maxCount = 30, chance = 50000},
 }
 
 monster.attacks = {
-	{ name = "melee", interval = 2000, chance = 100, minDamage = 0, maxDamage = -1000, effect = CONST_ME_DRAWBLOOD },
-	{ name = "lord azaram wave", interval = 3500, chance = 50, minDamage = -360, maxDamage = -900 },
-	{ name = "combat", interval = 2700, chance = 20, type = COMBAT_EARTHDAMAGE, minDamage = -500, maxDamage = -1200, length = 7, spread = 0, effect = CONST_ME_STONES, target = false },
+	{name ="melee", interval = 2000, chance = 100, minDamage = -200, maxDamage = -1000, effect = CONST_ME_DRAWBLOOD},
+	{name ="combat", interval = 2000, chance = 25, type = COMBAT_PHYSICALDAMAGE, minDamage = -400, maxDamage = -1000, length = 7, spread = 3, effect = CONST_ME_STONES, target = false},
+	{name ="combat", interval = 2000, chance = 15, type = COMBAT_EARTHDAMAGE, minDamage = -400, maxDamage = -3000, length = 7, spread = 3, effect = CONST_ME_POISONAREA, target = false}
 }
 
 monster.defenses = {
 	defense = 25,
 	armor = 78,
-	--	mitigation = ???,
+	{name ="combat", interval = 2000, chance = 50, type = COMBAT_HEALING, minDamage = 150, maxDamage = 550, effect = CONST_ME_MAGIC_BLUE, target = false}
 }
 
 monster.elements = {
-	{ type = COMBAT_PHYSICALDAMAGE, percent = 0 },
-	{ type = COMBAT_ENERGYDAMAGE, percent = 5 },
-	{ type = COMBAT_EARTHDAMAGE, percent = 100 },
-	{ type = COMBAT_FIREDAMAGE, percent = -10 },
-	{ type = COMBAT_LIFEDRAIN, percent = 0 },
-	{ type = COMBAT_MANADRAIN, percent = 0 },
-	{ type = COMBAT_DROWNDAMAGE, percent = 0 },
-	{ type = COMBAT_ICEDAMAGE, percent = 0 },
-	{ type = COMBAT_HOLYDAMAGE, percent = 0 },
-	{ type = COMBAT_DEATHDAMAGE, percent = 0 },
+	{type = COMBAT_PHYSICALDAMAGE, percent = 0},
+	{type = COMBAT_ENERGYDAMAGE, percent = 0},
+	{type = COMBAT_EARTHDAMAGE, percent = 0},
+	{type = COMBAT_FIREDAMAGE, percent = 20},
+	{type = COMBAT_LIFEDRAIN, percent = 0},
+	{type = COMBAT_MANADRAIN, percent = 0},
+	{type = COMBAT_DROWNDAMAGE, percent = 0},
+	{type = COMBAT_ICEDAMAGE, percent = 0},
+	{type = COMBAT_HOLYDAMAGE , percent = 0},
+	{type = COMBAT_DEATHDAMAGE , percent = 0}
 }
 
 monster.immunities = {
-	{ type = "paralyze", condition = true },
-	{ type = "outfit", condition = false },
-	{ type = "invisible", condition = true },
-	{ type = "bleed", condition = false },
+	{type = "paralyze", condition = true},
+	{type = "outfit", condition = false},
+	{type = "invisible", condition = true},
+	{type = "bleed", condition = false}
 }
 
-mType.onThink = function(monster, interval) end
+mType.onThink = function(monster, interval)
+end
 
 mType.onAppear = function(monster, creature)
 	if monster:getType():isRewardBoss() then
@@ -142,10 +160,13 @@ mType.onAppear = function(monster, creature)
 	end
 end
 
-mType.onDisappear = function(monster, creature) end
+mType.onDisappear = function(monster, creature)
+end
 
-mType.onMove = function(monster, creature, fromPosition, toPosition) end
+mType.onMove = function(monster, creature, fromPosition, toPosition)
+end
 
-mType.onSay = function(monster, creature, type, message) end
+mType.onSay = function(monster, creature, type, message)
+end
 
 mType:register(monster)

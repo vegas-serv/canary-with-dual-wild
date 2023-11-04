@@ -37,7 +37,7 @@ local thePrimalMenaceConfig = {
 			"Beast Sabretooth",
 			"Stalking Stalk",
 			"Sulphider",
-		},
+		}
 	},
 
 	PodConfig = {
@@ -53,7 +53,7 @@ local thePrimalMenaceConfig = {
 }
 
 monster.description = "The Primal Menace"
-monster.experience = 0
+monster.experience = 18000000
 monster.outfit = {
 	lookType = 1566,
 	lookHead = 0,
@@ -61,23 +61,34 @@ monster.outfit = {
 	lookLegs = 0,
 	lookFeet = 0,
 	lookAddons = 0,
-	lookMount = 0,
+	lookMount = 0
 }
 
-monster.events = {
-	"ThePrimalMenaceDeath",
+monster.level = {
+min = 425,
+max = 775
 }
 
-monster.health = 400000
-monster.maxHealth = 400000
+monster.health = 500000
+monster.maxHealth = 500000
 monster.race = "blood"
 monster.corpse = 39530
-monster.speed = 180
-monster.manaCost = 0
+monster.speed = 680
 
 monster.changeTarget = {
 	interval = 2000,
-	chance = 10,
+	chance = 10
+}
+
+monster.bosstiary = {
+	bossRaceId = 2247,
+	bossRace = RARITY_NEMESIS
+}
+
+monster.events = {
+	"Deadmonsters",
+	"primalOnKillEvent",
+	"ThePrimalMenaceDeath"
 }
 
 monster.flags = {
@@ -102,7 +113,7 @@ monster.flags = {
 
 monster.light = {
 	level = 0,
-	color = 0,
+	color = 0
 }
 
 monster.voices = {
@@ -111,16 +122,24 @@ monster.voices = {
 }
 
 monster.loot = {
-	{ name = "primal bag", chance = 50 },
+	{name = "primal bag", chance = 50},
+	{name = "giant sapphire", chance = 16800},
+    {name = "Giant Amethyst", chance = 16800},
+    {name = "Giant Emerald", chance = 16800},
+    {name = "Giant Ruby", chance = 16800},
+    {name = "Giant Topaz", chance = 16800},
+    {name = "Hexagonal Ruby", chance = 16800},
+    {name = "crystal coin", minCount = 0, maxCount = 30, chance = 50000},
 }
 
 monster.attacks = {
-	{ name = "melee", interval = 2000, chance = 85, minDamage = -0, maxDamage = -763 },
-	{ name = "combat", interval = 4000, chance = 35, type = COMBAT_EARTHDAMAGE, minDamage = -1500, maxDamage = -2200, length = 10, spread = 3, effect = CONST_ME_CARNIPHILA, target = false },
-	{ name = "combat", interval = 2500, chance = 45, type = COMBAT_FIREDAMAGE, minDamage = -700, maxDamage = -1000, length = 10, spread = 3, effect = CONST_ME_HITBYFIRE, target = false },
-	{ name = "big death wave", interval = 3500, chance = 35, minDamage = -250, maxDamage = -300, target = false },
-	{ name = "combat", interval = 5000, chance = 40, type = COMBAT_ENERGYDAMAGE, effect = CONST_ME_ENERGYHIT, minDamage = -1200, maxDamage = -1300, range = 4, target = false },
-	{ name = "combat", interval = 2700, chance = 45, type = COMBAT_EARTHDAMAGE, shootEffect = CONST_ANI_POISON, effect = CONST_ANI_EARTH, minDamage = -600, maxDamage = -1800, range = 4, target = false },
+	{name ="melee", interval = 2000, chance = 85, minDamage = -2500, maxDamage = -3500},
+	{name ="combat", interval = 4000, chance = 35, type = COMBAT_EARTHDAMAGE, minDamage = -3000, maxDamage = -4000, length = 10, spread = 3, effect = CONST_ME_CARNIPHILA, target = false},
+	{name ="combat", interval = 2500, chance = 45, type = COMBAT_FIREDAMAGE, minDamage = -3000, maxDamage = -7000, length = 10, spread = 3, effect = CONST_ME_HITBYFIRE, target = false},
+    {name ="big death wave", interval = 3500, chance = 35, minDamage = -4000, maxDamage = -7000, target = false},
+	{name ="combat", interval = 5000, chance = 40, type = COMBAT_ENERGYDAMAGE, effect = CONST_ME_ENERGYHIT, minDamage = -3500, maxDamage = -4000, range = 4, target = false},
+	{name ="combat", interval = 2700, chance = 45, type = COMBAT_EARTHDAMAGE, shootEffect = CONST_ANI_POISON, effect = CONST_ANI_EARTH, minDamage = -1100, maxDamage = -4000, range = 4, target = false},
+
 }
 
 monster.defenses = {
@@ -130,24 +149,24 @@ monster.defenses = {
 }
 
 monster.elements = {
-	{ type = COMBAT_PHYSICALDAMAGE, percent = 0 },
-	{ type = COMBAT_ENERGYDAMAGE, percent = -5 },
-	{ type = COMBAT_EARTHDAMAGE, percent = 100 },
-	{ type = COMBAT_FIREDAMAGE, percent = 5 },
-	{ type = COMBAT_LIFEDRAIN, percent = 0 },
-	{ type = COMBAT_MANADRAIN, percent = 0 },
-	{ type = COMBAT_DROWNDAMAGE, percent = 0 },
-	{ type = COMBAT_ICEDAMAGE, percent = 50 },
-	{ type = COMBAT_HOLYDAMAGE, percent = 40 },
-	{ type = COMBAT_DEATHDAMAGE, percent = 0 },
+	{type = COMBAT_PHYSICALDAMAGE, percent = 0},
+	{type = COMBAT_ENERGYDAMAGE, percent = -5},
+	{type = COMBAT_EARTHDAMAGE, percent = 100},
+	{type = COMBAT_FIREDAMAGE, percent = 5},
+	{type = COMBAT_LIFEDRAIN, percent = 0},
+	{type = COMBAT_MANADRAIN, percent = 0},
+	{type = COMBAT_DROWNDAMAGE, percent = 0},
+	{type = COMBAT_ICEDAMAGE, percent = 50},
+	{type = COMBAT_HOLYDAMAGE , percent = 40},
+	{type = COMBAT_DEATHDAMAGE , percent = 0}
 }
 
 monster.immunities = {
-	{ type = "paralyze", condition = true },
-	{ type = "outfit", condition = false },
-	{ type = "invisible", condition = true },
-	{ type = "drunk", condition = true },
-	{ type = "bleed", condition = false },
+	{type = "paralyze", condition = true},
+	{type = "outfit", condition = false},
+	{type = "invisible", condition = true},
+	{type = "drunk", condition = true},
+	{type = "bleed", condition = false}
 }
 
 local function initialize(monster)
@@ -176,9 +195,7 @@ end
 
 local function getHazardPoints(monster)
 	local hazard = Hazard.getByName("hazard.gnomprona-gardens")
-	if not hazard then
-		return 0
-	end
+	if not hazard then return 0 end
 
 	local _, hazardPoints = hazard:getHazardPlayerAndPoints(monster:getDamageMap())
 	return hazardPoints
@@ -290,7 +307,7 @@ local function spawnMonster(monsterId, spawnPosition)
 	end
 	local primalBeastEntry = {
 		MonsterId = primalMonster:getId(),
-		Created = os.time(),
+		Created = os.time()
 	}
 	local monsterMaxHealth = primalMonster:getMaxHealth()
 	primalMonster:setHealth(monsterMaxHealth * thePrimalMenaceConfig.MonsterConfig.HpRateOnSpawn)
