@@ -331,9 +331,6 @@ bool CreatureEvent::executeAdvance(std::shared_ptr<Player> player, skills_t skil
  */
 void CreatureEvent::executeOnKill(std::shared_ptr<Creature> creature, std::shared_ptr<Creature> target, bool lastHit) const {
 	// onKill(creature, target, lastHit)
-	g_logger().warn("[CreatureEvent::executeOnKill - Creature {} target {} event {}] "
-					"Deprecated use of onKill event. Use registered onDeath events instead for better performance.",
-					creature->getName(), target->getName(), getName());
 	if (!getScriptInterface()->reserveScriptEnv()) {
 		g_logger().error("[CreatureEvent::executeOnKill - Creature {} target {} event {}] "
 						 "Call stack overflow. Too many lua script calls being nested.",
