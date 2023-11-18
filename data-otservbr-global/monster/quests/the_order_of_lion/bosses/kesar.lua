@@ -36,6 +36,10 @@ monster.strategiesTarget = {
 	nearest = 100,
 }
 
+monster.events = {
+	"KesarImmortal",
+}
+
 monster.flags = {
 	summonable = false,
 	attackable = true,
