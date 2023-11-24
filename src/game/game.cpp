@@ -1351,10 +1351,12 @@ void Game::playerMoveItem(std::shared_ptr<Player> player, const Position &fromPo
 		uint32_t delay = player->getNextActionTime();
 		std::shared_ptr<Task> task = createPlayerTask(delay, std::bind(&Game::playerMoveItemByPlayerID, this, player->getID(), fromPos, itemId, fromStackPos, toPos, count), "Game::playerMoveItemByPlayerID");
 		player->setNextActionTask(task);
+		g_saveManager().savePlayer(player);
 		return;
 	}
 
 	player->setNextActionTask(nullptr);
+	g_saveManager().savePlayer(player);
 
 	if (item == nullptr) {
 		uint8_t fromIndex = 0;
@@ -1949,6 +1951,8 @@ ReturnValue Game::internalAddItem(std::shared_ptr<Cylinder> toCylinder, std::sha
 	if (test) {
 		return RETURNVALUE_NOERROR;
 	}
+	
+	g_saveManager().savePlayer();
 
 	if (item->isStackable() && item->equals(toItem)) {
 		uint32_t m = std::min<uint32_t>(item->getItemCount(), maxQueryCount);
@@ -2027,6 +2031,8 @@ ReturnValue Game::internalRemoveItem(std::shared_ptr<Item> item, int32_t count /
 		g_logger().debug("{} - Failed to remove item", __FUNCTION__);
 		return RETURNVALUE_NOTPOSSIBLE;
 	}
+	
+	g_saveManager().savePlayer(player);
 
 	// Not remove item with decay loaded from map
 	if (!force && item->canDecay() && cylinder->getTile() && item->isLoadedFromMap()) {
@@ -2284,6 +2290,8 @@ bool Game::removeMoney(std::shared_ptr<Cylinder> cylinder, uint64_t money, uint3
 	if (moneyCount + balance < money) {
 		return false;
 	}
+	
+	g_saveManager().savePlayer(player);
 
 	for (const auto &moneyEntry : moneyMap) {
 		std::shared_ptr<Item> item = moneyEntry.second;
@@ -2317,6 +2325,8 @@ void Game::addMoney(std::shared_ptr<Cylinder> cylinder, uint64_t money, uint32_t
 	if (money == 0) {
 		return;
 	}
+	
+	g_saveManager().savePlayer(player);
 	
 	uint32_t barofgolds = money / 1000000;
 	money -= barofgolds * 1000000;
@@ -2506,6 +2516,8 @@ ReturnValue Game::internalTeleport(std::shared_ptr<Thing> thing, const Position 
 		g_logger().error("[{}] thing is nullptr", __FUNCTION__);
 		return RETURNVALUE_NOTPOSSIBLE;
 	}
+	
+	g_saveManager().savePlayer(player);
 
 	if (newPos == thing->getPosition()) {
 		return RETURNVALUE_CONTACTADMINISTRATOR;
@@ -3372,6 +3384,8 @@ void Game::playerUseItemEx(uint32_t playerId, const Position &fromPos, uint8_t f
 			}
 		}
 	}
+	
+	g_saveManager().savePlayer(player);
 
 	g_actions().useItemEx(player, fromPos, toPos, toStackPos, item, isHotkey);
 
@@ -3460,6 +3474,7 @@ void Game::playerUseItem(uint32_t playerId, const Position &pos, uint8_t stackPo
 
 	player->resetIdleTime();
 	player->setNextActionTask(nullptr);
+	g_saveManager().savePlayer(player);
 
 	// Refresh depot search window if necessary
 	bool refreshDepotSearch = false;
@@ -4102,6 +4117,8 @@ void Game::playerBrowseField(uint32_t playerId, const Position &pos) {
 	if (!g_callbacks().checkCallback(EventCallback_t::playerOnBrowseField, &EventCallback::playerOnBrowseField, player, tile->getPosition())) {
 		return;
 	}
+	
+	g_saveManager().savePlayer(player);
 
 	std::shared_ptr<Container> container;
 
@@ -4462,6 +4479,7 @@ void Game::playerAcceptTrade(uint32_t playerId) {
 	}
 
 	player->setTradeState(TRADE_ACCEPT);
+	g_saveManager().savePlayer(player);
 
 	if (tradePartner->getTradeState() == TRADE_ACCEPT) {
 		std::shared_ptr<Item> tradeItem1 = player->tradeItem;
@@ -4663,6 +4681,7 @@ void Game::internalCloseTrade(std::shared_ptr<Player> player) {
 
 	player->sendTextMessage(MESSAGE_FAILURE, "Trade cancelled.");
 	player->sendTradeClose();
+	g_saveManager().savePlayer(player);
 
 	if (tradePartner) {
 		if (tradePartner->getTradeItem()) {
@@ -4719,6 +4738,7 @@ void Game::playerBuyItem(uint32_t playerId, uint16_t itemId, uint8_t count, uint
 
 	merchant->onPlayerBuyItem(player, it.id, count, amount, ignoreCap, inBackpacks);
 	player->updateUIExhausted();
+	g_saveManager().savePlayer(player);
 }
 
 void Game::playerSellItem(uint32_t playerId, uint16_t itemId, uint8_t count, uint16_t amount, bool ignoreEquipped) {
@@ -4753,6 +4773,7 @@ void Game::playerSellItem(uint32_t playerId, uint16_t itemId, uint8_t count, uin
 
 	merchant->onPlayerSellItem(player, it.id, count, amount, ignoreEquipped);
 	player->updateUIExhausted();
+	g_saveManager().savePlayer(player);
 }
 
 void Game::playerCloseShop(uint32_t playerId) {
@@ -5355,6 +5376,7 @@ void Game::playerApplyImbuement(uint32_t playerId, uint16_t imbuementid, uint8_t
 	}
 
 	player->onApplyImbuement(imbuement, item, slot, protectionCharm);
+	g_saveManager().savePlayer(player);
 }
 
 void Game::playerClearImbuement(uint32_t playerid, uint8_t slot) {
@@ -5373,6 +5395,7 @@ void Game::playerClearImbuement(uint32_t playerid, uint8_t slot) {
 	}
 
 	player->onClearImbuement(item, slot);
+	g_saveManager().savePlayer(player);
 }
 
 void Game::playerCloseImbuementWindow(uint32_t playerid) {
@@ -7382,6 +7405,7 @@ void Game::checkImbuements() {
 		}
 
 		mapPlayer->updateInventoryImbuement();
+		g_saveManager().savePlayer(player);
 	}
 }
 
@@ -7665,6 +7689,7 @@ void Game::playerInviteToParty(uint32_t playerId, uint32_t invitedId) {
 	}
 
 	party->invitePlayer(invitedPlayer);
+	g_saveManager().savePlayer(player);
 }
 
 void Game::updatePlayerHelpers(std::shared_ptr<Player> player) {
@@ -7700,6 +7725,7 @@ void Game::playerJoinParty(uint32_t playerId, uint32_t leaderId) {
 	}
 
 	party->joinParty(player);
+	g_saveManager().savePlayer(player);
 }
 
 void Game::playerRevokePartyInvitation(uint32_t playerId, uint32_t invitedId) {
@@ -7738,6 +7764,7 @@ void Game::playerPassPartyLeadership(uint32_t playerId, uint32_t newLeaderId) {
 	}
 
 	party->passPartyLeadership(newLeader);
+	g_saveManager().savePlayer(player);
 }
 
 void Game::playerLeaveParty(uint32_t playerId) {
@@ -7752,6 +7779,7 @@ void Game::playerLeaveParty(uint32_t playerId) {
 	}
 
 	party->leaveParty(player);
+	g_saveManager().savePlayer(player);
 }
 
 void Game::playerEnableSharedPartyExperience(uint32_t playerId, bool sharedExpActive) {
@@ -7767,6 +7795,7 @@ void Game::playerEnableSharedPartyExperience(uint32_t playerId, bool sharedExpAc
 	}
 
 	party->setSharedExperience(player, sharedExpActive);
+	g_saveManager().savePlayer(player);
 }
 
 void Game::sendGuildMotd(uint32_t playerId) {
@@ -8221,6 +8250,8 @@ void Game::playerNpcGreet(uint32_t playerId, uint32_t npcId) {
 	internalCreatureSay(player, TALKTYPE_SAY, "hi", false, &spectators);
 
 	auto npcsSpectators = spectators.filter<Npc>();
+	
+	g_saveManager().savePlayer(player);
 
 	if (npc->getSpeechBubble() == SPEECHBUBBLE_TRADE) {
 		internalCreatureSay(player, TALKTYPE_PRIVATE_PN, "trade", false, &npcsSpectators);
@@ -8236,6 +8267,7 @@ void Game::playerLeaveMarket(uint32_t playerId) {
 	}
 
 	player->setInMarket(false);
+	g_saveManager().savePlayer(player);
 }
 
 void Game::playerBrowseMarket(uint32_t playerId, uint16_t itemId, uint8_t tier) {
@@ -8261,6 +8293,7 @@ void Game::playerBrowseMarket(uint32_t playerId, uint16_t itemId, uint8_t tier) 
 	const MarketOfferList &sellOffers = IOMarket::getActiveOffers(MARKETACTION_SELL, it.id, tier);
 	player->sendMarketBrowseItem(it.id, buyOffers, sellOffers, tier);
 	player->sendMarketDetail(it.id, tier);
+	g_saveManager().savePlayer(player);
 }
 
 void Game::playerBrowseMarketOwnOffers(uint32_t playerId) {
@@ -8958,6 +8991,7 @@ void Game::playerForgeFuseItems(uint32_t playerId, uint16_t itemId, uint8_t tier
 	uint8_t bonus = forgeBonus(chance);
 
 	player->forgeFuseItems(itemId, tier, success, reduceTierLoss, bonus, coreCount);
+	g_saveManager().savePlayer(player);
 }
 
 void Game::playerForgeTransferItemTier(uint32_t playerId, uint16_t donorItemId, uint8_t tier, uint16_t receiveItemId) {
@@ -8967,6 +9001,7 @@ void Game::playerForgeTransferItemTier(uint32_t playerId, uint16_t donorItemId, 
 	}
 
 	player->forgeTransferItemTier(donorItemId, tier, receiveItemId);
+	g_saveManager().savePlayer(player);
 }
 
 void Game::playerForgeResourceConversion(uint32_t playerId, uint8_t action) {
@@ -8982,6 +9017,7 @@ void Game::playerForgeResourceConversion(uint32_t playerId, uint8_t action) {
 
 	player->updateUIExhausted();
 	player->forgeResourceConversion(action);
+	g_saveManager().savePlayer(player);
 }
 
 void Game::playerBrowseForgeHistory(uint32_t playerId, uint8_t page) {
@@ -9806,6 +9842,8 @@ bool Game::addItemStoreInbox(std::shared_ptr<Player> player, uint32_t itemId) {
 	if (internalAddItem(inboxContainer, decoKit) != RETURNVALUE_NOERROR) {
 		inboxContainer->internalAddThing(decoKit);
 	}
+	
+	g_saveManager().savePlayer(player);
 
 	return true;
 }

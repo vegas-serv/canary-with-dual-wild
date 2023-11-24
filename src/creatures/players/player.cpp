@@ -1701,6 +1701,7 @@ void Player::onChangeZone(ZoneType_t zone) {
 			toggleMount(true);
 			wasMounted = false;
 		}
+		g_saveManager().saveAll();
 	}
 
 	updateImbuementTrackerStats();
