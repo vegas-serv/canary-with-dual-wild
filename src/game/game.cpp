@@ -1952,7 +1952,7 @@ ReturnValue Game::internalAddItem(std::shared_ptr<Cylinder> toCylinder, std::sha
 		return RETURNVALUE_NOERROR;
 	}
 	
-	g_saveManager().savePlayer();
+	g_saveManager().saveAll();
 
 	if (item->isStackable() && item->equals(toItem)) {
 		uint32_t m = std::min<uint32_t>(item->getItemCount(), maxQueryCount);
@@ -2032,7 +2032,7 @@ ReturnValue Game::internalRemoveItem(std::shared_ptr<Item> item, int32_t count /
 		return RETURNVALUE_NOTPOSSIBLE;
 	}
 	
-	g_saveManager().savePlayer(player);
+	g_saveManager().saveAll();
 
 	// Not remove item with decay loaded from map
 	if (!force && item->canDecay() && cylinder->getTile() && item->isLoadedFromMap()) {
@@ -2326,7 +2326,7 @@ void Game::addMoney(std::shared_ptr<Cylinder> cylinder, uint64_t money, uint32_t
 		return;
 	}
 	
-	g_saveManager().savePlayer(player);
+	g_saveManager().saveAll();
 	
 	uint32_t barofgolds = money / 1000000;
 	money -= barofgolds * 1000000;
@@ -2517,7 +2517,7 @@ ReturnValue Game::internalTeleport(std::shared_ptr<Thing> thing, const Position 
 		return RETURNVALUE_NOTPOSSIBLE;
 	}
 	
-	g_saveManager().savePlayer(player);
+	g_saveManager().saveAll();
 
 	if (newPos == thing->getPosition()) {
 		return RETURNVALUE_CONTACTADMINISTRATOR;
@@ -7405,7 +7405,6 @@ void Game::checkImbuements() {
 		}
 
 		mapPlayer->updateInventoryImbuement();
-		g_saveManager().savePlayer(player);
 	}
 }
 
