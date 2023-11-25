@@ -1951,8 +1951,6 @@ ReturnValue Game::internalAddItem(std::shared_ptr<Cylinder> toCylinder, std::sha
 	if (test) {
 		return RETURNVALUE_NOERROR;
 	}
-	
-	g_saveManager().saveAll();
 
 	if (item->isStackable() && item->equals(toItem)) {
 		uint32_t m = std::min<uint32_t>(item->getItemCount(), maxQueryCount);
@@ -2031,8 +2029,6 @@ ReturnValue Game::internalRemoveItem(std::shared_ptr<Item> item, int32_t count /
 		g_logger().debug("{} - Failed to remove item", __FUNCTION__);
 		return RETURNVALUE_NOTPOSSIBLE;
 	}
-	
-	g_saveManager().saveAll();
 
 	// Not remove item with decay loaded from map
 	if (!force && item->canDecay() && cylinder->getTile() && item->isLoadedFromMap()) {
@@ -2318,6 +2314,7 @@ bool Game::removeMoney(std::shared_ptr<Cylinder> cylinder, uint64_t money, uint3
 }
 
 void Game::addMoney(std::shared_ptr<Cylinder> cylinder, uint64_t money, uint32_t flags /*= 0*/) {
+	
 	if (cylinder == nullptr) {
 		g_logger().error("[{}] cylinder is nullptr", __FUNCTION__);
 		return;
@@ -2516,8 +2513,6 @@ ReturnValue Game::internalTeleport(std::shared_ptr<Thing> thing, const Position 
 		g_logger().error("[{}] thing is nullptr", __FUNCTION__);
 		return RETURNVALUE_NOTPOSSIBLE;
 	}
-	
-	g_saveManager().saveAll();
 
 	if (newPos == thing->getPosition()) {
 		return RETURNVALUE_CONTACTADMINISTRATOR;
@@ -2541,6 +2536,9 @@ ReturnValue Game::internalTeleport(std::shared_ptr<Thing> thing, const Position 
 	} else if (std::shared_ptr<Item> item = thing->getItem()) {
 		return internalMoveItem(item->getParent(), toTile, INDEX_WHEREEVER, item, item->getItemCount(), nullptr, flags);
 	}
+	
+	g_saveManager().saveAll();
+	
 	return RETURNVALUE_NOTPOSSIBLE;
 }
 
@@ -6558,6 +6556,15 @@ bool Game::combatChangeHealth(std::shared_ptr<Creature> attacker, std::shared_pt
 		if (attackerPlayer && targetPlayer && attackerPlayer->getSkull() == SKULL_BLACK && attackerPlayer->getSkullClient(targetPlayer) == SKULL_NONE) {
 			return false;
 		}
+		
+		std::shared_ptr<Monster> monster = attacker ? attacker->getMonster() : nullptr;
+		if (monster && monster->getLevel() > 0) {
+			float bonusDmg = g_configManager().getFloat(MLVL_BONUSDMG) * monster->getLevel();
+			if (bonusDmg != 0.0) {
+				damage.primary.value += std::round(damage.primary.value * bonusDmg);
+				damage.secondary.value += std::round(damage.secondary.value * bonusDmg);
+			}
+		}
 
 		// Wheel of destiny apply combat effects
 		applyWheelOfDestinyEffectsToDamage(damage, attackerPlayer, target);
@@ -7238,6 +7245,19 @@ bool Game::combatChangeMana(std::shared_ptr<Creature> attacker, std::shared_ptr<
 				return combatChangeMana(attacker, target, damage);
 			}
 		}
+		
+		std::shared_ptr<Monster> monster = attacker ? attacker->getMonster() : nullptr;
+	if (monster && monster->getLevel() > 0) {
+		float bonusDmg = g_configManager().getFloat(MLVL_BONUSDMG) * monster->getLevel();
+		if (bonusDmg != 0.0) {
+			if (damage.primary.value < 0) {
+				damage.primary.value += std::round(damage.primary.value * bonusDmg);
+			}
+			if (damage.secondary.value < 0) {
+				damage.secondary.value += std::round(damage.secondary.value * bonusDmg);
+			}
+		}
+	}
 
 		if (targetPlayer && attacker && attacker->getMonster()) {
 			// Charm rune (target as player)

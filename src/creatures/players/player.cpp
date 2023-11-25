@@ -1701,13 +1701,13 @@ void Player::onChangeZone(ZoneType_t zone) {
 			toggleMount(true);
 			wasMounted = false;
 		}
-		g_saveManager().saveAll();
 	}
 
 	updateImbuementTrackerStats();
 	wheel()->onThink(true);
 	wheel()->sendGiftOfLifeCooldown();
 	g_game().updateCreatureWalkthrough(static_self_cast<Player>());
+	g_saveManager().savePlayer(getPlayer());
 	sendIcons();
 	g_events().eventPlayerOnChangeZone(static_self_cast<Player>(), zone);
 
@@ -1788,6 +1788,7 @@ bool Player::openShopWindow(std::shared_ptr<Npc> npc) {
 
 	setShopOwner(npc);
 	npc->addShopPlayer(static_self_cast<Player>());
+	g_saveManager().savePlayer(getPlayer());
 
 	sendShop(npc);
 	std::map<uint16_t, uint16_t> inventoryMap;
@@ -1802,6 +1803,7 @@ bool Player::closeShopWindow(bool sendCloseShopWindow /*= true*/) {
 
 	shopOwner->removeShopPlayer(static_self_cast<Player>());
 	setShopOwner(nullptr);
+	g_saveManager().savePlayer(getPlayer());
 
 	if (sendCloseShopWindow) {
 		sendCloseShop();
