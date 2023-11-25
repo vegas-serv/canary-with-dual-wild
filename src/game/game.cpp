@@ -6672,10 +6672,8 @@ bool Game::combatChangeHealth(std::shared_ptr<Creature> attacker, std::shared_pt
 			}
 		}
 
+		std::string attackMsg = fmt::format("{} attack", damage.critical ? "critical " : " ");
 		std::stringstream ss;
-		ss << (damage.critical ? "critical " : " ") << "attack";
-		std::string attackMsg = ss.str();
-		ss.str({});
 
 		if (target->hasCondition(CONDITION_MANASHIELD) && damage.primary.type != COMBAT_UNDEFINEDDAMAGE) {
 			int32_t manaDamage = std::min<int32_t>(target->getMana(), healthChange);
@@ -6962,17 +6960,19 @@ void Game::buildMessageAsSpectator(
 ) const {
 	if (spectatorMessage.empty()) {
 		ss.str({});
+		auto attackMsg = damage.critical ? "critical " : "";
+		auto article = damage.critical ? "a" : "an";
 		ss << ucfirst(target->getNameDescription()) << " loses " << damageString;
 		if (attacker) {
 			ss << " due to ";
 			if (attacker == target) {
 				if (targetPlayer) {
-					ss << targetPlayer->getPossessivePronoun() << " own attack";
+					ss << targetPlayer->getPossessivePronoun() << " own " << attackMsg << "attack";
 				} else {
-					ss << "its own attack";
+					ss << "its own " << attackMsg << "attack";
 				}
 			} else {
-				ss << "an attack by " << attacker->getNameDescription();
+				ss << article << " " << attackMsg << "attack by " << attacker->getNameDescription();
 			}
 		}
 		ss << '.';
@@ -6992,13 +6992,15 @@ void Game::buildMessageAsTarget(
 	const std::string &damageString
 ) const {
 	ss.str({});
+	auto attackMsg = damage.critical ? "critical " : "";
+	auto article = damage.critical ? "a" : "an";
 	ss << "You lose " << damageString;
 	if (!attacker) {
 		ss << '.';
 	} else if (targetPlayer == attackerPlayer) {
-		ss << " due to your own attack.";
+		ss << " due to your own " << attackMsg << "attack.";
 	} else {
-		ss << " due to an attack by " << attacker->getNameDescription() << '.';
+		ss << " due to " << article << " " << attackMsg << "attack by " << attacker->getNameDescription() << '.';
 	}
 	if (damage.extension) {
 		ss << " " << damage.exString;
@@ -7012,7 +7014,7 @@ void Game::buildMessageAsAttacker(
 	std::stringstream &ss, const std::string &damageString
 ) const {
 	ss.str({});
-	ss << ucfirst(target->getNameDescription()) << " loses " << damageString << " due to your attack.";
+	ss << ucfirst(target->getNameDescription()) << " loses " << damageString << " due to your " << (damage.critical ? "critical " : " ") << "attack.";
 	if (damage.extension) {
 		ss << " " << damage.exString;
 	}
