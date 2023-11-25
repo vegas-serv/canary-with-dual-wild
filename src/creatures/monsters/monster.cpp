@@ -65,12 +65,12 @@ Monster::Monster(const std::shared_ptr<MonsterType> mType) :
 }
 	
 	if (level > 0) {
-		float bonusHp = g_configManager().getFloat(MLVL_BONUSHP) * level;
+		float bonusHp = g_configManager().getFloat(MLVL_BONUSHP, __FUNCTION__) * level;
 		if (bonusHp != 0.0) {
 			healthMax += healthMax * bonusHp;
 			health += health * bonusHp;
 		}
-		float bonusSpeed = g_configManager().getFloat(MLVL_BONUSSPEED) * level;
+		float bonusSpeed = g_configManager().getFloat(MLVL_BONUSSPEED, __FUNCTION__) * level;
 		if (bonusSpeed != 0.0) {
 			baseSpeed += baseSpeed * bonusSpeed;
 		}
