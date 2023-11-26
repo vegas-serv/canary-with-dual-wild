@@ -2290,8 +2290,6 @@ bool Game::removeMoney(std::shared_ptr<Cylinder> cylinder, uint64_t money, uint3
 	if (moneyCount + balance < money) {
 		return false;
 	}
-	
-	g_saveManager().savePlayer(player);
 
 	for (const auto &moneyEntry : moneyMap) {
 		std::shared_ptr<Item> item = moneyEntry.second;
@@ -2326,8 +2324,6 @@ void Game::addMoney(std::shared_ptr<Cylinder> cylinder, uint64_t money, uint32_t
 	if (money == 0) {
 		return;
 	}
-	
-	g_saveManager().saveAll();
 	
 	uint32_t barofgolds = money / 1000000;
 	money -= barofgolds * 1000000;

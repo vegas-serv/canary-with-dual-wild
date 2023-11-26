@@ -92,7 +92,6 @@ bool SaveManager::doSavePlayer(std::shared_ptr<Player> player) {
 bool SaveManager::savePlayer(std::shared_ptr<Player> player) {
 	if (player->isOnline()) {
 		schedulePlayer(player);
-		player->loginPosition = player->getPosition();
 		return true;
 	}
 	return doSavePlayer(player);
