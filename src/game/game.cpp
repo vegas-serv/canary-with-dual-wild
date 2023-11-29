@@ -1351,12 +1351,10 @@ void Game::playerMoveItem(std::shared_ptr<Player> player, const Position &fromPo
 		uint32_t delay = player->getNextActionTime();
 		std::shared_ptr<Task> task = createPlayerTask(delay, std::bind(&Game::playerMoveItemByPlayerID, this, player->getID(), fromPos, itemId, fromStackPos, toPos, count), "Game::playerMoveItemByPlayerID");
 		player->setNextActionTask(task);
-		g_saveManager().savePlayer(player);
 		return;
 	}
 
 	player->setNextActionTask(nullptr);
-	g_saveManager().savePlayer(player);
 
 	if (item == nullptr) {
 		uint8_t fromIndex = 0;
@@ -4115,8 +4113,6 @@ void Game::playerBrowseField(uint32_t playerId, const Position &pos) {
 	if (!g_callbacks().checkCallback(EventCallback_t::playerOnBrowseField, &EventCallback::playerOnBrowseField, player, tile->getPosition())) {
 		return;
 	}
-	
-	g_saveManager().savePlayer(player);
 
 	std::shared_ptr<Container> container;
 
@@ -5374,7 +5370,6 @@ void Game::playerApplyImbuement(uint32_t playerId, uint16_t imbuementid, uint8_t
 	}
 
 	player->onApplyImbuement(imbuement, item, slot, protectionCharm);
-	g_saveManager().savePlayer(player);
 }
 
 void Game::playerClearImbuement(uint32_t playerid, uint8_t slot) {
@@ -5393,7 +5388,6 @@ void Game::playerClearImbuement(uint32_t playerid, uint8_t slot) {
 	}
 
 	player->onClearImbuement(item, slot);
-	g_saveManager().savePlayer(player);
 }
 
 void Game::playerCloseImbuementWindow(uint32_t playerid) {
