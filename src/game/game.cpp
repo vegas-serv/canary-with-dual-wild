@@ -1351,12 +1351,10 @@ void Game::playerMoveItem(std::shared_ptr<Player> player, const Position &fromPo
 		uint32_t delay = player->getNextActionTime();
 		std::shared_ptr<Task> task = createPlayerTask(delay, std::bind(&Game::playerMoveItemByPlayerID, this, player->getID(), fromPos, itemId, fromStackPos, toPos, count), "Game::playerMoveItemByPlayerID");
 		player->setNextActionTask(task);
-		g_saveManager().savePlayer(player);
 		return;
 	}
 
 	player->setNextActionTask(nullptr);
-	g_saveManager().savePlayer(player);
 
 	if (item == nullptr) {
 		uint8_t fromIndex = 0;
@@ -2290,8 +2288,6 @@ bool Game::removeMoney(std::shared_ptr<Cylinder> cylinder, uint64_t money, uint3
 	if (moneyCount + balance < money) {
 		return false;
 	}
-	
-	g_saveManager().savePlayer(player);
 
 	for (const auto &moneyEntry : moneyMap) {
 		std::shared_ptr<Item> item = moneyEntry.second;
@@ -2326,8 +2322,6 @@ void Game::addMoney(std::shared_ptr<Cylinder> cylinder, uint64_t money, uint32_t
 	if (money == 0) {
 		return;
 	}
-	
-	g_saveManager().saveAll();
 	
 	uint32_t barofgolds = money / 1000000;
 	money -= barofgolds * 1000000;
@@ -4119,8 +4113,6 @@ void Game::playerBrowseField(uint32_t playerId, const Position &pos) {
 	if (!g_callbacks().checkCallback(EventCallback_t::playerOnBrowseField, &EventCallback::playerOnBrowseField, player, tile->getPosition())) {
 		return;
 	}
-	
-	g_saveManager().savePlayer(player);
 
 	std::shared_ptr<Container> container;
 
@@ -5378,7 +5370,6 @@ void Game::playerApplyImbuement(uint32_t playerId, uint16_t imbuementid, uint8_t
 	}
 
 	player->onApplyImbuement(imbuement, item, slot, protectionCharm);
-	g_saveManager().savePlayer(player);
 }
 
 void Game::playerClearImbuement(uint32_t playerid, uint8_t slot) {
@@ -5397,7 +5388,6 @@ void Game::playerClearImbuement(uint32_t playerid, uint8_t slot) {
 	}
 
 	player->onClearImbuement(item, slot);
-	g_saveManager().savePlayer(player);
 }
 
 void Game::playerCloseImbuementWindow(uint32_t playerid) {
@@ -5835,7 +5825,7 @@ void Game::checkCreatures() {
 	auto &checkCreatureList = checkCreatureLists[index];
 	size_t it = 0, end = checkCreatureList.size();
 	while (it < end) {
-		const auto &creature = checkCreatureList[it];
+		auto creature = checkCreatureList[it];
 		if (creature && creature->creatureCheck) {
 			if (creature->getHealth() > 0) {
 				creature->onThink(EVENT_CREATURE_THINK_INTERVAL);
@@ -7799,7 +7789,8 @@ void Game::playerLeaveParty(uint32_t playerId) {
 	}
 
 	std::shared_ptr<Party> party = player->getParty();
-	if (!party || player->hasCondition(CONDITION_INFIGHT)) {
+	if (!party || player->hasCondition(CONDITION_INFIGHT) && !player->getZoneType() == ZONE_PROTECTION) {
+		player->sendTextMessage(TextMessage(MESSAGE_FAILURE, "You cannot leave party, contact the administrator."));
 		return;
 	}
 
