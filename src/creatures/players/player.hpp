@@ -2723,6 +2723,7 @@ private:
 	std::shared_ptr<RewardChest> rewardChest = nullptr;
 
 	uint32_t inventoryWeight = 0;
+	uint32_t attackSpeed = 0;
 	uint32_t capacity = 40000;
 	uint32_t bonusCapacity = 0;
 
@@ -2873,24 +2874,16 @@ private:
 
 	bool isPromoted() const;
 
-	bool onFistAttackSpeed = g_configManager().getBoolean(TOGGLE_ATTACK_SPEED_ONFIST, "Player.hpp::onFistAttackSpeed");
-	uint32_t MAX_ATTACK_SPEED = g_configManager().getNumber(MAX_SPEED_ATTACKONFIST, "Player.hpp::MAX_ATTACK_SPEED");
-
 	uint32_t getAttackSpeed() const {
-		if (onFistAttackSpeed) {
-			uint32_t baseAttackSpeed = vocation->getAttackSpeed();
-			uint32_t skillLevel = getSkillLevel(SKILL_FIST);
-			uint32_t attackSpeed = baseAttackSpeed - (skillLevel * g_configManager().getNumber(MULTIPLIER_ATTACKONFIST, __FUNCTION__));
-
-			if (attackSpeed < MAX_ATTACK_SPEED) {
-				attackSpeed = MAX_ATTACK_SPEED;
-			}
-
-			return static_cast<uint32_t>(attackSpeed);
-		} else {
-			return vocation->getAttackSpeed();
-		}
-	}
+        if (attackSpeed > 0) {
+        return attackSpeed;
+        }
+        return vocation->getAttackSpeed();
+    }
+	
+	void setAttackSpeed(uint32_t speed) {
+            attackSpeed = speed;
+    }
 
 	static double_t getPercentLevel(uint64_t count, uint64_t nextLevelCount);
 	double getLostPercent() const;

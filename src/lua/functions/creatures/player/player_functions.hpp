@@ -352,6 +352,9 @@ private:
 		registerMethod(L, "Player", "getVipTime", PlayerFunctions::luaPlayerGetVipTime);
 
 		registerMethod(L, "Player", "kv", PlayerFunctions::luaPlayerKV);
+		
+		registerMethod(L, "Player", "getAttackSpeed", PlayerFunctions::luaPlayerGetAttackSpeed);
+        registerMethod(L, "Player", "setAttackSpeed", PlayerFunctions::luaPlayerSetAttackSpeed);
 
 		GroupFunctions::init(L);
 		GuildFunctions::init(L);
@@ -699,6 +702,9 @@ private:
 	static int luaPlayerGetVipTime(lua_State* L);
 
 	static int luaPlayerKV(lua_State* L);
+	
+	static int luaPlayerGetAttackSpeed(lua_State* L);
+	static int luaPlayerSetAttackSpeed(lua_State* L);
 
 	friend class CreatureFunctions;
 };

@@ -4106,3 +4106,29 @@ int PlayerFunctions::luaPlayerKV(lua_State* L) {
 	setMetatable(L, -1, "KV");
 	return 1;
 }
+
+int PlayerFunctions::luaPlayerSetAttackSpeed(lua_State* L)
+{
+    // player:setAttackSpeed(ms)
+    std::shared_ptr<Player> player = getUserdataShared<Player>(L, 1);
+    uint32_t ms = getNumber<uint32_t>(L, 2);
+    if (player) {
+        player->setAttackSpeed(ms);
+        pushBoolean(L, true);
+    } else {
+        lua_pushnil(L);
+    }
+    return 1;
+}
+
+int PlayerFunctions::luaPlayerGetAttackSpeed(lua_State* L)
+{
+    // player:getAttackSpeed()
+    std::shared_ptr<Player> player = getUserdataShared<Player>(L, 1);
+    if (player) {
+        lua_pushnumber(L, player->getAttackSpeed());
+    } else {
+        lua_pushnil(L);
+    }
+    return 1;
+}
