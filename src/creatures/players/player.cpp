@@ -1479,7 +1479,7 @@ void Player::openImbuementWindow(std::shared_ptr<Item> item) {
 
 void Player::sendSaleItemList(const std::map<uint16_t, uint16_t> &inventoryMap) const {
 	if (client && shopOwner) {
-		client->sendSaleItemList(shopOwner->getShopItemVector(), inventoryMap);
+		client->sendSaleItemList(shopOwner->getShopItemVector(getGUID()), inventoryMap);
 	}
 }
 
@@ -1787,7 +1787,7 @@ bool Player::openShopWindow(std::shared_ptr<Npc> npc) {
 	}
 
 	setShopOwner(npc);
-	npc->addShopPlayer(static_self_cast<Player>());
+
 	g_saveManager().savePlayer(getPlayer());
 
 	sendShop(npc);
@@ -4138,7 +4138,7 @@ bool Player::hasShopItemForSale(uint16_t itemId, uint8_t subType) const {
 	}
 
 	const ItemType &itemType = Item::items[itemId];
-	std::vector<ShopBlock> shoplist = shopOwner->getShopItemVector();
+	std::vector<ShopBlock> shoplist = shopOwner->getShopItemVector(getGUID());
 	return std::any_of(shoplist.begin(), shoplist.end(), [&](const ShopBlock &shopBlock) {
 		return shopBlock.itemId == itemId && shopBlock.itemBuyPrice != 0 && (!itemType.isFluidContainer() || shopBlock.itemSubType == subType);
 	});
@@ -6828,7 +6828,9 @@ bool Player::saySpell(
 	// Send to client
 	for (std::shared_ptr<Creature> spectator : spectators) {
 		if (std::shared_ptr<Player> tmpPlayer = spectator->getPlayer()) {
-			valueEmote = tmpPlayer->getStorageValue(STORAGEVALUE_EMOTE);
+			if (g_configManager().getBoolean(EMOTE_SPELLS, __FUNCTION__)) {
+				valueEmote = tmpPlayer->getStorageValue(STORAGEVALUE_EMOTE);
+			}
 			if (!ghostMode || tmpPlayer->canSeeCreature(static_self_cast<Player>())) {
 				if (valueEmote == 1) {
 					tmpPlayer->sendCreatureSay(static_self_cast<Player>(), TALKTYPE_MONSTER_SAY, text, pos);
