@@ -7005,8 +7005,7 @@ void ProtocolGame::AddCreature(NetworkMessage &msg, std::shared_ptr<Creature> cr
 		} else {
 			std::shared_ptr<Monster> monster = creature->getMonster();
 		if (monster && monster->getLevel() > 0) {
-			//msg.addString(creature->getName() + " [" + std::to_string(monster->getLevel()) + "]");
-			msg.addString(creature->getName());
+			msg.addString(creature->getName() + " [" + std::to_string(monster->getLevel()) + "]");
 		} else {
 			msg.addString(creature->getName());
 		}
