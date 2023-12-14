@@ -124,6 +124,8 @@ bool IOLoginDataLoad::loadPlayerFirst(std::shared_ptr<Player> player, DBResult_p
 		g_logger().error("Player {} has vocation id {} which doesn't exist", player->name, result->getNumber<uint16_t>("vocation"));
 		return false;
 	}
+	
+	player->rebirth = std::max<uint32_t>(0, result->getNumber<uint32_t>("rebirth"));// rebirth
 
 	player->setBankBalance(result->getNumber<uint64_t>("balance"));
 	player->quickLootFallbackToMainContainer = result->getNumber<bool>("quickloot_fallback");

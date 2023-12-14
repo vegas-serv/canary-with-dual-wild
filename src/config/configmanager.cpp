@@ -155,6 +155,10 @@ bool ConfigManager::load() {
 
 	loadStringConfig(L, FORGE_FIENDISH_INTERVAL_TYPE, "forgeFiendishIntervalType", "hour");
 	loadStringConfig(L, FORGE_FIENDISH_INTERVAL_TIME, "forgeFiendishIntervalTime", "1");
+	
+	loadIntConfig(L, REBORN_LEVEL, "rebornLevel", 700000);
+	loadIntConfig(L, REBORN_STATBONUS, "rebornStats", 5);
+	loadIntConfig(L, REBORN_DMGBONUS, "rebornDmg", 10);
 
 	loadIntConfig(L, MAX_PLAYERS, "maxPlayers", 0);
 	loadIntConfig(L, PZ_LOCKED, "pzLocked", 60000);

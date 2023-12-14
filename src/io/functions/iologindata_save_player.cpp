@@ -178,6 +178,7 @@ bool IOLoginDataSave::savePlayerFirst(std::shared_ptr<Player> player) {
 	query.str("");
 	query << "UPDATE `players` SET ";
 	query << "`level` = " << player->level << ",";
+	query << "`rebirth` = " << player->rebirth << ',';// rebirth
 	query << "`group_id` = " << player->group->id << ",";
 	query << "`vocation` = " << player->getVocationId() << ",";
 	query << "`health` = " << player->health << ",";

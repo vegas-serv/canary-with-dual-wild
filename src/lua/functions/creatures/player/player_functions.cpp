@@ -4132,3 +4132,28 @@ int PlayerFunctions::luaPlayerGetAttackSpeed(lua_State* L)
     }
     return 1;
 }
+
+int PlayerFunctions::luaPlayerDoRebirth(lua_State* L)
+{
+    // player:doRebirth()
+    std::shared_ptr<Player> player = getUserdataShared<Player>(L, 1);
+    if (player) {
+        player->doReborn();
+        lua_pushnil(L);
+    } else {
+        lua_pushnil(L);
+    }
+    return 1;
+}
+
+int PlayerFunctions::luaPlayerGetRebirth(lua_State* L) // rebirth
+{
+    // player:getRebirth()
+    std::shared_ptr<Player> player = getUserdataShared<Player>(L, 1);
+    if (player) {
+        lua_pushnumber(L, player->getRebirth());
+    } else {
+        lua_pushnil(L);
+    }
+    return 1;
+}

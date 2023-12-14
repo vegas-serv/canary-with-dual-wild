@@ -63,6 +63,24 @@ Player::~Player() {
 	logged = false;
 }
 
+void Player::doReborn() // rebirth
+{
+    rebirth++;
+    double bonusRebirth = rebirth * g_configManager().getNumber(REBORN_STATBONUS, __FUNCTION__);
+    bonusRebirth /= 100;
+    bonusRebirth += 1;
+    
+    mana = 500000 * bonusRebirth;
+    manaMax = mana;
+    health = 1000000 * bonusRebirth;
+    healthMax = health;
+    capacity = 20000;
+    experience = 4200;
+    level = 8;
+    levelPercent = 0;
+    sendStats();
+}
+
 bool Player::setVocation(uint16_t vocId) {
 	Vocation* voc = g_vocations().getVocation(vocId);
 	if (!voc) {
@@ -157,6 +175,8 @@ std::string Player::getDescription(int32_t lookDistance) {
 			s << " " << subjectPronoun << " " << getSubjectVerb() << " VIP.";
 		}
 	}
+	
+	s << " Master Resets: " << rebirth << ".";
 
 	if (party) {
 		if (lookDistance == -1) {
@@ -2285,21 +2305,26 @@ void Player::addExperience(std::shared_ptr<Creature> target, uint64_t exp, bool 
 
 	uint32_t prevLevel = level;
 	while (experience >= nextLevelExp) {
+		
+		double bonusRebirth = rebirth * g_configManager().getNumber(REBORN_STATBONUS, __FUNCTION__);
+        bonusRebirth /= 100;
+        bonusRebirth += 1;
+		
 		++level;
 		// Player stats gain for vocations level <= 8
 		if (vocation->getId() != VOCATION_NONE && level <= 8) {
 			const Vocation* noneVocation = g_vocations().getVocation(VOCATION_NONE);
-			healthMax += noneVocation->getHPGain();
-			health += noneVocation->getHPGain();
-			manaMax += noneVocation->getManaGain();
-			mana += noneVocation->getManaGain();
-			capacity += noneVocation->getCapGain();
+			healthMax += noneVocation->getHPGain() * bonusRebirth;
+			health += noneVocation->getHPGain() * bonusRebirth;
+			manaMax += noneVocation->getManaGain() * bonusRebirth;
+			mana += noneVocation->getManaGain() * bonusRebirth;
+			capacity += noneVocation->getCapGain() * bonusRebirth;
 		} else {
-			healthMax += vocation->getHPGain();
-			health += vocation->getHPGain();
-			manaMax += vocation->getManaGain();
-			mana += vocation->getManaGain();
-			capacity += vocation->getCapGain();
+			healthMax += vocation->getHPGain() * bonusRebirth;
+			health += vocation->getHPGain() * bonusRebirth;
+			manaMax += vocation->getManaGain() * bonusRebirth;
+			mana += vocation->getManaGain() * bonusRebirth;
+			capacity += vocation->getCapGain() * bonusRebirth;
 		}
 
 		currLevelExp = nextLevelExp;

@@ -6450,6 +6450,22 @@ bool Game::combatChangeHealth(std::shared_ptr<Creature> attacker, std::shared_pt
 		if (attackerPlayer && targetPlayer && attackerPlayer->getSkull() == SKULL_BLACK && attackerPlayer->getSkullClient(targetPlayer) == SKULL_NONE) {
 			return false;
 		}
+		
+		double bonusRebirth = 0.0;
+        if(attackerPlayer != nullptr){
+            bonusRebirth = attackerPlayer->rebirth * g_configManager().getNumber(REBORN_DMGBONUS, __FUNCTION__);
+            bonusRebirth /= 10;
+            bonusRebirth /= 100;
+            bonusRebirth += 1;
+        }
+        else
+            bonusRebirth = 1.0;
+        
+        std::cout << bonusRebirth << std::endl;
+        
+        
+		damage.primary.value = std::abs(damage.primary.value) * bonusRebirth;
+		damage.secondary.value = std::abs(damage.secondary.value * bonusRebirth);
 
 		if (damage.origin != ORIGIN_NONE) {
 			const auto events = target->getCreatureEvents(CREATURE_EVENT_HEALTHCHANGE);
