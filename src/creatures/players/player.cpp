@@ -31,6 +31,7 @@
 #include "items/weapons/weapons.hpp"
 #include "core.hpp"
 #include "map/spectators.hpp"
+#include "lib/metrics/metrics.hpp"
 
 MuteCountMap Player::muteCountMap;
 
@@ -1112,6 +1113,23 @@ void Player::checkLootContainers(std::shared_ptr<Item> item) {
 }
 
 void Player::sendLootStats(std::shared_ptr<Item> item, uint8_t count) {
+	uint64_t value = 0;
+	if (item->getID() == ITEM_GOLD_COIN || item->getID() == ITEM_PLATINUM_COIN || item->getID() == ITEM_CRYSTAL_COIN) {
+		if (item->getID() == ITEM_PLATINUM_COIN) {
+			value = count * 100;
+		} else if (item->getID() == ITEM_CRYSTAL_COIN) {
+			value = count * 10000;
+		} else {
+			value = count;
+		}
+	} else if (
+		auto npc = g_game().getNpcByName("The Lootmonger")
+	) {
+		const auto &iType = Item::items.getItemType(item->getID());
+		value = iType.sellPrice * count;
+	}
+	g_metrics().addCounter("player_loot", value, { { "player", getName() } });
+
 	if (client) {
 		client->sendLootStats(item, count);
 	}
@@ -1261,6 +1279,10 @@ void Player::sendStats() {
 }
 
 void Player::updateSupplyTracker(std::shared_ptr<Item> item) {
+	const auto &iType = Item::items.getItemType(item->getID());
+	auto value = iType.buyPrice;
+	g_metrics().addCounter("player_supply", value, { { "player", getName() } });
+
 	if (client) {
 		client->sendUpdateSupplyTracker(item);
 	}
@@ -1387,6 +1409,8 @@ void Player::onApplyImbuement(Imbuement* imbuement, std::shared_ptr<Item> item, 
 		return;
 	}
 
+	g_metrics().addCounter("balance_decrease", price, { { "player", getName() }, { "context", "apply_imbuement" } });
+
 	for (auto &[key, value] : items) {
 		std::stringstream withdrawItemMessage;
 
@@ -1449,6 +1473,7 @@ void Player::onClearImbuement(std::shared_ptr<Item> item, uint8_t slot) {
 		this->openImbuementWindow(item);
 		return;
 	}
+	g_metrics().addCounter("balance_decrease", baseImbuement->removeCost, { { "player", getName() }, { "context", "clear_imbuement" } });
 
 	if (item->getParent() == getPlayer()) {
 		removeItemImbuementStats(imbuementInfo.imbuement);
@@ -1665,6 +1690,12 @@ void Player::onCreatureAppear(std::shared_ptr<Creature> creature, bool isLogin) 
 			}
 			sendBlessStatus();
 		}
+
+		if (getCurrentMount() != 0) {
+			toggleMount(true);
+		}
+
+		g_game().changePlayerSpeed(static_self_cast<Player>(), 0);
 	}
 }
 
@@ -1697,6 +1728,12 @@ void Player::onChangeZone(ZoneType_t zone) {
 			wasMounted = true;
 		}
 	} else {
+		int32_t ticks = g_configManager().getNumber(STAIRHOP_DELAY, __FUNCTION__);
+		if (ticks > 0) {
+			if (const auto &condition = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_PACIFIED, ticks, 0)) {
+				addCondition(condition);
+			}
+		}
 		if (wasMounted) {
 			toggleMount(true);
 			wasMounted = false;
@@ -2243,6 +2280,16 @@ void Player::addExperience(std::shared_ptr<Creature> target, uint64_t exp, bool 
 	g_events().eventPlayerOnGainExperience(static_self_cast<Player>(), target, exp, rawExp);
 	if (exp == 0) {
 		return;
+	}
+
+	auto rate = exp / rawExp;
+	std::map<std::string, std::string> attrs({ { "player", getName() }, { "level", std::to_string(getLevel()) }, { "rate", std::to_string(rate) } });
+	if (sendText) {
+		g_metrics().addCounter("player_experience_raw", rawExp, attrs);
+		g_metrics().addCounter("player_experience_actual", exp, attrs);
+	} else {
+		g_metrics().addCounter("player_experience_bonus_raw", rawExp, attrs);
+		g_metrics().addCounter("player_experience_bonus_actual", exp, attrs);
 	}
 
 	// Hazard system experience
@@ -3951,9 +3998,7 @@ std::map<uint32_t, uint32_t> &Player::getAllItemTypeCount(std::map<uint32_t, uin
 
 std::map<uint16_t, uint16_t> &Player::getAllSaleItemIdAndCount(std::map<uint16_t, uint16_t> &countMap) const {
 	for (const auto item : getAllInventoryItems(false, true)) {
-		if (!item->hasImbuements()) {
-			countMap[item->getID()] += item->getItemCount();
-		}
+		countMap[item->getID()] += item->getItemCount();
 	}
 
 	return countMap;
@@ -4369,6 +4414,7 @@ void Player::onAddCondition(ConditionType_t type) {
 
 	if (type == CONDITION_OUTFIT && isMounted()) {
 		dismount();
+		wasMounted = true;
 	}
 
 	sendIcons();
@@ -4440,6 +4486,10 @@ void Player::onEndCondition(ConditionType_t type) {
 		if (getSkull() != SKULL_RED && getSkull() != SKULL_BLACK) {
 			setSkull(SKULL_NONE);
 		}
+	}
+
+	if (type == CONDITION_OUTFIT && wasMounted) {
+		toggleMount(true);
 	}
 
 	sendIcons();
@@ -4651,7 +4701,7 @@ bool Player::onKilledMonster(const std::shared_ptr<Monster> &monster) {
 	if (hasFlag(PlayerFlags_t::NotGenerateLoot)) {
 		monster->setDropLoot(false);
 	}
-	if (monster->isSummon()) {
+	if (monster->hasBeenSummoned()) {
 		return false;
 	}
 	auto mType = monster->getMonsterType();
@@ -5586,6 +5636,14 @@ void Player::sendUnjustifiedPoints() {
 	}
 }
 
+uint8_t Player::getLastMount() const {
+	int32_t value = getStorageValue(PSTRG_MOUNTS_CURRENTMOUNT);
+	if (value > 0) {
+		return value;
+	}
+	return static_cast<uint8_t>(kv()->get("last-mount")->get<int>());
+}
+
 uint8_t Player::getCurrentMount() const {
 	int32_t value = getStorageValue(PSTRG_MOUNTS_CURRENTMOUNT);
 	if (value > 0) {
@@ -5644,7 +5702,7 @@ bool Player::toggleMount(bool mount) {
 			return false;
 		}
 
-		uint8_t currentMountId = getCurrentMount();
+		uint8_t currentMountId = getLastMount();
 		if (currentMountId == 0) {
 			sendOutfitWindow();
 			return false;
@@ -5661,6 +5719,7 @@ bool Player::toggleMount(bool mount) {
 
 		if (!hasMount(currentMount)) {
 			setCurrentMount(0);
+			kv()->set("last-mount", 0);
 			sendOutfitWindow();
 			return false;
 		}
@@ -5677,6 +5736,7 @@ bool Player::toggleMount(bool mount) {
 
 		defaultOutfit.lookMount = currentMount->clientId;
 		setCurrentMount(currentMount->id);
+		kv()->set("last-mount", currentMount->id);
 
 		if (currentMount->speed != 0) {
 			g_game().changeSpeed(static_self_cast<Player>(), currentMount->speed);
@@ -5736,6 +5796,7 @@ bool Player::untameMount(uint8_t mountId) {
 		}
 
 		setCurrentMount(0);
+		kv()->set("last-mount", 0);
 	}
 
 	return true;
@@ -5767,6 +5828,7 @@ void Player::dismount() {
 	}
 
 	defaultOutfit.lookMount = 0;
+	setCurrentMount(0);
 }
 
 bool Player::addOfflineTrainingTries(skills_t skill, uint64_t tries) {
@@ -5934,32 +5996,28 @@ void Player::clearModalWindows() {
 }
 
 uint16_t Player::getHelpers() const {
-	uint16_t helpers;
-
 	if (guild && party) {
-		phmap::flat_hash_set<std::shared_ptr<Player>> helperSet;
+		const auto &guildMembers = guild->getMembersOnline();
 
-		const auto guildMembers = guild->getMembersOnline();
-		helperSet.insert(guildMembers.begin(), guildMembers.end());
+		stdext::vector_set<std::shared_ptr<Player>> helperSet;
+		helperSet.insert(helperSet.end(), guildMembers.begin(), guildMembers.end());
+		helperSet.insertAll(party->getMembers());
+		helperSet.insertAll(party->getInvitees());
 
-		const auto partyMembers = party->getMembers();
-		helperSet.insert(partyMembers.begin(), partyMembers.end());
+		helperSet.emplace(party->getLeader());
 
-		const auto partyInvitees = party->getInvitees();
-		helperSet.insert(partyInvitees.begin(), partyInvitees.end());
-
-		helperSet.insert(party->getLeader());
-
-		helpers = helperSet.size();
-	} else if (guild) {
-		helpers = guild->getMemberCountOnline();
-	} else if (party) {
-		helpers = party->getMemberCount() + party->getInvitationCount() + 1;
-	} else {
-		helpers = 0;
+		return static_cast<uint16_t>(helperSet.size());
 	}
 
-	return helpers;
+	if (guild) {
+		return static_cast<uint16_t>(guild->getMemberCountOnline());
+	}
+
+	if (party) {
+		return static_cast<uint16_t>(party->getMemberCount() + party->getInvitationCount() + 1);
+	}
+
+	return 0u;
 }
 
 void Player::sendClosePrivate(uint16_t channelId) {
@@ -6972,6 +7030,7 @@ void Player::forgeFuseItems(uint16_t itemId, uint8_t tier, bool success, bool re
 				sendForgeError(RETURNVALUE_CONTACTADMINISTRATOR);
 				return;
 			}
+			g_metrics().addCounter("balance_decrease", cost, { { "player", getName() }, { "context", "forge_fuse" } });
 			history.cost = cost;
 		}
 
@@ -7045,6 +7104,7 @@ void Player::forgeFuseItems(uint16_t itemId, uint8_t tier, bool success, bool re
 			sendForgeError(RETURNVALUE_CONTACTADMINISTRATOR);
 			return;
 		}
+		g_metrics().addCounter("balance_decrease", cost, { { "player", getName() }, { "context", "forge_fuse" } });
 
 		history.cost = cost;
 	}
@@ -7176,6 +7236,7 @@ void Player::forgeTransferItemTier(uint16_t donorItemId, uint8_t tier, uint16_t 
 		return;
 	}
 	history.cost = cost;
+	g_metrics().addCounter("balance_decrease", cost, { { "player", getName() }, { "context", "forge_transfer" } });
 
 	returnValue = g_game().internalAddItem(static_self_cast<Player>(), exaltationContainer, INDEX_WHEREEVER);
 	if (returnValue != RETURNVALUE_NOERROR) {
